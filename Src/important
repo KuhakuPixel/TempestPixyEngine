@@ -1,0 +1,4 @@
+-Chess engine requirements (foundation):
+-Board representation as the backend for the chess engine, needs to keep track of the board
+ and its rule (Just like on cpw-engine/board0x88.cpp for refrence) it needs to have the capability to display the board, load from fen notation and probably convert position to fen again.
+
