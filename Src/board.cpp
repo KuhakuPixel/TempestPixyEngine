@@ -3,7 +3,42 @@
 #include <ctype.h>
 #include <stdexcept>
 #include "CharHelper.h"
+#include "math.h"
 #define EMPTYSQUARE '-'
+
+struct Square
+{
+    char file;
+    char rank;
+    int fileNum;
+    int rankNum;
+    Square(char file, char rank)
+    {
+        int fileNum = CharHelper::ToAlphabetIndex(file) + 1;
+        int rankNum = CharHelper::ToInt(rank);
+        if (fileNum > 0 && fileNum <= 8)
+        {
+            this->fileNum=fileNum;
+        }
+        else
+        {
+            throw std::invalid_argument("invalid file value ,must be in between A and H (inclusive)");
+        }
+        if (rankNum > 0 && rankNum <= 8)
+        {
+            this->rankNum = rankNum;
+        }
+        else
+        {
+            throw std::invalid_argument("invalid rank value ,must be in between 1 and 8 (inclusive)");
+        }
+        this->file = file;
+        this->rank = rank;
+    }
+    Square(char file, int rank) : Square(file, (char)rank)
+    {
+    }
+};
 struct Board
 {
     char board[8][8] = {
@@ -45,7 +80,7 @@ struct Board
                 printf("%d  ", 8 - i);
                 for (int j = 0; j < 8; j++)
                 {
-                    printf(" %c ", board[7-i][j]);
+                    printf(" %c ", board[7 - i][j]);
                 }
 
                 printf("\n");
@@ -68,11 +103,14 @@ struct Board
         {
             throw std::invalid_argument("invalid move notation");
         }
-
-        char pieceToMove = board[CharHelper::ToInt(moveNotation[1]) - 1][CharHelper::ToAlphabetIndex(moveNotation[0])];
+        Square fromSquare=Square(moveNotation[0],moveNotation[1]);
+        Square toSquare=Square(moveNotation[2],moveNotation[3]);
+        char pieceToMove = board[fromSquare.rankNum-1][fromSquare.fileNum-1];
         printf("piece to move : %c\n", pieceToMove);
-        board[CharHelper::ToInt(moveNotation[3]) - 1][CharHelper::ToAlphabetIndex(moveNotation[2])] = pieceToMove;
-        board[CharHelper::ToInt(moveNotation[1]) - 1][CharHelper::ToAlphabetIndex(moveNotation[0])] = EMPTYSQUARE;
+        printf("fromsquare , filenum %d ranknum %d \n",fromSquare.fileNum,fromSquare.rankNum);
+          printf("toquare , filenum %d ranknum %d \n",toSquare.fileNum,toSquare.rankNum);
+        board[toSquare.rankNum-1][toSquare.fileNum-1] = pieceToMove;
+        board[fromSquare.rankNum-1][fromSquare.fileNum-1] = EMPTYSQUARE;
         //std::atoi()
     }
 };
