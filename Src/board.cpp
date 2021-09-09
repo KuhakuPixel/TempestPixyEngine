@@ -4,8 +4,46 @@
 #include <stdexcept>
 #include "CharHelper.h"
 #include "math.h"
+#include <cmath>
+#include <map>
 #define EMPTYSQUARE '-'
 
+enum class PieceColors
+{
+    white,
+    black
+};
+enum class PieceName
+{
+    whiteKing,
+    whiteQueen,
+    whitePawn,
+    whiteRook,
+    whiteKnight,
+    whiteBishop,
+
+    blackKing,
+    blackQueen,
+    blackPawn,
+    blackRook,
+    blackKnight,
+    blackBishop
+
+};
+const std::map<char, PieceName> pieceAbbreviationsToPieceMapping = {
+    {'K', PieceName::whiteKing},
+    {'Q', PieceName::whiteQueen},
+    {'R', PieceName::whiteRook},
+    {'N', PieceName::whiteRook},
+    {'B', PieceName::whiteBishop},
+    {'P', PieceName::whiteBishop},
+
+    {'k', PieceName::blackKing},
+    {'q', PieceName::blackQueen},
+    {'r', PieceName::blackRook},
+    {'n', PieceName::blackKnight},
+    {'b', PieceName::blackBishop},
+    {'p', PieceName::blackPawn}};
 struct Square
 {
     char file;
@@ -18,7 +56,7 @@ struct Square
         int rankNum = CharHelper::ToInt(rank);
         if (fileNum > 0 && fileNum <= 8)
         {
-            this->fileNum=fileNum;
+            this->fileNum = fileNum;
         }
         else
         {
@@ -89,6 +127,58 @@ struct Board
 
         printf("\n    A  B  C  D  E  F  G  H\n");
     }
+
+    
+    bool IsMoveLegal(char piece, Square from, Square to)
+    {
+        bool isMoveLegal = true;
+        PieceName pieceToMove = pieceAbbreviationsToPieceMapping.at(piece);
+        Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
+        printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
+        int xAbs = std::abs(moveDir.x);
+        int yAbs = std::abs(moveDir.y);
+        //check if the piece move according to the rule
+        switch (tolower(piece))
+        {
+        case 'n':
+            isMoveLegal &= ((xAbs == 1 && yAbs == 2) ||
+                            (xAbs == 2 && yAbs == 1));
+
+            break;
+        case 'r':
+            isMoveLegal &= ((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0));
+            break;
+
+        case 'b':
+            isMoveLegal &= ((xAbs > 0 && yAbs > 0) && (xAbs == yAbs));
+
+            break;
+        case 'k':
+            isMoveLegal &= ((xAbs == 1 && yAbs == 0) || (yAbs == 1 && xAbs == 0) || (xAbs == 1 && yAbs == 1));
+
+            break;
+        case 'q':
+            isMoveLegal &= (((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0)) ||
+                            (xAbs > 0 && yAbs > 0) && (xAbs == yAbs));
+        case 'p':
+            if (pieceToMove == PieceName::whitePawn)
+            {
+                isMoveLegal &= ((moveDir.y == 1 || moveDir.y == 2) || (moveDir.x == 1 && moveDir.y == 1));
+            }
+            else if (pieceToMove == PieceName::blackPawn)
+            {
+                isMoveLegal &= ((moveDir.y == -1 || moveDir.y == -2) || (moveDir.x == -1 && moveDir.y == -1));
+            }
+
+            break;
+
+        default:
+            printf("piece is invalid \n");
+            isMoveLegal &= false;
+            break;
+        }
+        return isMoveLegal;
+    }
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
@@ -103,14 +193,18 @@ struct Board
         {
             throw std::invalid_argument("invalid move notation");
         }
-        Square fromSquare=Square(moveNotation[0],moveNotation[1]);
-        Square toSquare=Square(moveNotation[2],moveNotation[3]);
-        char pieceToMove = board[fromSquare.rankNum-1][fromSquare.fileNum-1];
-        printf("piece to move : %c\n", pieceToMove);
-        printf("fromsquare , filenum %d ranknum %d \n",fromSquare.fileNum,fromSquare.rankNum);
-          printf("toquare , filenum %d ranknum %d \n",toSquare.fileNum,toSquare.rankNum);
-        board[toSquare.rankNum-1][toSquare.fileNum-1] = pieceToMove;
-        board[fromSquare.rankNum-1][fromSquare.fileNum-1] = EMPTYSQUARE;
-        //std::atoi()
+        Square fromSquare = Square(moveNotation[0], moveNotation[1]);
+        Square toSquare = Square(moveNotation[2], moveNotation[3]);
+        char pieceToMove = board[fromSquare.rankNum - 1][fromSquare.fileNum - 1];
+        if (IsMoveLegal(pieceToMove, fromSquare, toSquare))
+        {
+            printf("piece to move : %c\n", pieceToMove);
+            board[fromSquare.rankNum - 1][fromSquare.fileNum - 1] = EMPTYSQUARE;
+            board[toSquare.rankNum - 1][toSquare.fileNum - 1] = pieceToMove;
+        }
+        else
+        {
+            printf("move is not legal,try again\n");
+        }
     }
 };
