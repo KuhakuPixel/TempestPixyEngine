@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "board.cpp"
 #include "CharHelper.h"
 #include "math.h"
@@ -10,6 +11,8 @@ void StartEngine()
 
     while (true)
     {
+        std::string colorToMove = pieceColorStr[(int)board.currentTurn];
+        printf("Side to move %s \n", colorToMove.c_str());
         board.DisplayBoard('w');
         std::string move = "";
         printf("Move : ");

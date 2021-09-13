@@ -6,8 +6,10 @@
 #include "math.h"
 #include <cmath>
 #include <map>
+#include <string.h>
 #define EMPTYSQUARE '-'
 
+std::string pieceColorStr[2] = {"white", "black"};
 enum class PieceColors
 {
     white,
@@ -43,7 +45,23 @@ const std::map<char, PieceName> pieceAbbreviationsToPieceMapping = {
     {'r', PieceName::blackRook},
     {'n', PieceName::blackKnight},
     {'b', PieceName::blackBishop},
-    {'p', PieceName::blackPawn}};
+    {'p', PieceName::blackPawn},
+};
+const std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping = {
+    {'K', PieceColors::white},
+    {'Q', PieceColors::white},
+    {'R', PieceColors::white},
+    {'N', PieceColors::white},
+    {'B', PieceColors::white},
+    {'P', PieceColors::white},
+
+    {'k', PieceColors::black},
+    {'q', PieceColors::black},
+    {'r', PieceColors::black},
+    {'n', PieceColors::black},
+    {'b', PieceColors::black},
+    {'p', PieceColors::black},
+};
 struct Square
 {
     char file;
@@ -79,6 +97,7 @@ struct Square
 };
 struct Board
 {
+    PieceColors currentTurn = PieceColors::white;
     char board[8][8] = {
 
         {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
@@ -91,6 +110,10 @@ struct Board
         {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'},
 
     };
+    void LoadBoard(char board[8][8])
+    {
+        memcpy(this->board, board, sizeof(char) * 8 * 8);
+    }
     void LoadFromFen(std::string fen)
     {
     }
@@ -128,16 +151,23 @@ struct Board
         printf("\n    A  B  C  D  E  F  G  H\n");
     }
 
-    
     bool IsMoveLegal(char piece, Square from, Square to)
     {
         bool isMoveLegal = true;
-        PieceName pieceToMove = pieceAbbreviationsToPieceMapping.at(piece);
+        if (piece == EMPTYSQUARE)
+            return false;
+
+        PieceName pieceName = pieceAbbreviationsToPieceMapping.at(piece);
+        PieceColors pieceColor = pieceAbbreviationsToPieceColorMapping.at(piece);
+        //check if the current side move their own piece
+        isMoveLegal &= (currentTurn == pieceColor);
+
+        //check if piece 's move is according to the rule
         Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
         printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
         int xAbs = std::abs(moveDir.x);
         int yAbs = std::abs(moveDir.y);
-        //check if the piece move according to the rule
+
         switch (tolower(piece))
         {
         case 'n':
@@ -161,11 +191,11 @@ struct Board
             isMoveLegal &= (((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0)) ||
                             (xAbs > 0 && yAbs > 0) && (xAbs == yAbs));
         case 'p':
-            if (pieceToMove == PieceName::whitePawn)
+            if (pieceName == PieceName::whitePawn)
             {
                 isMoveLegal &= ((moveDir.y == 1 || moveDir.y == 2) || (moveDir.x == 1 && moveDir.y == 1));
             }
-            else if (pieceToMove == PieceName::blackPawn)
+            else if (pieceName == PieceName::blackPawn)
             {
                 isMoveLegal &= ((moveDir.y == -1 || moveDir.y == -2) || (moveDir.x == -1 && moveDir.y == -1));
             }
@@ -177,6 +207,13 @@ struct Board
             isMoveLegal &= false;
             break;
         }
+
+        //check if the piece move to a square that is occupied by their own piece
+        if (board[to.rankNum - 1][to.fileNum - 1] != EMPTYSQUARE)
+        {
+            isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(board[to.rankNum - 1][to.fileNum - 1]) == currentTurn);
+        }
+
         return isMoveLegal;
     }
     ///The move format is in long algebraic notation.
@@ -201,6 +238,14 @@ struct Board
             printf("piece to move : %c\n", pieceToMove);
             board[fromSquare.rankNum - 1][fromSquare.fileNum - 1] = EMPTYSQUARE;
             board[toSquare.rankNum - 1][toSquare.fileNum - 1] = pieceToMove;
+            if (currentTurn == PieceColors::white)
+            {
+                this->currentTurn = PieceColors::black;
+            }
+            else
+            {
+                this->currentTurn = PieceColors::white;
+            }
         }
         else
         {
