@@ -26,17 +26,17 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         break;
     case PieceName::bishop:
         Vector2 unitDir = Vector2((moveDir.x / abs(moveDir.x)), (moveDir.y / abs(moveDir.y)));
-        int rankNumIterator = from.rankNum ;
-        int fileNumIterator = from.fileNum ;
-        for (int i = from.rankNum; i <= to.rankNum; i++)
+        int rankNumIterator = from.rankNum + unitDir.y;
+        int fileNumIterator = from.fileNum + unitDir.x;
+        for (int i = 0; i <= abs(moveDir.x) - 2; i++)
         {
-            if (board.board[rankNumIterator][fileNumIterator] != EMPTYSQUARE)
+            if (board.board[rankNumIterator - 1][fileNumIterator - 1] != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;
             }
-            rankNumIterator+=unitDir.y;
-            fileNumIterator+=unitDir.x;
+            rankNumIterator += unitDir.y;
+            fileNumIterator += unitDir.x;
         }
         break;
     }

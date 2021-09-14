@@ -118,14 +118,20 @@ bool Board::IsMoveLegal(char piece, Square from, Square to)
         isMoveLegal &= (((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0)) ||
                         (xAbs > 0 && yAbs > 0) && (xAbs == yAbs));
     case 'p':
+
         if (pieceColor == PieceColors::white)
         {
-
-            isMoveLegal &= ((moveDir.y == 1 || (moveDir.y == 2 && from.rankNum == 2)) || (moveDir.x == 1 && moveDir.y == 1));
+            bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
+            bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
+            bool pawnCapture = moveDir.x == 1 && moveDir.y == 1;
+            isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
         else if (pieceColor == PieceColors::black)
         {
-            isMoveLegal &= ((moveDir.y == -1 || (moveDir.y == -2 && from.rankNum == 7)) || (moveDir.x == -1 && moveDir.y == -1));
+            bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
+            bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
+            bool pawnCapture = moveDir.x == -1 && moveDir.y == -1;
+            isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
 
         break;
