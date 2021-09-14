@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "board.cpp"
+#include "board.h"
 #include "CharHelper.h"
 #include "math.h"
 void StartEngine()
