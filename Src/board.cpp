@@ -115,8 +115,13 @@ bool Board::IsMoveLegal(char piece, Square from, Square to)
 
         break;
     case 'q':
-        isMoveLegal &= (((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0)) ||
-                        (xAbs > 0 && yAbs > 0) && (xAbs == yAbs));
+    {
+        bool rookMove = ((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0));
+        bool bishopMove = (xAbs > 0 && yAbs > 0) && (xAbs == yAbs);
+        isMoveLegal &= rookMove || bishopMove;
+        break;
+    }
+
     case 'p':
 
         if (pieceColor == PieceColors::white)

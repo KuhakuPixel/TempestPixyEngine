@@ -17,7 +17,15 @@ void StartEngine()
         std::string move = "";
         printf("Move : ");
         std::cin >> move;
-        board.Move(move);
+        try
+        {
+            board.Move(move);
+        }
+        //ref: https://stackoverflow.com/questions/6755991/catching-stdexception-by-reference/6756040#6756040
+        catch (const std::exception &e)
+        {
+            printf("%s \n", e.what());
+        }
     }
 }
 int main(int argc, char *argv[])
