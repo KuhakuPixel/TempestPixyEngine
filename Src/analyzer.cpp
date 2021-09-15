@@ -46,16 +46,10 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int unitDirX = moveDir.x == 0 ? 0 : (moveDir.x / abs(moveDir.x));
         int unitDirY = moveDir.y == 0 ? 0 : (moveDir.y / abs(moveDir.y));
         Vector2 unitDir = Vector2(unitDirX, unitDirY);
-       
+
         int distanceSquare = 0;
-        if (moveDir.x != 0)
-        {
-            distanceSquare = abs(moveDir.x);
-        }
-        else if (unitDir.y != 0)
-        {
-            distanceSquare = abs(moveDir.y);
-        }
+        distanceSquare = moveDir.x != 0 ? abs(moveDir.x) : abs(moveDir.y);
+
         int rankNumIterator = from.rankNum + unitDir.y;
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
@@ -77,14 +71,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         Vector2 unitDir = Vector2(unitDirX, unitDirY);
 
         int distanceSquare = 0;
-        if (moveDir.x != 0)
-        {
-            distanceSquare = abs(moveDir.x);
-        }
-        else if (unitDir.y != 0)
-        {
-            distanceSquare = abs(moveDir.y);
-        }
+        distanceSquare = moveDir.x != 0 ? abs(moveDir.x) : abs(moveDir.y);
         int rankNumIterator = from.rankNum + unitDir.y;
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)

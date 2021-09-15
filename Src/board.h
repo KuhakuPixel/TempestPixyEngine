@@ -2,13 +2,15 @@
 #include <string>
 #include <map>
 #include "CharHelper.h"
+#include <vector>
 #define EMPTYSQUARE '-'
 
 const std::string pieceColorStr[2] = {"white", "black"};
 enum class PieceColors
 {
     white,
-    black
+    black,
+    null,
 };
 enum class PieceName
 {
@@ -18,13 +20,21 @@ enum class PieceName
     rook,
     knight,
     bishop,
+    null,
 
 };
-struct Piece{
-    PieceName pieceName;
-    PieceColors pieceColor;
-    Piece(PieceName pieceName,PieceColors pieceColor);
+enum class MoveFlag
+{
+    normal,
+    capture,
+    check,
+    shortCastle,
+    longCastle,
+    enpassant,
+    promotion,
+    checkMate
 };
+
 const std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping = {
     {'K', PieceName::king},
     {'Q', PieceName::queen},
@@ -39,6 +49,7 @@ const std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping = {
     {'n', PieceName::knight},
     {'b', PieceName::bishop},
     {'p', PieceName::pawn},
+    {EMPTYSQUARE, PieceName::null},
 };
 const std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping = {
     {'K', PieceColors::white},
@@ -54,6 +65,7 @@ const std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping = {
     {'n', PieceColors::black},
     {'b', PieceColors::black},
     {'p', PieceColors::black},
+    {EMPTYSQUARE, PieceColors::null},
 };
 struct Square
 {
@@ -62,9 +74,16 @@ struct Square
     int fileNum;
     int rankNum;
     Square(char file, char rank);
+    std::string GetBoardNotation();
 };
+
 struct Board
 {
+    std::map<PieceColors, std::vector<MoveFlag>> playersToCastlingRightsMap = {
+        {PieceColors::white, {MoveFlag::shortCastle, MoveFlag::longCastle}},
+        {PieceColors::black, {MoveFlag::shortCastle, MoveFlag::longCastle}},
+    };
+
     PieceColors currentTurn = PieceColors::white;
     char board[8][8] = {
 
@@ -78,6 +97,9 @@ struct Board
         {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'},
 
     };
+    void PlaceOnBoard(char piece, Square square);
+    
+    MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
     void LoadBoard(char board[8][8]);
 
     void LoadFromFen(std::string fen);
@@ -85,7 +107,7 @@ struct Board
     ///w for white , b for black
     void DisplayBoard(char orientation = 'w');
 
-    bool IsMoveLegal(char piece, Square from, Square to);
+    bool IsMoveLegal(PieceName pieceName, PieceColors pieceColor, Square from, Square to);
 
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
