@@ -230,9 +230,9 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
             else if (pieceColor == PieceColors::black)
             {
                 this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-                this->PlaceOnBoard('K', toSquare);
+                this->PlaceOnBoard('k', toSquare);
                 this->PlaceOnBoard(EMPTYSQUARE, Square('h', '8'));
-                this->PlaceOnBoard('R', Square('f', '8'));
+                this->PlaceOnBoard('r', Square('f', '8'));
             }
             break;
         }
@@ -248,9 +248,9 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
             else if (pieceColor == PieceColors::black)
             {
                 this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-                this->PlaceOnBoard('K', toSquare);
+                this->PlaceOnBoard('k', toSquare);
                 this->PlaceOnBoard(EMPTYSQUARE, Square('a', '8'));
-                this->PlaceOnBoard('R', Square('d', '8'));
+                this->PlaceOnBoard('r', Square('d', '8'));
             }
             break;
         }
