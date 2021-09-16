@@ -1,5 +1,42 @@
 #include "catch.hpp"
 #include "../Src/board.h"
+#include "../Src/stringHelper.h"
+#include <vector>
+#include <string>
+TEST_CASE("Test string library", "[string]")
+{
+    SECTION("SplitTest1")
+    {
+        std::vector<std::string> actual = StringHelper::SplitString("Test,Split,good", ",");
+        std::vector<std::string> expect = {"Test", "Split", "good"};
+        REQUIRE(actual == expect);
+    }
+    SECTION("SplitTest2")
+    {
+        std::vector<std::string> actual = StringHelper::SplitString("Test Split good lol", " ");
+        std::vector<std::string> expect = {"Test", "Split", "good", "lol"};
+        REQUIRE(actual == expect);
+    }
+    SECTION("SplitTest3")
+    {
+        std::vector<std::string> actual = StringHelper::SplitString("Test   Split good", " ");
+        std::vector<std::string> expect = {"Test", "Split", "good"};
+        REQUIRE(actual == expect);
+    }
+    SECTION("SplitTest4")
+    {
+        std::vector<std::string> actual = StringHelper::SplitString("Test::Split::good::", "::");
+        std::vector<std::string> expect = {"Test", "Split", "good"};
+        REQUIRE(actual == expect);
+    }
+    SECTION("SplitTest4")
+    {
+        std::vector<std::string> actual = StringHelper::SplitString("::Test::Split::good::", "::");
+        std::vector<std::string> expect = {"Test", "Split", "good"};
+        REQUIRE(actual == expect);
+    }
+}
+
 //reference : https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md#top
 /*
 
@@ -37,25 +74,89 @@ TEST_CASE( "vectors can be sized and resized", "[vector]" ) {
 }
 */
 
-TEST_CASE("legal move tests", "[BoardIllegalMoves]")
+TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
 {
 
     Board board = Board();
-    SECTION("TestIsMoveLegalPawn0")
+#pragma region TestWhitePawn
+    SECTION("TestIsMoveLegalPawnWhite0")
     {
-        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white, "e2e5");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e2e5");
         REQUIRE(actual == false);
     }
-    SECTION("TestIsMoveLegalPawn1")
+    SECTION("TestIsMoveLegalPawnWhite1")
     {
-        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white, "e2e4");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e2e4");
         REQUIRE(actual == true);
     }
-    SECTION("TestIsMoveLegalPawn2")
+    SECTION("TestIsMoveLegalPawnWhite2")
     {
         board.Move("e2e4");
         board.Move("e7e5");
-        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white,"e2e3");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e2e3");
         REQUIRE(actual == false);
     }
+    SECTION("TestIsMoveLegalPawnWhite3")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e4e6");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestIsMoveLegalPawnWhite4")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e4e3");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestIsMoveLegalPawnWhite5")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e4e5");
+        REQUIRE(actual == false);
+    }
+
+#pragma endregion
+
+#pragma region TestBlackPawn
+    SECTION("TestIsMoveLegalPawnBlack0")
+    {
+        board.Move("e2e4");
+        bool actual = board.IsMoveLegal(PieceColors::black, "e7e4");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestIsMoveLegalPawnBlack1")
+    {
+        board.Move("e2e4");
+        bool actual = board.IsMoveLegal(PieceColors::black, "e7e5");
+        REQUIRE(actual == true);
+    }
+    SECTION("TestIsMoveLegalPawnBlack2")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        board.Move("b1c3");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e7e6");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestIsMoveLegalPawnBlack3")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        board.Move("b1c3");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e5e4");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestIsMoveLegalPawnBlack4")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        board.Move("b1c3");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e5e6");
+        REQUIRE(actual == false);
+    }
+
+#pragma endregion
 }

@@ -42,6 +42,10 @@ void Board::PlaceOnBoard(char piece, Square square)
 {
     board[square.rankNum - 1][square.fileNum - 1] = piece;
 }
+char Board::GetPieceFromBoard(Square square)
+{
+    return board[square.rankNum - 1][square.fileNum - 1];
+}
 MoveFlag Board::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
 {
     MoveFlag moveFlag = MoveFlag::normal;
@@ -116,18 +120,20 @@ void Board::DisplayBoard(char orientation)
 
     printf("\n    A  B  C  D  E  F  G  H\n");
 }
-bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
+bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 {
+
+    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(this->GetPieceFromBoard(from));
     bool isMoveLegal = true;
     if (pieceName == PieceName::null)
         return false;
 
     //check if the current side move their own piece
-    isMoveLegal &= (currentTurn == pieceColor);
+    isMoveLegal &= (currentTurn == sideToMove);
 
     //check if piece 's move is according to the rule
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
-    printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
+    //printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
     int xAbs = std::abs(moveDir.x);
     int yAbs = std::abs(moveDir.y);
     switch (pieceName)
@@ -163,14 +169,14 @@ bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, Square from
 
     case PieceName::pawn:
 
-        if (pieceColor == PieceColors::white)
+        if (sideToMove == PieceColors::white)
         {
             bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
             bool pawnCapture = moveDir.x == 1 && moveDir.y == 1;
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
-        else if (pieceColor == PieceColors::black)
+        else if (sideToMove == PieceColors::black)
         {
             bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
@@ -192,11 +198,11 @@ bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, Square from
         isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(board[to.rankNum - 1][to.fileNum - 1]) == currentTurn);
     }
     //check if something is blocking the movement
-    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, pieceColor, from, to));
+    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
     return isMoveLegal;
 }
 
-bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, std::string moveNotation)
+bool Board::IsMoveLegal(PieceColors sideToMove, std::string moveNotation)
 {
     if (moveNotation.size() < 4)
     {
@@ -209,7 +215,7 @@ bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, std::string
     }
     Square fromSquare = Square(moveNotation[0], moveNotation[1]);
     Square toSquare = Square(moveNotation[2], moveNotation[3]);
-    return this->IsMoveLegal(pieceName, pieceColor, fromSquare, toSquare);
+    return this->IsMoveLegal(sideToMove, fromSquare, toSquare);
 }
 
 void Board::Move(std::string moveNotation, bool allowIllegalMove)
@@ -227,8 +233,8 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     Square toSquare = Square(moveNotation[2], moveNotation[3]);
     char pieceToMove = board[fromSquare.rankNum - 1][fromSquare.fileNum - 1];
     PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(pieceToMove);
-    PieceColors pieceColor = pieceAbbreviationsToPieceColorMapping.at(pieceToMove);
-    if (IsMoveLegal(pieceName, pieceColor, fromSquare, toSquare) || allowIllegalMove)
+    PieceColors sideToMove = pieceAbbreviationsToPieceColorMapping.at(pieceToMove);
+    if (IsMoveLegal(sideToMove, fromSquare, toSquare) || allowIllegalMove)
     {
         MoveFlag moveFlag = this->GetMoveFlag(*this, pieceName, fromSquare, toSquare);
         switch (moveFlag)
@@ -241,14 +247,14 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
         }
         case MoveFlag::shortCastle:
         {
-            if (pieceColor == PieceColors::white)
+            if (sideToMove == PieceColors::white)
             {
                 this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
                 this->PlaceOnBoard('K', toSquare);
                 this->PlaceOnBoard(EMPTYSQUARE, Square('h', '1'));
                 this->PlaceOnBoard('R', Square('f', '1'));
             }
-            else if (pieceColor == PieceColors::black)
+            else if (sideToMove == PieceColors::black)
             {
                 this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
                 this->PlaceOnBoard('k', toSquare);
@@ -259,14 +265,14 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
         }
         case MoveFlag::longCastle:
         {
-            if (pieceColor == PieceColors::white)
+            if (sideToMove == PieceColors::white)
             {
                 this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
                 this->PlaceOnBoard('K', toSquare);
                 this->PlaceOnBoard(EMPTYSQUARE, Square('a', '1'));
                 this->PlaceOnBoard('R', Square('d', '1'));
             }
-            else if (pieceColor == PieceColors::black)
+            else if (sideToMove == PieceColors::black)
             {
                 this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
                 this->PlaceOnBoard('k', toSquare);
@@ -276,7 +282,7 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
             break;
         }
         }
-        printf("piece to move : %c\n", pieceToMove);
+
 
         if (currentTurn == PieceColors::white)
         {
