@@ -97,7 +97,7 @@ void Board::LoadFromFen(std::string fen)
     {
         for (int j = 0; j < 8; j++)
         {
-            this->board[7-i][j] = fenPositions[i][j];
+            this->board[7 - i][j] = fenPositions[i][j];
         }
     }
 }
@@ -107,7 +107,9 @@ std::string Board::ExportFen()
 }
 void Board::DisplayBoard(char orientation)
 {
-    printf("    A  B  C  D  E  F  G  H\n\n");
+    printf("===========================\n");
+    printf("    A  B  C  D  E  F  G  H\n");
+    printf("===========================\n");
     if (orientation == 'b')
     {
         for (int i = 0; i < 8; i++)
@@ -134,8 +136,9 @@ void Board::DisplayBoard(char orientation)
             printf("\n");
         }
     }
-
+    printf("===========================");
     printf("\n    A  B  C  D  E  F  G  H\n");
+    printf("===========================\n");
 }
 bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 {
