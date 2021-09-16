@@ -10,6 +10,7 @@
 #include <string.h>
 #include "analyzer.h"
 #include "stringHelper.h"
+#include "chessLib.h"
 #define EMPTYSQUARE '-'
 
 Square::Square(char file, char rank)
@@ -86,9 +87,19 @@ void Board::LoadFromFen(std::string fen)
 {
     //example of a fen : "r1bqkbnr/pp2ppp1/2np3p/2p5/2B1P3/3PBN2/PPP2PPP/RN1QK2R b KQkq - 1 5"
     std::vector<std::string> fenSplitted = StringHelper::SplitString(fen, " ");
-    std::string fenPos = fenSplitted[0];
-    std::string sideToMoveColor=fenSplitted[1];
-    std::string castlingRightsStrings=fenSplitted[2];
+
+    std::string fenPos = ChessLib::ExpandFenPosition(fenSplitted[0], EMPTYSQUARE);
+    std::vector<std::string> fenPositions = StringHelper::SplitString(fenPos, "/");
+    std::string sideToMoveColor = fenSplitted[1];
+    std::string castlingRightsStrings = fenSplitted[2];
+
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            this->board[7-i][j] = fenPositions[i][j];
+        }
+    }
 }
 std::string Board::ExportFen()
 {

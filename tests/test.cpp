@@ -182,3 +182,12 @@ TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
 
 #pragma endregion
 }
+TEST_CASE("Test Load fen to board", "[LoadFen]")
+{
+    Board board = Board();
+    SECTION("TestLoad0")
+    {
+        board.LoadFromFen("rn2kbnr/pp3ppp/1qp1p3/3pPb2/3P4/2P1BN2/PP3PPP/RN1QKB1R b KQkq - 0 6");
+        board.DisplayBoard();
+    }
+}
