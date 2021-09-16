@@ -9,6 +9,7 @@
 #include <map>
 #include <string.h>
 #include "analyzer.h"
+#include "stringHelper.h"
 #define EMPTYSQUARE '-'
 
 Square::Square(char file, char rank)
@@ -83,6 +84,11 @@ void Board::LoadBoard(char board[8][8])
 }
 void Board::LoadFromFen(std::string fen)
 {
+    //example of a fen : "r1bqkbnr/pp2ppp1/2np3p/2p5/2B1P3/3PBN2/PPP2PPP/RN1QK2R b KQkq - 1 5"
+    std::vector<std::string> fenSplitted = StringHelper::SplitString(fen, " ");
+    std::string fenPos = fenSplitted[0];
+    std::string sideToMoveColor=fenSplitted[1];
+    std::string castlingRightsStrings=fenSplitted[2];
 }
 std::string Board::ExportFen()
 {
@@ -282,7 +288,6 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
             break;
         }
         }
-
 
         if (currentTurn == PieceColors::white)
         {

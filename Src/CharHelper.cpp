@@ -22,7 +22,7 @@ int CharHelper::ToInt(char c)
 
     if (isdigit(c))
     {
-        return c - 48;
+        return (int)c - 48;
     }
     else
     {
