@@ -1,6 +1,4 @@
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-
 #include "../Src/board.h"
 //reference : https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md#top
 /*
@@ -39,20 +37,25 @@ TEST_CASE( "vectors can be sized and resized", "[vector]" ) {
 }
 */
 
-TEST_CASE("Illegal Move Tests", "[BoardIllegalMoves]")
+TEST_CASE("legal move tests", "[BoardIllegalMoves]")
 {
 
     Board board = Board();
     SECTION("TestIsMoveLegalPawn0")
     {
-      
-        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white, Square('e', '2'), Square('e', '5'));
+        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white, "e2e5");
         REQUIRE(actual == false);
     }
     SECTION("TestIsMoveLegalPawn1")
     {
-        
-        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white, Square('e', '2'), Square('e', '4'));
+        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white, "e2e4");
         REQUIRE(actual == true);
+    }
+    SECTION("TestIsMoveLegalPawn2")
+    {
+        board.Move("e2e4");
+        board.Move("e7e5");
+        bool actual = board.IsMoveLegal(PieceName::pawn, PieceColors::white,"e2e3");
+        REQUIRE(actual == false);
     }
 }

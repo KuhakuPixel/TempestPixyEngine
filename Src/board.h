@@ -98,16 +98,23 @@ struct Board
 
     };
     void PlaceOnBoard(char piece, Square square);
-    
+
     MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
     void LoadBoard(char board[8][8]);
 
     void LoadFromFen(std::string fen);
 
+    std::string ExportFen();
+   
+
     ///w for white , b for black
     void DisplayBoard(char orientation = 'w');
 
     bool IsMoveLegal(PieceName pieceName, PieceColors pieceColor, Square from, Square to);
+    ///The move format is in long algebraic notation.
+    ///A nullmove from the Engine to the GUI should be send as 0000.
+    ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
+    bool IsMoveLegal(PieceName pieceName, PieceColors pieceColor,std::string moveNotation);
 
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.

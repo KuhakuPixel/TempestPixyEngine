@@ -40,7 +40,7 @@ std::string Square::GetBoardNotation()
 }
 void Board::PlaceOnBoard(char piece, Square square)
 {
-    board[square.rankNum - 1][square.fileNum-1] = piece;
+    board[square.rankNum - 1][square.fileNum - 1] = piece;
 }
 MoveFlag Board::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
 {
@@ -80,6 +80,10 @@ void Board::LoadBoard(char board[8][8])
 void Board::LoadFromFen(std::string fen)
 {
 }
+std::string Board::ExportFen()
+{
+    return "";
+}
 void Board::DisplayBoard(char orientation)
 {
     printf("    A  B  C  D  E  F  G  H\n\n");
@@ -112,21 +116,21 @@ void Board::DisplayBoard(char orientation)
 
     printf("\n    A  B  C  D  E  F  G  H\n");
 }
-bool Board::IsMoveLegal(PieceName pieceToMoveName, PieceColors pieceToMoveColor, Square from, Square to)
+bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
     bool isMoveLegal = true;
-    if (pieceToMoveName == PieceName::null)
+    if (pieceName == PieceName::null)
         return false;
 
     //check if the current side move their own piece
-    isMoveLegal &= (currentTurn == pieceToMoveColor);
+    isMoveLegal &= (currentTurn == pieceColor);
 
     //check if piece 's move is according to the rule
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
     printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
     int xAbs = std::abs(moveDir.x);
     int yAbs = std::abs(moveDir.y);
-    switch (pieceToMoveName)
+    switch (pieceName)
     {
     case PieceName::knight:
         isMoveLegal &= ((xAbs == 1 && yAbs == 2) ||
@@ -159,14 +163,14 @@ bool Board::IsMoveLegal(PieceName pieceToMoveName, PieceColors pieceToMoveColor,
 
     case PieceName::pawn:
 
-        if (pieceToMoveColor == PieceColors::white)
+        if (pieceColor == PieceColors::white)
         {
             bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
             bool pawnCapture = moveDir.x == 1 && moveDir.y == 1;
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
-        else if (pieceToMoveColor == PieceColors::black)
+        else if (pieceColor == PieceColors::black)
         {
             bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
@@ -188,9 +192,26 @@ bool Board::IsMoveLegal(PieceName pieceToMoveName, PieceColors pieceToMoveColor,
         isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(board[to.rankNum - 1][to.fileNum - 1]) == currentTurn);
     }
     //check if something is blocking the movement
-    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceToMoveName, pieceToMoveColor, from, to));
+    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, pieceColor, from, to));
     return isMoveLegal;
 }
+
+bool Board::IsMoveLegal(PieceName pieceName, PieceColors pieceColor, std::string moveNotation)
+{
+    if (moveNotation.size() < 4)
+    {
+        throw std::invalid_argument("move size must be at least 4");
+    }
+    if (isdigit(moveNotation[0]) || !isdigit(moveNotation[1]) ||
+        isdigit(moveNotation[2]) || !isdigit(moveNotation[3]))
+    {
+        throw std::invalid_argument("invalid move notation");
+    }
+    Square fromSquare = Square(moveNotation[0], moveNotation[1]);
+    Square toSquare = Square(moveNotation[2], moveNotation[3]);
+    return this->IsMoveLegal(pieceName, pieceColor, fromSquare, toSquare);
+}
+
 void Board::Move(std::string moveNotation, bool allowIllegalMove)
 {
     if (moveNotation.size() < 4)
