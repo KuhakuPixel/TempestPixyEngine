@@ -98,6 +98,7 @@ private:
         {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
 
     };
+    void ClearBoard();
 
 public:
     PieceColors GetCurrentTurn();
@@ -108,6 +109,7 @@ public:
 
     char GetPiece(Square square);
     MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
+    
     void LoadBoard(char board[8][8]);
 
     void LoadFromFen(std::string fen);

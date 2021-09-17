@@ -185,14 +185,20 @@ TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
 TEST_CASE("Test Load fen to board", "[LoadFen]")
 {
     Board board = Board();
-    SECTION("TestLoad0")
-    {
-        board.LoadFromFen("rn2kbnr/pp3ppp/1qp1p3/3pPb2/3P4/2P1BN2/PP3PPP/RN1QKB1R b KQkq - 0 6");
-        board.DisplayBoard();
-    }
+    
     SECTION("TestLoad1")
     {
         board.LoadFromFen("B4r1k/p1p1Nppp/1p1q2b1/8/3P2P1/PQP3nP/5P2/3RR1K1 b - - 0 26");
         board.DisplayBoard();
+    }
+}
+
+TEST_CASE("PerformanceTest", "[Performance]")
+{
+    Board board = Board();
+    SECTION("Test0")
+    {
+       
+        printf("size of a board instance : %lu\n", sizeof(board));
     }
 }

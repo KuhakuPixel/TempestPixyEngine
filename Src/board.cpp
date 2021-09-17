@@ -36,6 +36,16 @@ Square::Square(char file, char rank)
     this->file = file;
     this->rank = rank;
 }
+void Board::ClearBoard()
+{
+    for (int rankItr = 1; rankItr <= 8; rankItr++)
+    {
+        for (int fileItr = 1; fileItr <= 8; fileItr++)
+        {
+            this->PlacePiece(EMPTYSQUARE, fileItr, rankItr);
+        }
+    }
+}
 PieceColors Board::GetCurrentTurn()
 {
     return this->currentTurn;
@@ -112,11 +122,14 @@ void Board::LoadFromFen(std::string fen)
     std::string sideToMoveColor = fenSplitted[1];
     std::string castlingRightsStrings = fenSplitted[2];
 
-    for (int rankItr = 0; rankItr < 8; rankItr++)
+    this->ClearBoard();
+    for (int rankItr = 1; rankItr <= 8; rankItr++)
     {
-        for (int fileItr = 0; fileItr < 8; fileItr++)
+        for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
-            this->PlacePiece(fenPositions[rankItr][fileItr], fileItr, rankItr);
+            //need to inverse because the fen pos will start with the black pieces
+            //and the black pieces start on the 8th rank
+            this->PlacePiece(fenPositions[rankItr - 1][fileItr - 1], fileItr, 8 - rankItr + 1);
         }
     }
 }
