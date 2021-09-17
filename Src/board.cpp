@@ -122,6 +122,7 @@ void Board::LoadFromFen(std::string fen)
     std::string sideToMoveColor = fenSplitted[1];
     std::string castlingRightsStrings = fenSplitted[2];
 
+    //load board
     this->ClearBoard();
     for (int rankItr = 1; rankItr <= 8; rankItr++)
     {
@@ -132,6 +133,13 @@ void Board::LoadFromFen(std::string fen)
             this->PlacePiece(fenPositions[rankItr - 1][fileItr - 1], fileItr, 8 - rankItr + 1);
         }
     }
+    //load side to move
+    if (sideToMoveColor == "b")
+        this->currentTurn = PieceColors::black;
+    else if (sideToMoveColor == "w")
+        this->currentTurn = PieceColors::white;
+    else
+        throw std::invalid_argument("Invalid fen when trying to load a board from fen");
 }
 std::string Board::ExportFen()
 {
@@ -146,7 +154,7 @@ void Board::DisplayBoard(char orientation)
     {
         for (int i = 0; i < 8; i++)
         {
-            printf("%d  ", 8-i);
+            printf("%d  ", 8 - i);
             for (int j = 0; j < 8; j++)
             {
                 printf(" %c ", board[i][j]);
@@ -159,7 +167,7 @@ void Board::DisplayBoard(char orientation)
     {
         for (int i = 0; i < 8; i++)
         {
-            printf("%d  ", i+1);
+            printf("%d  ", i + 1);
             for (int j = 0; j < 8; j++)
             {
                 printf(" %c ", board[7 - i][j]);
