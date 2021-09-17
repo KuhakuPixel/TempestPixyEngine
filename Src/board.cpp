@@ -146,7 +146,7 @@ void Board::DisplayBoard(char orientation)
     {
         for (int i = 0; i < 8; i++)
         {
-            printf("%d  ", i + 1);
+            printf("%d  ", 8-i);
             for (int j = 0; j < 8; j++)
             {
                 printf(" %c ", board[i][j]);
@@ -159,7 +159,7 @@ void Board::DisplayBoard(char orientation)
     {
         for (int i = 0; i < 8; i++)
         {
-            printf("%d  ", 8 - i);
+            printf("%d  ", i+1);
             for (int j = 0; j < 8; j++)
             {
                 printf(" %c ", board[7 - i][j]);
