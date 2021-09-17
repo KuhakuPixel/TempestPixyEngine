@@ -36,17 +36,36 @@ Square::Square(char file, char rank)
     this->file = file;
     this->rank = rank;
 }
+PieceColors Board::GetCurrentTurn()
+{
+    return this->currentTurn;
+}
+std::string Board::GetCurrentTurnStr()
+{
+    return pieceColorStr[(int)this->GetCurrentTurn()];
+}
 std::string Square::GetBoardNotation()
 {
     return std::string() + this->file + this->rank;
 }
-void Board::PlaceOnBoard(char piece, Square square)
+
+void Board::PlacePiece(char piece, int fileNum, int rankNum)
 {
-    board[square.rankNum - 1][square.fileNum - 1] = piece;
+    board[8 - rankNum][fileNum - 1] = piece;
 }
-char Board::GetPieceFromBoard(Square square)
+void Board::PlacePiece(char piece, Square square)
 {
-    return board[square.rankNum - 1][square.fileNum - 1];
+    this->PlacePiece(piece, square.fileNum, square.rankNum);
+}
+
+char Board::GetPiece(int fileNum, int rankNum)
+{
+    return board[8 - rankNum][fileNum - 1];
+}
+
+char Board::GetPiece(Square square)
+{
+    return this->GetPiece(square.fileNum, square.rankNum);
 }
 MoveFlag Board::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
 {
@@ -93,11 +112,11 @@ void Board::LoadFromFen(std::string fen)
     std::string sideToMoveColor = fenSplitted[1];
     std::string castlingRightsStrings = fenSplitted[2];
 
-    for (int i = 0; i < 8; i++)
+    for (int rankItr = 0; rankItr < 8; rankItr++)
     {
-        for (int j = 0; j < 8; j++)
+        for (int fileItr = 0; fileItr < 8; fileItr++)
         {
-            this->board[7 - i][j] = fenPositions[i][j];
+            this->PlacePiece(fenPositions[rankItr][fileItr], fileItr, rankItr);
         }
     }
 }
@@ -110,7 +129,7 @@ void Board::DisplayBoard(char orientation)
     printf("===========================\n");
     printf("    A  B  C  D  E  F  G  H\n");
     printf("===========================\n");
-    if (orientation == 'b')
+    if (orientation == 'w')
     {
         for (int i = 0; i < 8; i++)
         {
@@ -123,7 +142,7 @@ void Board::DisplayBoard(char orientation)
             printf("\n");
         }
     }
-    else if (orientation == 'w')
+    else if (orientation == 'b')
     {
         for (int i = 0; i < 8; i++)
         {
@@ -143,7 +162,7 @@ void Board::DisplayBoard(char orientation)
 bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 {
 
-    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(this->GetPieceFromBoard(from));
+    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(this->GetPiece(from));
     bool isMoveLegal = true;
     if (pieceName == PieceName::null)
         return false;
@@ -213,9 +232,9 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     }
 
     //check if the piece move to a square that is occupied by their own piece
-    if (board[to.rankNum - 1][to.fileNum - 1] != EMPTYSQUARE)
+    if (this->GetPiece(to) != EMPTYSQUARE)
     {
-        isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(board[to.rankNum - 1][to.fileNum - 1]) == currentTurn);
+        isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(this->GetPiece(to)) == currentTurn);
     }
     //check if something is blocking the movement
     isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
@@ -249,37 +268,37 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     {
         throw std::invalid_argument("invalid move notation");
     }
-    Square fromSquare = Square(moveNotation[0], moveNotation[1]);
-    Square toSquare = Square(moveNotation[2], moveNotation[3]);
-    char pieceToMove = board[fromSquare.rankNum - 1][fromSquare.fileNum - 1];
+    Square from = Square(moveNotation[0], moveNotation[1]);
+    Square to = Square(moveNotation[2], moveNotation[3]);
+    char pieceToMove = this->GetPiece(from);
     PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(pieceToMove);
     PieceColors sideToMove = pieceAbbreviationsToPieceColorMapping.at(pieceToMove);
-    if (IsMoveLegal(sideToMove, fromSquare, toSquare) || allowIllegalMove)
+    if (IsMoveLegal(sideToMove, from, to) || allowIllegalMove)
     {
-        MoveFlag moveFlag = this->GetMoveFlag(*this, pieceName, fromSquare, toSquare);
+        MoveFlag moveFlag = this->GetMoveFlag(*this, pieceName, from, to);
         switch (moveFlag)
         {
         case MoveFlag::normal:
         {
-            this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-            this->PlaceOnBoard(pieceToMove, toSquare);
+            this->PlacePiece(EMPTYSQUARE, from);
+            this->PlacePiece(pieceToMove, to);
             break;
         }
         case MoveFlag::shortCastle:
         {
             if (sideToMove == PieceColors::white)
             {
-                this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-                this->PlaceOnBoard('K', toSquare);
-                this->PlaceOnBoard(EMPTYSQUARE, Square('h', '1'));
-                this->PlaceOnBoard('R', Square('f', '1'));
+                this->PlacePiece(EMPTYSQUARE, from);
+                this->PlacePiece('K', to);
+                this->PlacePiece(EMPTYSQUARE, Square('h', '1'));
+                this->PlacePiece('R', Square('f', '1'));
             }
             else if (sideToMove == PieceColors::black)
             {
-                this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-                this->PlaceOnBoard('k', toSquare);
-                this->PlaceOnBoard(EMPTYSQUARE, Square('h', '8'));
-                this->PlaceOnBoard('r', Square('f', '8'));
+                this->PlacePiece(EMPTYSQUARE, from);
+                this->PlacePiece('k', to);
+                this->PlacePiece(EMPTYSQUARE, Square('h', '8'));
+                this->PlacePiece('r', Square('f', '8'));
             }
             break;
         }
@@ -287,17 +306,17 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
         {
             if (sideToMove == PieceColors::white)
             {
-                this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-                this->PlaceOnBoard('K', toSquare);
-                this->PlaceOnBoard(EMPTYSQUARE, Square('a', '1'));
-                this->PlaceOnBoard('R', Square('d', '1'));
+                this->PlacePiece(EMPTYSQUARE, from);
+                this->PlacePiece('K', to);
+                this->PlacePiece(EMPTYSQUARE, Square('a', '1'));
+                this->PlacePiece('R', Square('d', '1'));
             }
             else if (sideToMove == PieceColors::black)
             {
-                this->PlaceOnBoard(EMPTYSQUARE, fromSquare);
-                this->PlaceOnBoard('k', toSquare);
-                this->PlaceOnBoard(EMPTYSQUARE, Square('a', '8'));
-                this->PlaceOnBoard('r', Square('d', '8'));
+                this->PlacePiece(EMPTYSQUARE, from);
+                this->PlacePiece('k', to);
+                this->PlacePiece(EMPTYSQUARE, Square('a', '8'));
+                this->PlacePiece('r', Square('d', '8'));
             }
             break;
         }
@@ -314,6 +333,6 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     }
     else
     {
-        printf("move is not legal,try again\n");
+        throw std::invalid_argument("move is not legal,try again\n");
     }
 }

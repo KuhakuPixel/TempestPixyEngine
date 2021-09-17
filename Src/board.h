@@ -77,8 +77,9 @@ struct Square
     std::string GetBoardNotation();
 };
 
-struct Board
+class Board
 {
+private:
     std::map<PieceColors, std::vector<MoveFlag>> playersToCastlingRightsMap = {
         {PieceColors::white, {MoveFlag::shortCastle, MoveFlag::longCastle}},
         {PieceColors::black, {MoveFlag::shortCastle, MoveFlag::longCastle}},
@@ -87,26 +88,31 @@ struct Board
     PieceColors currentTurn = PieceColors::white;
     char board[8][8] = {
 
-        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
-        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
-        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
-        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
-        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
-        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
         {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'},
+        {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
+        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
+        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
+        {EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE, EMPTYSQUARE},
+        {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+        {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
 
     };
-    void PlaceOnBoard(char piece, Square square);
-    char GetPieceFromBoard(Square square);
 
+public:
+    PieceColors GetCurrentTurn();
+    std::string GetCurrentTurnStr();
+    void PlacePiece(char piece, int fileNum, int rankNum);
+    void PlacePiece(char piece, Square square);
+    char GetPiece(int fileNum, int rankNum);
+
+    char GetPiece(Square square);
     MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
     void LoadBoard(char board[8][8]);
 
     void LoadFromFen(std::string fen);
 
     std::string ExportFen();
-   
 
     ///w for white , b for black
     void DisplayBoard(char orientation = 'w');
@@ -115,7 +121,7 @@ struct Board
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
-    bool IsMoveLegal(PieceColors sideToMove,std::string moveNotation);
+    bool IsMoveLegal(PieceColors sideToMove, std::string moveNotation);
 
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
