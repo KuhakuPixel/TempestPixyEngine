@@ -14,14 +14,14 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
             if (moveDir.x == 0 && moveDir.y == 1)
             {
 
-                pieceMovementIsBlocked = board.GetPiece(to) != EMPTYSQUARE;
+                pieceMovementIsBlocked = board.GetPieceName(to) != EMPTYSQUARE;
             }
         }
         else if (pieceColor == PieceColors::black)
         {
             if (moveDir.x == 0 && moveDir.y == -1)
             {
-                pieceMovementIsBlocked = board.GetPiece(to) != EMPTYSQUARE;
+                pieceMovementIsBlocked = board.GetPieceName(to) != EMPTYSQUARE;
             }
         }
         break;
@@ -32,7 +32,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= abs(moveDir.x) - 2; i++)
         {
-            if (board.GetPiece(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (board.GetPieceName(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -55,7 +55,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
         {
-            if (board.GetPiece(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (board.GetPieceName(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -77,7 +77,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
         {
-            if (board.GetPiece(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (board.GetPieceName(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;

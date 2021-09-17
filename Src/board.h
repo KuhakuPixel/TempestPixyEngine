@@ -105,11 +105,15 @@ public:
     std::string GetCurrentTurnStr();
     void PlacePiece(char piece, int fileNum, int rankNum);
     void PlacePiece(char piece, Square square);
-    char GetPiece(int fileNum, int rankNum);
+    char GetPieceName(int fileNum, int rankNum);
 
-    char GetPiece(Square square);
+    char GetPieceName(Square square);
+
+    PieceColors GetPieceColor(int filenum, int rankNum);
+    PieceColors GetPieceColor(Square square);
+   
     MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
-    
+
     void LoadBoard(char board[8][8]);
 
     void LoadFromFen(std::string fen);

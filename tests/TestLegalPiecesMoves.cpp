@@ -10,6 +10,7 @@ TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
 
     Board board = Board();
 #pragma region TestWhitePawn
+#pragma region Test legal moves
     SECTION("TestIsMoveLegalPawnWhite0")
     {
         bool actual = board.IsMoveLegal(PieceColors::white, "e2e5");
@@ -48,7 +49,43 @@ TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
         bool actual = board.IsMoveLegal(PieceColors::white, "e4e5");
         REQUIRE(actual == false);
     }
+#pragma endregion
 
+#pragma region TestCapture
+    SECTION("TestPawnCaptureWhiteCaptureEnemy")
+    {
+        board.LoadFromFen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e4d5");
+        REQUIRE(actual == true);
+    }
+    SECTION("TestPawnCaptureWhiteCaptureEmptySquares")
+    {
+        board.LoadFromFen("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+        bool actual = board.IsMoveLegal(PieceColors::white, "e4f5");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestPawnCaptureWhiteCaptureFriendlyPawn")
+    {
+        board.LoadFromFen("rnbqkbnr/ppp2ppp/8/3pp3/4P3/3P4/PPP2PPP/RNBQKBNR w KQkq - 0 3");
+
+        bool actual = board.IsMoveLegal(PieceColors::white, "d3e4");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestPawnCaptureWhiteCaptureFriendlyQueen")
+    {
+        board.LoadFromFen("rnbqkb1r/2pppppp/p7/1p1P4/3Q2n1/4P3/PPP2PPP/RNB1KBNR w KQkq - 2 5");
+
+        bool actual = board.IsMoveLegal(PieceColors::white, "e3d4");
+        REQUIRE(actual == false);
+    }
+    SECTION("TestPawnCaptureWhiteCaptureKnight")
+    {
+        board.LoadFromFen("r1bqkbnr/pppppppp/8/2n5/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 1 3");
+
+        bool actual = board.IsMoveLegal(PieceColors::white, "d4c5");
+        REQUIRE(actual == true);
+    }
+#pragma endregion
 #pragma endregion
 
 #pragma region TestBlackPawn

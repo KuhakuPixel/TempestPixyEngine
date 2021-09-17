@@ -68,14 +68,23 @@ void Board::PlacePiece(char piece, Square square)
     this->PlacePiece(piece, square.fileNum, square.rankNum);
 }
 
-char Board::GetPiece(int fileNum, int rankNum)
+char Board::GetPieceName(int fileNum, int rankNum)
 {
     return board[8 - rankNum][fileNum - 1];
 }
 
-char Board::GetPiece(Square square)
+char Board::GetPieceName(Square square)
 {
-    return this->GetPiece(square.fileNum, square.rankNum);
+    return this->GetPieceName(square.fileNum, square.rankNum);
+}
+PieceColors Board::GetPieceColor(int fileNum, int rankNum)
+{
+    char piece = this->GetPieceName(fileNum, rankNum);
+    return pieceAbbreviationsToPieceColorMapping.at(piece);
+}
+PieceColors Board::GetPieceColor(Square square)
+{
+    return this->GetPieceColor(square.fileNum, square.rankNum);
 }
 MoveFlag Board::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
 {
@@ -183,7 +192,7 @@ void Board::DisplayBoard(char orientation)
 bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 {
 
-    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(this->GetPiece(from));
+    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(this->GetPieceName(from));
     bool isMoveLegal = true;
     if (pieceName == PieceName::null)
         return false;
@@ -233,14 +242,14 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
         {
             bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
-            bool pawnCapture = moveDir.x == 1 && moveDir.y == 1;
+            bool pawnCapture = xAbs == 1 && moveDir.y == 1 && (this->GetPieceColor(to) == PieceColors::black);
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
         else if (sideToMove == PieceColors::black)
         {
             bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
-            bool pawnCapture = moveDir.x == -1 && moveDir.y == -1;
+            bool pawnCapture = xAbs == 1 && moveDir.y == -1 && (this->GetPieceColor(to) == PieceColors::white);
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
 
@@ -253,9 +262,9 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     }
 
     //check if the piece move to a square that is occupied by their own piece
-    if (this->GetPiece(to) != EMPTYSQUARE)
+    if (this->GetPieceName(to) != EMPTYSQUARE)
     {
-        isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(this->GetPiece(to)) == currentTurn);
+        isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(this->GetPieceName(to)) == currentTurn);
     }
     //check if something is blocking the movement
     isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
@@ -291,7 +300,7 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     }
     Square from = Square(moveNotation[0], moveNotation[1]);
     Square to = Square(moveNotation[2], moveNotation[3]);
-    char pieceToMove = this->GetPiece(from);
+    char pieceToMove = this->GetPieceName(from);
     PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(pieceToMove);
     PieceColors sideToMove = pieceAbbreviationsToPieceColorMapping.at(pieceToMove);
     if (IsMoveLegal(sideToMove, from, to) || allowIllegalMove)
