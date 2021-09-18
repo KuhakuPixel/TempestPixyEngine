@@ -4,6 +4,22 @@
 #include "../Src/chessLib.h"
 #include <vector>
 #include <string>
+
+//reference : https://github.com/catchorg/Catch2/issues/850
+//https://stackoverflow.com/questions/43762651/how-does-stdtie-work
+//https://stackoverflow.com/questions/20705702/stl-pair-like-triplet-class-do-i-roll-my-own
+
+void TestPiecesLegalMove(std::string fenPosition, PieceColors sideToMove, std::string move, bool expect)
+{
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+    bool actual = board.IsMoveLegal(sideToMove, move);
+    if (actual != expect)
+    {
+        printf("test cases failed \n");
+    }
+    REQUIRE(actual == expect);
+}
 #pragma region Test Legal moves
 TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
 {
@@ -167,9 +183,34 @@ TEST_CASE("Test Pawn legal moves", "[BoardLegalMoves]")
 #pragma endregion
 }
 
+#pragma endregion
+
 TEST_CASE("Test bishop legal moves", "[BoardLegalMoves]")
 {
 
     Board board = Board();
+
+    std::string fenPosition;
+    PieceColors sideToMove;
+    std::string move;
+    bool isMoveLegal;
+
+    std::tie(fenPosition, sideToMove, move, isMoveLegal) = GENERATE(
+        table<std::string, PieceColors, std::string, bool>({
+            //test if bishop is blocked
+            {"rnbqkbnr/ppp1pppp/8/8/3pP3/3P4/PPP2PPP/RNBQKBNR w KQkq - 0 3", PieceColors::white, "f1c4", false},
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", PieceColors::white, "f1h3", false},
+            {"rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", PieceColors::black, "f8c5", false},
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", PieceColors::black, "c8e6", false},
+            //test capture
+            {"rnbqkbnr/p1p1pppp/8/1p1p4/4P3/7P/PPPP1PP1/RNBQKBNR w KQkq - 0 3", PieceColors::white, "f1b5", true},
+            {"rnbqkbnr/1pppp2p/p4pp1/8/8/1P3N2/PBPPPPPP/RN1QKB1R w KQkq - 0 4", PieceColors::white, "b2f6", true},
+            {"rn1qkbnr/pbpppppp/1p6/8/3PP3/8/PPP1NPPP/RNBQKB1R b KQkq - 2 3", PieceColors::black, "b7e4", true},
+            {"rnbqk1nr/ppppppbp/6p1/8/2P1P3/1P6/P2P1PPP/RNBQKBNR b KQkq - 0 3", PieceColors::black, "g7a1", true},
+        }));
+
+    SECTION("Test Bishops moves")
+    {
+        TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
+    }
 }
-#pragma endregion
