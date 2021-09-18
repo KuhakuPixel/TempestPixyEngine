@@ -199,68 +199,7 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 
     //check if the current side move their own piece
     isMoveLegal &= (currentTurn == sideToMove);
-
-    //check if piece 's move is according to the rule
-    Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
-    //printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
-    int xAbs = std::abs(moveDir.x);
-    int yAbs = std::abs(moveDir.y);
-    switch (pieceName)
-    {
-    case PieceName::knight:
-        isMoveLegal &= ((xAbs == 1 && yAbs == 2) ||
-                        (xAbs == 2 && yAbs == 1));
-        break;
-    case PieceName::rook:
-        isMoveLegal &= ((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0));
-        break;
-
-    case PieceName::bishop:
-        isMoveLegal &= ((xAbs > 0 && yAbs > 0) && (xAbs == yAbs));
-
-        break;
-    case PieceName::king:
-    {
-        bool isNormalKingMove = (xAbs == 1 && yAbs == 0) || (yAbs == 1 && xAbs == 0) || (xAbs == 1 && yAbs == 1);
-        bool isCastlingMove = (xAbs == 2 && yAbs == 0);
-        isMoveLegal &= isNormalKingMove || isCastlingMove;
-
-        break;
-    }
-
-    case PieceName::queen:
-    {
-        bool rookMove = ((moveDir.x == 0 && yAbs > 0) || (xAbs > 0 && moveDir.y == 0));
-        bool bishopMove = (xAbs > 0 && yAbs > 0) && (xAbs == yAbs);
-        isMoveLegal &= rookMove || bishopMove;
-        break;
-    }
-
-    case PieceName::pawn:
-
-        if (sideToMove == PieceColors::white)
-        {
-            bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
-            bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
-            bool pawnCapture = xAbs == 1 && moveDir.y == 1 && (this->GetPieceColor(to) == PieceColors::black);
-            isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
-        }
-        else if (sideToMove == PieceColors::black)
-        {
-            bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
-            bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
-            bool pawnCapture = xAbs == 1 && moveDir.y == -1 && (this->GetPieceColor(to) == PieceColors::white);
-            isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
-        }
-
-        break;
-
-    default:
-        printf("piece is invalid \n");
-        isMoveLegal &= false;
-        break;
-    }
-
+    isMoveLegal &= Analyzer::DoesPieceMoveAccordingToRule(*this, pieceName, sideToMove, from, to);
     //check if the piece move to a square that is occupied by their own piece
     if (this->GetPieceName(to) != EMPTYSQUARE)
     {

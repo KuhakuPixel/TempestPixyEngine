@@ -1,0 +1,4 @@
+-Create a function to check if a square is attack,useful to check  example :
+	-Check if a move is illegal by king is capturable
+	-Check if checkmate? and ect
+	-Should be put in a separate class probably since it will be used by the search and eval algoritm 
