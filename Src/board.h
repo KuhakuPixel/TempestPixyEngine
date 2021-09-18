@@ -35,38 +35,7 @@ enum class MoveFlag
     checkMate
 };
 
-const std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping = {
-    {'K', PieceName::king},
-    {'Q', PieceName::queen},
-    {'R', PieceName::rook},
-    {'N', PieceName::knight},
-    {'B', PieceName::bishop},
-    {'P', PieceName::pawn},
 
-    {'k', PieceName::king},
-    {'q', PieceName::queen},
-    {'r', PieceName::rook},
-    {'n', PieceName::knight},
-    {'b', PieceName::bishop},
-    {'p', PieceName::pawn},
-    {EMPTYSQUARE, PieceName::null},
-};
-const std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping = {
-    {'K', PieceColors::white},
-    {'Q', PieceColors::white},
-    {'R', PieceColors::white},
-    {'N', PieceColors::white},
-    {'B', PieceColors::white},
-    {'P', PieceColors::white},
-
-    {'k', PieceColors::black},
-    {'q', PieceColors::black},
-    {'r', PieceColors::black},
-    {'n', PieceColors::black},
-    {'b', PieceColors::black},
-    {'p', PieceColors::black},
-    {EMPTYSQUARE, PieceColors::null},
-};
 struct Square
 {
     char file;
@@ -74,6 +43,7 @@ struct Square
     int fileNum;
     int rankNum;
     Square(char file, char rank);
+    Square(int fileNum, int rankNum);
     std::string GetBoardNotation();
 };
 
@@ -105,12 +75,13 @@ public:
     std::string GetCurrentTurnStr();
     void PlacePiece(char piece, int fileNum, int rankNum);
     void PlacePiece(char piece, Square square);
-    char GetPieceName(int fileNum, int rankNum);
+    char GetPieceNameFromBoard(int fileNum, int rankNum);
 
-    char GetPieceName(Square square);
+    char GetPieceNameFromBoard(Square square);
 
-    PieceColors GetPieceColor(int filenum, int rankNum);
-    PieceColors GetPieceColor(Square square);
+
+    PieceColors GetPieceColorFromBoard(int filenum, int rankNum);
+    PieceColors GetPieceColorFromBoard(Square square);
    
     MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
 

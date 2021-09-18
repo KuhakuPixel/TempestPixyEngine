@@ -1,6 +1,7 @@
 #include "analyzer.h"
 #include "math.h"
 #include "board.h"
+#include "chessLib.h"
 #include <cmath>
 bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
@@ -14,14 +15,14 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
             if (moveDir.x == 0 && moveDir.y == 1)
             {
 
-                pieceMovementIsBlocked = board.GetPieceName(to) != EMPTYSQUARE;
+                pieceMovementIsBlocked = board.GetPieceNameFromBoard(to) != EMPTYSQUARE;
             }
         }
         else if (pieceColor == PieceColors::black)
         {
             if (moveDir.x == 0 && moveDir.y == -1)
             {
-                pieceMovementIsBlocked = board.GetPieceName(to) != EMPTYSQUARE;
+                pieceMovementIsBlocked = board.GetPieceNameFromBoard(to) != EMPTYSQUARE;
             }
         }
         break;
@@ -32,7 +33,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= abs(moveDir.x) - 2; i++)
         {
-            if (board.GetPieceName(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (board.GetPieceNameFromBoard(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -55,7 +56,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
         {
-            if (board.GetPieceName(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (board.GetPieceNameFromBoard(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -77,7 +78,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
         {
-            if (board.GetPieceName(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (board.GetPieceNameFromBoard(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -138,14 +139,14 @@ bool Analyzer::DoesPieceMoveAccordingToRule(Board board, PieceName pieceName, Pi
         {
             bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
-            bool pawnCapture = xAbs == 1 && moveDir.y == 1 && (board.GetPieceColor(to) == PieceColors::black);
+            bool pawnCapture = xAbs == 1 && moveDir.y == 1 && (board.GetPieceColorFromBoard(to) == PieceColors::black);
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
         else if (pieceColor == PieceColors::black)
         {
             bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
-            bool pawnCapture = xAbs == 1 && moveDir.y == -1 && (board.GetPieceColor(to) == PieceColors::white);
+            bool pawnCapture = xAbs == 1 && moveDir.y == -1 && (board.GetPieceColorFromBoard(to) == PieceColors::white);
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
 
@@ -158,16 +159,27 @@ bool Analyzer::DoesPieceMoveAccordingToRule(Board board, PieceName pieceName, Pi
     }
     return isMoveLegal;
 }
-bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Square square)
+bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Square targetSq)
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
     {
         for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
-            if (board.GetPieceColor(fileItr, rankItr) == enemyPieceColor)
+            if (board.GetPieceColorFromBoard(fileItr, rankItr) == enemyPieceColor)
             {
-                //PieceName piece = board.GetPieceName(fileItr, rankItr);
-                //return Analyzer::IsPieceMovementBlocked(board, );
+                char pieceChar = board.GetPieceNameFromBoard(fileItr, rankItr);
+                PieceColors pieceColor = board.GetPieceColorFromBoard(fileItr, rankItr);
+                if (pieceChar != EMPTYSQUARE && pieceColor == enemyPieceColor)
+                {
+                    Square pieceOriginalSq = Square(fileItr, rankItr);
+                    PieceName pieceName = ChessLib::ToPieceNameEnum(pieceChar);
+                    bool doesPieceMoveAccordingToRule = Analyzer::DoesPieceMoveAccordingToRule(board, pieceName, pieceColor, pieceOriginalSq, targetSq);
+                    bool isPieceMovementBlocked = Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq);
+                    if (doesPieceMoveAccordingToRule && !isPieceMovementBlocked)
+                    {
+                        return true;
+                    }
+                }
             }
         }
     }

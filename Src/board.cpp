@@ -36,6 +36,27 @@ Square::Square(char file, char rank)
     this->file = file;
     this->rank = rank;
 }
+Square::Square(int fileNum, int rankNum)
+{
+    if (fileNum > 0 && fileNum <= 8)
+    {
+        this->fileNum = fileNum;
+    }
+    else
+    {
+        throw std::invalid_argument("invalid file value ,must be in between A and H (inclusive)\n");
+    }
+    if (rankNum > 0 && rankNum <= 8)
+    {
+        this->rankNum = rankNum;
+    }
+    else
+    {
+        throw std::invalid_argument("invalid rank value ,must be in between 1 and 8 (inclusive)\n");
+    }
+    this->rank = CharHelper::FromAlphabetIndex(rankNum - 1, false);
+    this->file = static_cast<char>(fileNum);
+}
 void Board::ClearBoard()
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
@@ -68,23 +89,24 @@ void Board::PlacePiece(char piece, Square square)
     this->PlacePiece(piece, square.fileNum, square.rankNum);
 }
 
-char Board::GetPieceName(int fileNum, int rankNum)
+char Board::GetPieceNameFromBoard(int fileNum, int rankNum)
 {
     return board[8 - rankNum][fileNum - 1];
 }
 
-char Board::GetPieceName(Square square)
+char Board::GetPieceNameFromBoard(Square square)
 {
-    return this->GetPieceName(square.fileNum, square.rankNum);
+    return this->GetPieceNameFromBoard(square.fileNum, square.rankNum);
 }
-PieceColors Board::GetPieceColor(int fileNum, int rankNum)
+PieceColors Board::GetPieceColorFromBoard(int fileNum, int rankNum)
 {
-    char piece = this->GetPieceName(fileNum, rankNum);
-    return pieceAbbreviationsToPieceColorMapping.at(piece);
+    char piece = this->GetPieceNameFromBoard(fileNum, rankNum);
+
+    return ChessLib::ToPieceColorEnum(piece);
 }
-PieceColors Board::GetPieceColor(Square square)
+PieceColors Board::GetPieceColorFromBoard(Square square)
 {
-    return this->GetPieceColor(square.fileNum, square.rankNum);
+    return this->GetPieceColorFromBoard(square.fileNum, square.rankNum);
 }
 MoveFlag Board::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
 {
@@ -192,7 +214,7 @@ void Board::DisplayBoard(char orientation)
 bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 {
 
-    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(this->GetPieceName(from));
+    PieceName pieceName = ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(from));
     bool isMoveLegal = true;
     if (pieceName == PieceName::null)
         return false;
@@ -201,9 +223,9 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     isMoveLegal &= (currentTurn == sideToMove);
     isMoveLegal &= Analyzer::DoesPieceMoveAccordingToRule(*this, pieceName, sideToMove, from, to);
     //check if the piece move to a square that is occupied by their own piece
-    if (this->GetPieceName(to) != EMPTYSQUARE)
+    if (this->GetPieceNameFromBoard(to) != EMPTYSQUARE)
     {
-        isMoveLegal &= !(pieceAbbreviationsToPieceColorMapping.at(this->GetPieceName(to)) == currentTurn);
+        isMoveLegal &= !(this->GetPieceColorFromBoard(to) == currentTurn);
     }
     //check if something is blocking the movement
     isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
@@ -239,9 +261,9 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     }
     Square from = Square(moveNotation[0], moveNotation[1]);
     Square to = Square(moveNotation[2], moveNotation[3]);
-    char pieceToMove = this->GetPieceName(from);
-    PieceName pieceName = pieceAbbreviationsToPieceNameMapping.at(pieceToMove);
-    PieceColors sideToMove = pieceAbbreviationsToPieceColorMapping.at(pieceToMove);
+    char pieceToMove = this->GetPieceNameFromBoard(from);
+    PieceName pieceName = ChessLib::ToPieceNameEnum(pieceToMove);
+    PieceColors sideToMove = ChessLib::ToPieceColorEnum(pieceToMove);
     if (IsMoveLegal(sideToMove, from, to) || allowIllegalMove)
     {
         MoveFlag moveFlag = this->GetMoveFlag(*this, pieceName, from, to);
