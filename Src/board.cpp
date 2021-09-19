@@ -219,7 +219,6 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     {
         if (moveFlag == MoveFlag::pawnDiagonalMove)
         {
-
             isMoveLegal &= (!this->IsSquareEmpty(to)) && (sideToMove != this->GetPieceColorFromBoard(to));
         }
     }

@@ -20,7 +20,7 @@ public:
     ///for example pawn only move sideway when capturing (this function will return true if the pawn moves diaoganlly even
     ///                                                   if the the pawn cant take on that square (because in check,there
     ///                                                   there are friendly pieces or ect))
-    static bool DoesPieceMoveAccordingToRule(PieceName pieceName, PieceColors pieceColor, Square from, Square to);
-     static MoveFlag GetMoveFlag(const Board &board,Square from, Square to);
+    static bool DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to);
+    static MoveFlag GetMoveFlag(const Board &board, Square from, Square to);
     static bool IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Square square);
 };

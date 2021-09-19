@@ -224,26 +224,26 @@ bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Squ
     {
         for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
-            if (board.GetPieceColorFromBoard(fileItr, rankItr) == enemyPieceColor)
+            if (!board.IsSquareEmpty(fileItr, rankItr))
             {
                 PieceName pieceName = board.GetPieceNameEnumFromBoard(fileItr, rankItr);
-
                 PieceColors pieceColor = board.GetPieceColorFromBoard(fileItr, rankItr);
+                if (pieceColor != enemyPieceColor)
+                    continue;
                 Square pieceOriginalSq = Square(fileItr, rankItr);
+                MoveFlag moveFlag = Analyzer::GetMoveFlag(board, pieceOriginalSq, targetSq);
 
                 if (Analyzer::DoesPieceMoveAccordingToRule(pieceName, pieceColor, pieceOriginalSq, targetSq))
                 {
-                    if (!board.IsSquareEmpty(fileItr, rankItr))
+                    if (!Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq))
                     {
-                        Square pieceOriginalSq = Square(fileItr, rankItr);
-
-                        MoveFlag moveFlag = Analyzer::GetMoveFlag(board, pieceOriginalSq, targetSq);
-                        if (!Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq))
+                        if (moveFlag == MoveFlag::pawnDiagonalMove)
                         {
-                            if (moveFlag == MoveFlag::pawnDiagonalMove)
-                            {
-                                return true;
-                            }
+                            return true;
+                        }
+                        else if (moveFlag == MoveFlag::normal)
+                        {
+                            return true;
                         }
                     }
                 }
