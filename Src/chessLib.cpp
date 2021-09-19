@@ -2,6 +2,9 @@
 #include <ctype.h>
 #include <stdexcept>
 #include "CharHelper.h"
+#include <map>
+
+const std::string ChessLib::pieceColorStr[2] = {"white", "black"};
 std::string ChessLib::ExpandFenPosition(std::string fenPosition, char emptySquare)
 {
     std::string expanded = "";

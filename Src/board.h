@@ -3,37 +3,8 @@
 #include <map>
 #include "CharHelper.h"
 #include <vector>
-#define EMPTYSQUARE '-'
+#include "chessLib.h"
 
-const std::string pieceColorStr[2] = {"white", "black"};
-enum class PieceColors
-{
-    white,
-    black,
-    null,
-};
-enum class PieceName
-{
-    king,
-    queen,
-    pawn,
-    rook,
-    knight,
-    bishop,
-    null,
-
-};
-enum class MoveFlag
-{
-    normal,
-    capture,
-    check,
-    shortCastle,
-    longCastle,
-    enpassant,
-    promotion,
-    checkMate
-};
 
 
 struct Square
@@ -71,19 +42,25 @@ private:
     void ClearBoard();
 
 public:
-    PieceColors GetCurrentTurn();
-    std::string GetCurrentTurnStr();
+    //getter are const to tell the compiler that this function will not change
+    //the property of this instance
+    //ref:
+    //https://stackoverflow.com/questions/26963510/error-passing-const-as-this-argument-of-discards-qualifiers/26963552
+    //https://stackoverflow.com/questions/13103755/intellisense-the-object-has-type-qualifiers-that-are-not-compatible-with-the-me/13103791
+    //https://stackoverflow.com/questions/28987916/cannot-call-a-method-of-const-reference-parameter-in-c
+    PieceColors GetCurrentTurn() const;
+    std::string GetCurrentTurnStr() const ;
     void PlacePiece(char piece, int fileNum, int rankNum);
     void PlacePiece(char piece, Square square);
-    char GetPieceNameFromBoard(int fileNum, int rankNum);
+    char GetPieceNameFromBoard(int fileNum, int rankNum) const;
 
-    char GetPieceNameFromBoard(Square square);
+    char GetPieceNameFromBoard(Square square) const;
 
 
-    PieceColors GetPieceColorFromBoard(int filenum, int rankNum);
-    PieceColors GetPieceColorFromBoard(Square square);
+    PieceColors GetPieceColorFromBoard(int filenum, int rankNum) const;
+    PieceColors GetPieceColorFromBoard(Square square) const;
    
-    MoveFlag GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to);
+   
 
     void LoadBoard(char board[8][8]);
 

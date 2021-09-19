@@ -186,3 +186,65 @@ bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Squ
 
     return false;
 }
+MoveFlag Analyzer::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
+{
+    MoveFlag moveFlag = MoveFlag::normal;
+    std::string move = from.GetBoardNotation() + to.GetBoardNotation();
+    Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
+    int xAbs = std::abs(moveDir.x);
+    int yAbs = std::abs(moveDir.y);
+    if (pieceName == PieceName::king)
+    {
+        if (board.GetCurrentTurn() == PieceColors::white)
+        {
+            if (move == "e1g1")
+            {
+                moveFlag = MoveFlag::shortCastle;
+            }
+            else if (move == "e1c1")
+            {
+                moveFlag = MoveFlag::longCastle;
+            }
+        }
+        else if (board.GetCurrentTurn() == PieceColors::black)
+        {
+            if (move == "e8g8")
+            {
+                moveFlag = MoveFlag::shortCastle;
+            }
+            else if (move == "e8c8")
+            {
+                moveFlag = MoveFlag::longCastle;
+            }
+        }
+    }
+    else if (pieceName == PieceName::pawn)
+    {
+        bool pawnMoveOneSquare = false;
+        bool pawnMoveTwoSquare = false;
+        bool pawnCapture = false;
+
+        if (board.GetCurrentTurn() == PieceColors::white)
+        {
+            pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
+            pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
+            pawnCapture = xAbs == 1 && moveDir.y == 1 && (board.GetPieceColorFromBoard(to) == PieceColors::black);
+        }
+        else if (board.GetCurrentTurn() == PieceColors::black)
+        {
+            pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
+            pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
+            pawnCapture = xAbs == 1 && moveDir.y == -1 && (board.GetPieceColorFromBoard(to) == PieceColors::white);
+        }
+        if (pawnMoveOneSquare || pawnMoveTwoSquare)
+        {
+            moveFlag = MoveFlag::normal;
+        }
+        else if (pawnCapture)
+        {
+            moveFlag = MoveFlag::capture;
+        }
+    }
+
+    return moveFlag;
+}

@@ -3,6 +3,7 @@
 #include "board.h"
 #include "CharHelper.h"
 #include "math.h"
+#include "chessLib.h"
 void StartEngine()
 {
     Board board = Board();

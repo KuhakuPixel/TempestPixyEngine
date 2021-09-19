@@ -11,7 +11,7 @@
 #include "analyzer.h"
 #include "stringHelper.h"
 #include "chessLib.h"
-#define EMPTYSQUARE '-'
+
 
 Square::Square(char file, char rank)
 {
@@ -67,13 +67,13 @@ void Board::ClearBoard()
         }
     }
 }
-PieceColors Board::GetCurrentTurn()
+PieceColors Board::GetCurrentTurn() const
 {
     return this->currentTurn;
 }
-std::string Board::GetCurrentTurnStr()
+std::string Board::GetCurrentTurnStr() const
 {
-    return pieceColorStr[(int)this->GetCurrentTurn()];
+    return ChessLib::pieceColorStr[(int)this->GetCurrentTurn()];
 }
 std::string Square::GetBoardNotation()
 {
@@ -89,56 +89,26 @@ void Board::PlacePiece(char piece, Square square)
     this->PlacePiece(piece, square.fileNum, square.rankNum);
 }
 
-char Board::GetPieceNameFromBoard(int fileNum, int rankNum)
+char Board::GetPieceNameFromBoard(int fileNum, int rankNum) const
 {
     return board[8 - rankNum][fileNum - 1];
 }
 
-char Board::GetPieceNameFromBoard(Square square)
+char Board::GetPieceNameFromBoard(Square square) const
 {
     return this->GetPieceNameFromBoard(square.fileNum, square.rankNum);
 }
-PieceColors Board::GetPieceColorFromBoard(int fileNum, int rankNum)
+PieceColors Board::GetPieceColorFromBoard(int fileNum, int rankNum) const
 {
     char piece = this->GetPieceNameFromBoard(fileNum, rankNum);
 
     return ChessLib::ToPieceColorEnum(piece);
 }
-PieceColors Board::GetPieceColorFromBoard(Square square)
+PieceColors Board::GetPieceColorFromBoard(Square square) const
 {
     return this->GetPieceColorFromBoard(square.fileNum, square.rankNum);
 }
-MoveFlag Board::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
-{
-    MoveFlag moveFlag = MoveFlag::normal;
-    std::string move = from.GetBoardNotation() + to.GetBoardNotation();
-    if (pieceName == PieceName::king)
-    {
-        if (board.currentTurn == PieceColors::white)
-        {
-            if (move == "e1g1")
-            {
-                moveFlag = MoveFlag::shortCastle;
-            }
-            else if (move == "e1c1")
-            {
-                moveFlag = MoveFlag::longCastle;
-            }
-        }
-        else if (board.currentTurn == PieceColors::black)
-        {
-            if (move == "e8g8")
-            {
-                moveFlag = MoveFlag::shortCastle;
-            }
-            else if (move == "e8c8")
-            {
-                moveFlag = MoveFlag::longCastle;
-            }
-        }
-    }
-    return moveFlag;
-}
+
 void Board::LoadBoard(char board[8][8])
 {
     memcpy(this->board, board, sizeof(char) * 8 * 8);
@@ -266,7 +236,8 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     PieceColors sideToMove = ChessLib::ToPieceColorEnum(pieceToMove);
     if (IsMoveLegal(sideToMove, from, to) || allowIllegalMove)
     {
-        MoveFlag moveFlag = this->GetMoveFlag(*this, pieceName, from, to);
+
+        MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, pieceName, from, to);
         switch (moveFlag)
         {
         case MoveFlag::normal:

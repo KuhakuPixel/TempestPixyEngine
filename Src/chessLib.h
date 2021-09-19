@@ -1,5 +1,36 @@
+#pragma once
 #include <string>
-#include "board.h"
+#define EMPTYSQUARE '-'
+enum class PieceColors
+{
+    white,
+    black,
+    null,
+};
+enum class PieceName
+{
+    king,
+    queen,
+    pawn,
+    rook,
+    knight,
+    bishop,
+    null,
+
+};
+enum class MoveFlag
+{
+    
+    normal,
+    capture,
+    check,
+    shortCastle,
+    longCastle,
+    enpassant,
+    promotion,
+    checkMate
+};
+
 class ChessLib
 {
 
@@ -11,4 +42,5 @@ public:
 
     static PieceName ToPieceNameEnum(char pieceChar);
     static PieceColors ToPieceColorEnum(char pieceChar);
+    static const std::string pieceColorStr[2] ;
 };
