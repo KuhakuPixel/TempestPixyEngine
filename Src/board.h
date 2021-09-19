@@ -5,8 +5,6 @@
 #include <vector>
 #include "chessLib.h"
 
-
-
 struct Square
 {
     char file;
@@ -49,21 +47,23 @@ public:
     //https://stackoverflow.com/questions/13103755/intellisense-the-object-has-type-qualifiers-that-are-not-compatible-with-the-me/13103791
     //https://stackoverflow.com/questions/28987916/cannot-call-a-method-of-const-reference-parameter-in-c
     PieceColors GetCurrentTurn() const;
-    std::string GetCurrentTurnStr() const ;
+    std::string GetCurrentTurnStr() const;
+
+    bool IsSquareEmpty(int fileNum, int rankNum) const;
+    bool IsSquareEmpty(Square square) const;
     void PlacePiece(char piece, int fileNum, int rankNum);
     void PlacePiece(char piece, Square square);
-    char GetPieceNameFromBoard(int fileNum, int rankNum) const;
 
+    char GetPieceNameFromBoard(int fileNum, int rankNum) const;
     char GetPieceNameFromBoard(Square square) const;
 
+    PieceName GetPieceNameEnumFromBoard(int fileNum, int rankNum) const;
+    PieceName GetPieceNameEnumFromBoard(Square square) const;
 
-    PieceColors GetPieceColorFromBoard(int filenum, int rankNum) const;
+    PieceColors GetPieceColorFromBoard(int fileNum, int rankNum) const;
     PieceColors GetPieceColorFromBoard(Square square) const;
-   
-   
 
     void LoadBoard(char board[8][8]);
-
     void LoadFromFen(std::string fen);
 
     std::string ExportFen();

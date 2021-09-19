@@ -12,7 +12,6 @@
 #include "stringHelper.h"
 #include "chessLib.h"
 
-
 Square::Square(char file, char rank)
 {
     int fileNum = CharHelper::ToAlphabetIndex(file) + 1;
@@ -57,6 +56,10 @@ Square::Square(int fileNum, int rankNum)
     this->rank = CharHelper::FromAlphabetIndex(rankNum - 1, false);
     this->file = static_cast<char>(fileNum);
 }
+std::string Square::GetBoardNotation()
+{
+    return std::string() + this->file + this->rank;
+}
 void Board::ClearBoard()
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
@@ -75,9 +78,15 @@ std::string Board::GetCurrentTurnStr() const
 {
     return ChessLib::pieceColorStr[(int)this->GetCurrentTurn()];
 }
-std::string Square::GetBoardNotation()
+
+bool Board::IsSquareEmpty(int fileNum, int rankNum) const
 {
-    return std::string() + this->file + this->rank;
+    return this->GetPieceNameFromBoard(fileNum, rankNum) == EMPTYSQUARE;
+}
+
+bool Board::IsSquareEmpty(Square square) const
+{
+    return this->GetPieceNameFromBoard(square) == EMPTYSQUARE;
 }
 
 void Board::PlacePiece(char piece, int fileNum, int rankNum)
@@ -98,6 +107,7 @@ char Board::GetPieceNameFromBoard(Square square) const
 {
     return this->GetPieceNameFromBoard(square.fileNum, square.rankNum);
 }
+
 PieceColors Board::GetPieceColorFromBoard(int fileNum, int rankNum) const
 {
     char piece = this->GetPieceNameFromBoard(fileNum, rankNum);
@@ -109,6 +119,14 @@ PieceColors Board::GetPieceColorFromBoard(Square square) const
     return this->GetPieceColorFromBoard(square.fileNum, square.rankNum);
 }
 
+PieceName Board::GetPieceNameEnumFromBoard(int fileNum, int rankNum) const
+{
+    return ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(fileNum, rankNum));
+}
+PieceName Board::GetPieceNameEnumFromBoard(Square square) const
+{
+    return ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(square));
+}
 void Board::LoadBoard(char board[8][8])
 {
     memcpy(this->board, board, sizeof(char) * 8 * 8);
@@ -183,22 +201,35 @@ void Board::DisplayBoard(char orientation)
 }
 bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
 {
-
-    PieceName pieceName = ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(from));
-    bool isMoveLegal = true;
-    if (pieceName == PieceName::null)
+    if (this->IsSquareEmpty(from))
         return false;
+    bool isMoveLegal = true;
+    PieceName pieceName = this->GetPieceNameEnumFromBoard(from);
 
+    MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
     //check if the current side move their own piece
     isMoveLegal &= (currentTurn == sideToMove);
-    isMoveLegal &= Analyzer::DoesPieceMoveAccordingToRule(*this, pieceName, sideToMove, from, to);
-    //check if the piece move to a square that is occupied by their own piece
-    if (this->GetPieceNameFromBoard(to) != EMPTYSQUARE)
-    {
-        isMoveLegal &= !(this->GetPieceColorFromBoard(to) == currentTurn);
-    }
+    isMoveLegal &= Analyzer::DoesPieceMoveAccordingToRule(pieceName, sideToMove, from, to);
     //check if something is blocking the movement
     isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
+
+    //check if the move can take another pieces
+    //add if else statement because the pawn movement is an edge cases
+    if (pieceName == PieceName::pawn)
+    {
+        if (moveFlag == MoveFlag::pawnDiagonalMove)
+        {
+            bool canCaptureEnemy = (!this->IsSquareEmpty(to) && sideToMove != this->GetPieceColorFromBoard(to));
+            isMoveLegal &= canCaptureEnemy;
+        }
+    }
+    else
+    {
+        if (!this->IsSquareEmpty(to))
+        {
+            isMoveLegal &= sideToMove != this->GetPieceColorFromBoard(to);
+        }
+    }
     return isMoveLegal;
 }
 
@@ -237,7 +268,7 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     if (IsMoveLegal(sideToMove, from, to) || allowIllegalMove)
     {
 
-        MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, pieceName, from, to);
+        MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
         switch (moveFlag)
         {
         case MoveFlag::normal:

@@ -20,15 +20,12 @@ enum class PieceName
 };
 enum class MoveFlag
 {
-    
     normal,
-    capture,
-    check,
+    pawnDiagonalMove,
     shortCastle,
     longCastle,
-    enpassant,
     promotion,
-    checkMate
+    null,
 };
 
 class ChessLib
@@ -42,5 +39,5 @@ public:
 
     static PieceName ToPieceNameEnum(char pieceChar);
     static PieceColors ToPieceColorEnum(char pieceChar);
-    static const std::string pieceColorStr[2] ;
+    static const std::string pieceColorStr[2];
 };

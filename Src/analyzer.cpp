@@ -3,6 +3,7 @@
 #include "board.h"
 #include "chessLib.h"
 #include <cmath>
+
 bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
     bool pieceMovementIsBlocked = false;
@@ -92,14 +93,14 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
 
     return pieceMovementIsBlocked;
 }
-bool Analyzer::DoesPieceMoveAccordingToRule(Board board, PieceName pieceName, PieceColors pieceColor, Square from, Square to)
+bool Analyzer::DoesPieceMoveAccordingToRule(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
     bool isMoveLegal = true;
     if (pieceName == PieceName::null)
         return false;
-    //check if piece 's move is according to the rule
+
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
-    //printf("move dir x %d y %d\n", moveDir.x, moveDir.y);
+
     int xAbs = std::abs(moveDir.x);
     int yAbs = std::abs(moveDir.y);
     switch (pieceName)
@@ -139,14 +140,14 @@ bool Analyzer::DoesPieceMoveAccordingToRule(Board board, PieceName pieceName, Pi
         {
             bool pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
-            bool pawnCapture = xAbs == 1 && moveDir.y == 1 && (board.GetPieceColorFromBoard(to) == PieceColors::black);
+            bool pawnCapture = xAbs == 1 && moveDir.y == 1;
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
         else if (pieceColor == PieceColors::black)
         {
             bool pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
             bool pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
-            bool pawnCapture = xAbs == 1 && moveDir.y == -1 && (board.GetPieceColorFromBoard(to) == PieceColors::white);
+            bool pawnCapture = xAbs == 1 && moveDir.y == -1;
             isMoveLegal &= pawnMoveOneSquare || pawnMoveTwoSquare || pawnCapture;
         }
 
@@ -159,6 +160,64 @@ bool Analyzer::DoesPieceMoveAccordingToRule(Board board, PieceName pieceName, Pi
     }
     return isMoveLegal;
 }
+
+MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
+{
+    MoveFlag moveFlag = MoveFlag::normal;
+    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
+    PieceColors pieceColor = board.GetPieceColorFromBoard(from);
+
+    std::string move = from.GetBoardNotation() + to.GetBoardNotation();
+    Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
+
+    int xAbs = std::abs(moveDir.x);
+    int yAbs = std::abs(moveDir.y);
+    //check if there is a special move like pawn moving diagonally(capturing) or when castling
+    //anything else is normal
+    if (Analyzer::DoesPieceMoveAccordingToRule(pieceName, pieceColor, from, to))
+    {
+
+        if (pieceName == PieceName::pawn && xAbs == 1 && yAbs == 1)
+        {
+            moveFlag = MoveFlag::pawnDiagonalMove;
+        }
+        else if (pieceName == PieceName::king)
+        {
+            if (board.GetCurrentTurn() == PieceColors::white)
+            {
+                if (move == "e1g1")
+                {
+                    moveFlag = MoveFlag::shortCastle;
+                }
+                else if (move == "e1c1")
+                {
+                    moveFlag = MoveFlag::longCastle;
+                }
+            }
+            else if (board.GetCurrentTurn() == PieceColors::black)
+            {
+                if (move == "e8g8")
+                {
+                    moveFlag = MoveFlag::shortCastle;
+                }
+                else if (move == "e8c8")
+                {
+                    moveFlag = MoveFlag::longCastle;
+                }
+            }
+        }
+        else
+        {
+            moveFlag = MoveFlag::normal;
+        }
+    }
+    else
+    {
+        return MoveFlag::null;
+    }
+
+    return moveFlag;
+}
 bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Square targetSq)
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
@@ -167,17 +226,25 @@ bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Squ
         {
             if (board.GetPieceColorFromBoard(fileItr, rankItr) == enemyPieceColor)
             {
-                char pieceChar = board.GetPieceNameFromBoard(fileItr, rankItr);
+                PieceName pieceName = board.GetPieceNameEnumFromBoard(fileItr, rankItr);
+
                 PieceColors pieceColor = board.GetPieceColorFromBoard(fileItr, rankItr);
-                if (pieceChar != EMPTYSQUARE && pieceColor == enemyPieceColor)
+                Square pieceOriginalSq = Square(fileItr, rankItr);
+
+                if (Analyzer::DoesPieceMoveAccordingToRule(pieceName, pieceColor, pieceOriginalSq, targetSq))
                 {
-                    Square pieceOriginalSq = Square(fileItr, rankItr);
-                    PieceName pieceName = ChessLib::ToPieceNameEnum(pieceChar);
-                    bool doesPieceMoveAccordingToRule = Analyzer::DoesPieceMoveAccordingToRule(board, pieceName, pieceColor, pieceOriginalSq, targetSq);
-                    bool isPieceMovementBlocked = Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq);
-                    if (doesPieceMoveAccordingToRule && !isPieceMovementBlocked)
+                    if (!board.IsSquareEmpty(fileItr, rankItr))
                     {
-                        return true;
+                        Square pieceOriginalSq = Square(fileItr, rankItr);
+
+                        MoveFlag moveFlag = Analyzer::GetMoveFlag(board, pieceOriginalSq, targetSq);
+                        if (!Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq))
+                        {
+                            if (moveFlag == MoveFlag::pawnDiagonalMove)
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
@@ -185,66 +252,4 @@ bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Squ
     }
 
     return false;
-}
-MoveFlag Analyzer::GetMoveFlag(const Board &board, PieceName pieceName, Square from, Square to)
-{
-    MoveFlag moveFlag = MoveFlag::normal;
-    std::string move = from.GetBoardNotation() + to.GetBoardNotation();
-    Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
-    int xAbs = std::abs(moveDir.x);
-    int yAbs = std::abs(moveDir.y);
-    if (pieceName == PieceName::king)
-    {
-        if (board.GetCurrentTurn() == PieceColors::white)
-        {
-            if (move == "e1g1")
-            {
-                moveFlag = MoveFlag::shortCastle;
-            }
-            else if (move == "e1c1")
-            {
-                moveFlag = MoveFlag::longCastle;
-            }
-        }
-        else if (board.GetCurrentTurn() == PieceColors::black)
-        {
-            if (move == "e8g8")
-            {
-                moveFlag = MoveFlag::shortCastle;
-            }
-            else if (move == "e8c8")
-            {
-                moveFlag = MoveFlag::longCastle;
-            }
-        }
-    }
-    else if (pieceName == PieceName::pawn)
-    {
-        bool pawnMoveOneSquare = false;
-        bool pawnMoveTwoSquare = false;
-        bool pawnCapture = false;
-
-        if (board.GetCurrentTurn() == PieceColors::white)
-        {
-            pawnMoveOneSquare = moveDir.y == 1 && moveDir.x == 0;
-            pawnMoveTwoSquare = moveDir.y == 2 && from.rankNum == 2 && moveDir.x == 0;
-            pawnCapture = xAbs == 1 && moveDir.y == 1 && (board.GetPieceColorFromBoard(to) == PieceColors::black);
-        }
-        else if (board.GetCurrentTurn() == PieceColors::black)
-        {
-            pawnMoveOneSquare = moveDir.y == -1 && moveDir.x == 0;
-            pawnMoveTwoSquare = moveDir.y == -2 && from.rankNum == 7 && moveDir.x == 0;
-            pawnCapture = xAbs == 1 && moveDir.y == -1 && (board.GetPieceColorFromBoard(to) == PieceColors::white);
-        }
-        if (pawnMoveOneSquare || pawnMoveTwoSquare)
-        {
-            moveFlag = MoveFlag::normal;
-        }
-        else if (pawnCapture)
-        {
-            moveFlag = MoveFlag::capture;
-        }
-    }
-
-    return moveFlag;
 }

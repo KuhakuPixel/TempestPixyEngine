@@ -17,7 +17,7 @@ void TestPiecesLegalMove(std::string fenPosition, PieceColors sideToMove, std::s
     if (actual != expect)
     {
         printf("test cases failed \n");
-        printf("fenPosition : %s", fenPosition.c_str());
+        printf("fenPosition : %s \n move: %s\n", fenPosition.c_str(), move.c_str());
     }
     REQUIRE(actual == expect);
 }
@@ -143,7 +143,7 @@ TEST_CASE("Test queen legal moves", "[BoardLegalMoves]")
 
             {"rnbqkb1r/pp1p1ppp/2p4n/4p3/3PP2P/N7/PPP1QPP1/R1B1KBNR b KQkq - 4 6", PieceColors::black, "d8h4", true},
             {"rnbqkb1r/1p3ppp/2pN3n/p2pp3/3PP2P/8/PPP1QPP1/R1B1KBNR b KQkq - 1 8", PieceColors::black, "d8d6", true},
-             {"rnb1kb1r/1p3ppp/2pq3n/p2pp3/3PP2P/P7/1PP1QPP1/R1B1KBNR b KQkq - 0 9", PieceColors::black, "d6f8", false},
+            {"rnb1kb1r/1p3ppp/2pq3n/p2pp3/3PP2P/P7/1PP1QPP1/R1B1KBNR b KQkq - 0 9", PieceColors::black, "d6f8", false},
             {"rnb1kb1r/1p3ppp/2pq3n/p2pp3/3PP2P/P7/1PP1QPP1/R1B1KBNR b KQkq - 0 9", PieceColors::black, "d6d5", false},
         }));
 
