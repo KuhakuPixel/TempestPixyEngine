@@ -60,5 +60,7 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
 }

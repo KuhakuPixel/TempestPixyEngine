@@ -93,7 +93,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceCol
 
     return pieceMovementIsBlocked;
 }
-bool Analyzer::DoesPieceMoveAccordingToRule(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
+bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
     bool isMoveLegal = true;
     if (pieceName == PieceName::null)
@@ -174,7 +174,7 @@ MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
     int yAbs = std::abs(moveDir.y);
     //check if there is a special move like pawn moving diagonally(capturing) or when castling
     //anything else is normal
-    if (Analyzer::DoesPieceMoveAccordingToRule(pieceName, pieceColor, from, to))
+    if (Analyzer::DoesPieceMoveCorrectly(pieceName, pieceColor, from, to))
     {
 
         if (pieceName == PieceName::pawn && xAbs == 1 && yAbs == 1)
@@ -233,7 +233,7 @@ bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Squ
                 Square pieceOriginalSq = Square(fileItr, rankItr);
                 MoveFlag moveFlag = Analyzer::GetMoveFlag(board, pieceOriginalSq, targetSq);
 
-                if (Analyzer::DoesPieceMoveAccordingToRule(pieceName, pieceColor, pieceOriginalSq, targetSq))
+                if (Analyzer::DoesPieceMoveCorrectly(pieceName, pieceColor, pieceOriginalSq, targetSq))
                 {
                     if (!Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq))
                     {

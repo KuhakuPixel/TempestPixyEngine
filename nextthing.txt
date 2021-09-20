@@ -4,4 +4,7 @@
 	-Should be put in a separate class probably since it will be used by the search and eval algoritm
 
 -the function to check if a square is under attack can fail if it is a pawn because 
- the pawn moves differently when attacking 
+ the pawn moves differently when attacking
+
+
+Next:Improve the script to compile the program (maybe using python because it has more features than the bash script and it should only be used when needed) 

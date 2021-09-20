@@ -14,6 +14,10 @@ struct Square
     Square(char file, char rank);
     Square(int fileNum, int rankNum);
     std::string GetBoardNotation();
+
+    ///the first element of the tuple is the original square
+    ///the second element of the tuple is the destination square
+    static std::pair<Square,Square> GetMoveFromStr(std::string move);
 };
 
 class Board

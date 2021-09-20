@@ -60,6 +60,22 @@ std::string Square::GetBoardNotation()
 {
     return std::string() + this->file + this->rank;
 }
+
+std::pair<Square, Square> Square::GetMoveFromStr(std::string move)
+{
+    if (move.size() < 4)
+    {
+        throw std::invalid_argument("move size must be at least 4");
+    }
+    if (isdigit(move[0]) || !isdigit(move[1]) ||
+        isdigit(move[2]) || !isdigit(move[3]))
+    {
+        throw std::invalid_argument("invalid move notation");
+    }
+    Square from = Square(move[0], move[1]);
+    Square to = Square(move[2], move[3]);
+    return std::make_pair(Square(move[0], move[1]), Square(move[2], move[3]));
+}
 void Board::ClearBoard()
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
@@ -209,7 +225,7 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
     //check if the current side move their own piece
     isMoveLegal &= (currentTurn == sideToMove);
-    isMoveLegal &= Analyzer::DoesPieceMoveAccordingToRule(pieceName, sideToMove, from, to);
+    isMoveLegal &= Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to);
     //check if something is blocking the movement
     isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
 
