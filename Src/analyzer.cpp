@@ -3,12 +3,24 @@
 #include "board.h"
 #include "chessLib.h"
 #include <cmath>
-
+#include <stdexcept>
+#include <sstream>
 bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
 {
+
     bool pieceMovementIsBlocked = false;
     PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
     PieceColors pieceColor = board.GetPieceColorFromBoard(from);
+    if (!DoesPieceMoveCorrectly(pieceName, pieceColor, from, to))
+    {
+        std::stringstream errorSs;
+        errorSs << "Piece movement is not correct/according to rules\n"
+                << "pieceName:" << ChessLib::GetPieceNameStr(pieceName) << "\n"
+                << "pieceColor:" << ChessLib::GetPieceColorStr(pieceColor) << "\n"
+                << "move:" << from.GetBoardNotation() << to.GetBoardNotation() << "\n";
+
+        throw std::invalid_argument(errorSs.str());
+    }
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
     switch (pieceName)
     {

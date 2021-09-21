@@ -28,11 +28,14 @@ void TestDoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, std
     REQUIRE(actual == expect);
 }
 
-void TestIsPieceMovementBlocked(std::string fenPosition, PieceName pieceName, PieceColors sideToMove, std::string move, bool expect)
+void TestIsPieceMovementBlocked(std::string fenPosition, std::string move, bool expect)
 {
     Board board = Board();
     board.LoadFromFen(fenPosition);
-    bool actual = board.IsMoveLegal(sideToMove, move);
+    Square from = Square(1, 1);
+    Square to = Square(1, 1);
+    std::tie(from, to) = Square::GetMoveFromStr(move);
+    bool actual = Analyzer::IsPieceMovementBlocked(board, from, to);
     if (actual != expect)
     {
         printf("test cases failed \n");

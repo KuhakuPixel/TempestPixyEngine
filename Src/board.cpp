@@ -225,9 +225,15 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
     //check if the current side move their own piece
     isMoveLegal &= (currentTurn == sideToMove);
-    isMoveLegal &= Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to);
-    //check if something is blocking the movement
-    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, from, to));
+    if (Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to))
+    {
+        //check if something is blocking the movement
+        isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, from, to));
+    }
+    else
+    {
+        isMoveLegal &= false;
+    }
 
     //check if the move can take another pieces
     //add if else statement because the pawn movement is an edge cases
