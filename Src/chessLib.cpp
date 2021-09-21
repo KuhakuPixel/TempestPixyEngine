@@ -4,7 +4,17 @@
 #include "CharHelper.h"
 #include <map>
 
-const std::string ChessLib::pieceColorStr[2] = {"white", "black"};
+std::string ChessLib::GetPieceNameStr(PieceName pieceName)
+{
+    std::string pieceNames[] = {"king", "queen", "pawn", "rook", "knight", "bishop"};
+    return pieceNames[(int)pieceName];
+}
+
+std::string ChessLib::GetPieceColorStr(PieceColors pieceColors)
+{
+    std::string pieceColorStr[2] = {"white", "black"};
+    return pieceColorStr[(int)pieceColors];
+}
 std::string ChessLib::ExpandFenPosition(std::string fenPosition, char emptySquare)
 {
     std::string expanded = "";

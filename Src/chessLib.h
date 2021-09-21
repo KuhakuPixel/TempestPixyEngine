@@ -39,5 +39,7 @@ public:
 
     static PieceName ToPieceNameEnum(char pieceChar);
     static PieceColors ToPieceColorEnum(char pieceChar);
-    static const std::string pieceColorStr[2];
+
+    static std::string GetPieceNameStr(PieceName pieceName);
+    static std::string GetPieceColorStr(PieceColors pieceName);
 };

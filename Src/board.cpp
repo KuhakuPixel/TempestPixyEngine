@@ -92,7 +92,7 @@ PieceColors Board::GetCurrentTurn() const
 }
 std::string Board::GetCurrentTurnStr() const
 {
-    return ChessLib::pieceColorStr[(int)this->GetCurrentTurn()];
+    return ChessLib::GetPieceColorStr(this->GetCurrentTurn());
 }
 
 bool Board::IsSquareEmpty(int fileNum, int rankNum) const
