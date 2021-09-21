@@ -35,6 +35,7 @@ void TestIsPieceMovementBlocked(std::string fenPosition, std::string move, bool 
     Square from = Square(1, 1);
     Square to = Square(1, 1);
     std::tie(from, to) = Square::GetMoveFromStr(move);
+
     bool actual = Analyzer::IsPieceMovementBlocked(board, from, to);
     if (actual != expect)
     {
@@ -137,5 +138,44 @@ TEST_CASE("Test Piece correct movement", "[PiecesCorrectMovements]")
     SECTION("Test piece correct movements")
     {
         TestDoesPieceMoveCorrectly(pieceName, pieceColor, move, expect);
+    }
+}
+
+TEST_CASE("Test Is Piece Movement Blocked", "[PiecesCorrectMovements]")
+{
+    std::string fenPosition;
+    std::string move;
+    bool expect;
+
+    std::tie(fenPosition, move, expect) = GENERATE(
+        table<std::string, std::string, bool>({
+            //bishops
+            {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "f1d3", true},
+            {"rnbqkbnr/pppp1ppp/8/4p3/8/4P3/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "f1d3", false}, //e3e5 (van'tkruijs)
+            {"rnbqkbnr/pppp1ppp/8/4p3/8/4P3/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "c1f4", true},
+            {"rnbqkbnr/pppp1ppp/8/8/3P4/8/PPP2PPP/RNBQKBNR b KQkq - 0 3", "c8g4", true},
+            {"rnbqkbnr/ppp2ppp/8/3p4/3P4/2N5/PPP2PPP/R1BQKBNR b KQkq - 1 4", "c8e6", false},
+            {"rnbq1bnr/ppp1kppp/8/3p4/3P2Q1/2N5/PPP2PPP/R1B1KBNR b KQ - 3 5", "f8d6", true},
+
+            //rook
+            {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "a1a3", true},
+            {"r1b1k2r/ppp1qp2/3p1npp/8/4P3/2NPQ3/PPP1B1PP/2KR3R w kq - 0 12", "d1d6", true},
+            {"r1b1k2r/ppp1qp2/3p1npp/8/4P3/2NPQ3/PPP1B1PP/2KR3R w kq - 0 12", "h1f1", false},
+            {"r1b1k2r/1pp1qp2/p2p1npp/8/4P3/2NPQ3/PPP1B1PP/2KR1R2 w kq - 0 13", "f1f6", false},
+            {"r1b1k2r/1pp1qp2/p2p1npp/8/4P3/2NPQ3/PPP1B1PP/2KR1R2 w kq - 0 13", "f1f7", true},
+            {"r3k2r/ppp1qp2/3p1np1/8/4PRbp/2NPQ3/PPP1B1PP/2K1R3 w kq - 0 15", "f4f7", true},
+
+            //queen
+            {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "d1b3", true},
+            {"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", "d1d3", true},
+            {"r3kbnr/pppqpppp/2n5/3p1b2/3P1B2/4PN2/PPP2PPP/RN1QKB1R w KQkq - 1 5", "d1d5", true},
+            {"r3kbnr/pppqpppp/8/3p1b2/P2n1B2/4PN2/1PP2PPP/RN1QKB1R w KQkq - 0 6", "d1d4", false},
+            {"r3kbnr/pppqpppp/8/3p1b2/P2n1B2/4PN2/1PP2PPP/RN1QKB1R w KQkq - 0 6", "d1e2", false},
+            {"r3kbnr/pppqpppp/8/3p1b2/P1Pn1B2/4PN2/1P3PPP/RN1QKB1R b KQkq - 0 6", "d1d3", false},
+        }));
+
+    SECTION("Test piece correct movements")
+    {
+        TestIsPieceMovementBlocked(fenPosition, move, expect);
     }
 }

@@ -58,7 +58,7 @@ if len(args) == 0:
 else:
     if args[0] == "debug":
         compile_cpp_codes(["Src"], "build", "main", debug=True)
-        subprocess.run(["./build/main"])
+        subprocess.run(["gdb", "build/main"])
 
     elif args[0] == "test":
         if not ("TestMain.o" in os.listdir("tests")):
@@ -92,6 +92,6 @@ else:
             exclude_cpp_files=["TestMain.cpp", "main.cpp"],
             object_files=["tests/TestMain.o"],
         )
-        subprocess.run(["./tests/test"])
+        subprocess.run(["gdb", "tests/test"])
     else:
         print("unknown command")

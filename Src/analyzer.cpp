@@ -13,13 +13,11 @@ bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
     PieceColors pieceColor = board.GetPieceColorFromBoard(from);
     if (!DoesPieceMoveCorrectly(pieceName, pieceColor, from, to))
     {
-        std::stringstream errorSs;
-        errorSs << "Piece movement is not correct/according to rules\n"
-                << "pieceName:" << ChessLib::GetPieceNameStr(pieceName) << "\n"
-                << "pieceColor:" << ChessLib::GetPieceColorStr(pieceColor) << "\n"
-                << "move:" << from.GetBoardNotation() << to.GetBoardNotation() << "\n";
 
-        throw std::invalid_argument(errorSs.str());
+        std::string errorMsg = std::string("Piece movement is not correct / according to rules\n ") +
+                               "pieceName:" + ChessLib::GetPieceNameStr(pieceName) + "\n" + "pieceColor:" + ChessLib::GetPieceColorStr(pieceColor) + "\n" +
+                               "move:" + from.GetBoardNotation() + to.GetBoardNotation() + "\n";
+        throw std::invalid_argument(errorMsg);
     }
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
     switch (pieceName)

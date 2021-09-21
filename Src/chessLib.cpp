@@ -6,13 +6,13 @@
 
 std::string ChessLib::GetPieceNameStr(PieceName pieceName)
 {
-    std::string pieceNames[] = {"king", "queen", "pawn", "rook", "knight", "bishop"};
+    std::string pieceNames[] = {"king", "queen", "pawn", "rook", "knight", "bishop", "null"};
     return pieceNames[(int)pieceName];
 }
 
 std::string ChessLib::GetPieceColorStr(PieceColors pieceColors)
 {
-    std::string pieceColorStr[2] = {"white", "black"};
+    std::string pieceColorStr[] = {"white", "black", "null"};
     return pieceColorStr[(int)pieceColors];
 }
 std::string ChessLib::ExpandFenPosition(std::string fenPosition, char emptySquare)
