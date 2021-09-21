@@ -4,9 +4,11 @@
 #include "chessLib.h"
 #include <cmath>
 
-bool Analyzer::IsPieceMovementBlocked(Board board, PieceName pieceName, PieceColors pieceColor, Square from, Square to)
+bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
 {
     bool pieceMovementIsBlocked = false;
+    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
+    PieceColors pieceColor = board.GetPieceColorFromBoard(from);
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
     switch (pieceName)
     {
@@ -235,7 +237,7 @@ bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Squ
 
                 if (Analyzer::DoesPieceMoveCorrectly(pieceName, pieceColor, pieceOriginalSq, targetSq))
                 {
-                    if (!Analyzer::IsPieceMovementBlocked(board, pieceName, pieceColor, pieceOriginalSq, targetSq))
+                    if (!Analyzer::IsPieceMovementBlocked(board, pieceOriginalSq, targetSq))
                     {
                         if (moveFlag == MoveFlag::pawnDiagonalMove)
                         {

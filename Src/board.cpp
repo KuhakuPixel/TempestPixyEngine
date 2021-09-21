@@ -70,7 +70,7 @@ std::pair<Square, Square> Square::GetMoveFromStr(std::string move)
     if (isdigit(move[0]) || !isdigit(move[1]) ||
         isdigit(move[2]) || !isdigit(move[3]))
     {
-        throw std::invalid_argument("invalid move notation");
+        throw std::invalid_argument("invalid move notation: " + move);
     }
     Square from = Square(move[0], move[1]);
     Square to = Square(move[2], move[3]);
@@ -227,7 +227,7 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     isMoveLegal &= (currentTurn == sideToMove);
     isMoveLegal &= Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to);
     //check if something is blocking the movement
-    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, pieceName, sideToMove, from, to));
+    isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, from, to));
 
     //check if the move can take another pieces
     //add if else statement because the pawn movement is an edge cases
@@ -257,7 +257,7 @@ bool Board::IsMoveLegal(PieceColors sideToMove, std::string moveNotation)
     if (isdigit(moveNotation[0]) || !isdigit(moveNotation[1]) ||
         isdigit(moveNotation[2]) || !isdigit(moveNotation[3]))
     {
-        throw std::invalid_argument("invalid move notation");
+        throw std::invalid_argument("invalid move notation : " + moveNotation);
     }
     Square fromSquare = Square(moveNotation[0], moveNotation[1]);
     Square toSquare = Square(moveNotation[2], moveNotation[3]);
@@ -273,7 +273,7 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
     if (isdigit(moveNotation[0]) || !isdigit(moveNotation[1]) ||
         isdigit(moveNotation[2]) || !isdigit(moveNotation[3]))
     {
-        throw std::invalid_argument("invalid move notation");
+        throw std::invalid_argument("invalid move notation : " + moveNotation);
     }
     Square from = Square(moveNotation[0], moveNotation[1]);
     Square to = Square(moveNotation[2], moveNotation[3]);

@@ -14,7 +14,7 @@ class Analyzer
 {
 public:
     static void AnalyzeAttack(Board board, PieceColors attackingSide);
-    static bool IsPieceMovementBlocked(Board board, PieceName pieceName, PieceColors pieceColor, Square from, Square to);
+    static bool IsPieceMovementBlocked(Board board, Square from, Square to);
 
     ///This function will check if the piece moves acording to the rule and nothing else
     ///for example pawn only move sideway when capturing (this function will return true if the pawn moves diaoganlly even
