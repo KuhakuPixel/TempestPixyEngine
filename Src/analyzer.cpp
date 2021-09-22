@@ -5,7 +5,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <sstream>
-bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
+bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to)
 {
 
     bool pieceMovementIsBlocked = false;
@@ -20,25 +20,37 @@ bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
         throw std::invalid_argument(errorMsg);
     }
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
+    //check if there is something in between that is blocking the movement
+    //don't need to check knight because it can jump
     switch (pieceName)
     {
     case PieceName::pawn:
+    {
         if (pieceColor == PieceColors::white)
         {
             if (moveDir.x == 0 && moveDir.y == 1)
             {
-
-                pieceMovementIsBlocked = board.GetPieceNameFromBoard(to) != EMPTYSQUARE;
+                pieceMovementIsBlocked = !board.IsSquareEmpty(to);
+            }
+            else if (moveDir.x == 0 && moveDir.y == 2)
+            {
+                pieceMovementIsBlocked = !board.IsSquareEmpty(from.fileNum, 3);
             }
         }
         else if (pieceColor == PieceColors::black)
         {
             if (moveDir.x == 0 && moveDir.y == -1)
             {
-                pieceMovementIsBlocked = board.GetPieceNameFromBoard(to) != EMPTYSQUARE;
+                pieceMovementIsBlocked = !board.IsSquareEmpty(to);
+            }
+            else if (moveDir.x == 0 && moveDir.y == -2)
+            {
+                pieceMovementIsBlocked = !board.IsSquareEmpty(from.fileNum, 6);
             }
         }
         break;
+    }
+
     case PieceName::bishop:
     {
         Vector2 unitDir = Vector2((moveDir.x / abs(moveDir.x)), (moveDir.y / abs(moveDir.y)));
@@ -46,7 +58,8 @@ bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= abs(moveDir.x) - 2; i++)
         {
-            if (board.GetPieceNameFromBoard(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+
+            if (!board.IsSquareEmpty(fileNumIterator, rankNumIterator))
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -69,7 +82,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
         {
-            if (board.GetPieceNameFromBoard(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (!board.IsSquareEmpty(fileNumIterator, rankNumIterator))
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -91,7 +104,7 @@ bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
         int fileNumIterator = from.fileNum + unitDir.x;
         for (int i = 0; i <= distanceSquare - 2; i++)
         {
-            if (board.GetPieceNameFromBoard(fileNumIterator, rankNumIterator) != EMPTYSQUARE)
+            if (!board.IsSquareEmpty(fileNumIterator, rankNumIterator))
             {
                 pieceMovementIsBlocked = true;
                 break;
@@ -103,6 +116,10 @@ bool Analyzer::IsPieceMovementBlocked(Board board, Square from, Square to)
     }
     }
 
+    if (board.GetPieceColorFromBoard(to) == pieceColor)
+    {
+        return true;
+    }
     return pieceMovementIsBlocked;
 }
 bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
@@ -178,7 +195,6 @@ MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
     MoveFlag moveFlag = MoveFlag::normal;
     PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
     PieceColors pieceColor = board.GetPieceColorFromBoard(from);
-
     std::string move = from.GetBoardNotation() + to.GetBoardNotation();
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
 
@@ -230,7 +246,7 @@ MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
 
     return moveFlag;
 }
-bool Analyzer::IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Square targetSq)
+bool Analyzer::IsSquareUnderAttack(const Board &board, PieceColors enemyPieceColor, Square targetSq)
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
     {

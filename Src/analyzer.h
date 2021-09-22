@@ -13,8 +13,8 @@ class Analyzer
 
 {
 public:
-    static void AnalyzeAttack(Board board, PieceColors attackingSide);
-    static bool IsPieceMovementBlocked(Board board, Square from, Square to);
+    static void AnalyzeAttack(const Board &board, PieceColors attackingSide);
+    static bool IsPieceMovementBlocked(const Board &board, Square from, Square to);
 
     ///This function will check if the piece moves acording to the rule and nothing else
     ///for example pawn only move sideway when capturing (this function will return true if the pawn moves diaoganlly even
@@ -22,5 +22,5 @@ public:
     ///                                                   there are friendly pieces or ect))
     static bool DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to);
     static MoveFlag GetMoveFlag(const Board &board, Square from, Square to);
-    static bool IsSquareUnderAttack(Board board, PieceColors enemyPieceColor, Square square);
+    static bool IsSquareUnderAttack(const Board &board, PieceColors enemyPieceColor, Square square);
 };

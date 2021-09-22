@@ -97,6 +97,14 @@ std::string Board::GetCurrentTurnStr() const
 
 bool Board::IsSquareEmpty(int fileNum, int rankNum) const
 {
+    if (fileNum > 8 || fileNum < 1 || rankNum > 8 || rankNum < 1)
+    {
+        std::string errorMsg = std::string("invalid Square position\n") +
+                               "fileNum:" + std::to_string(fileNum) + "\n" +
+                               "rankNum:" + std::to_string(rankNum) + "\n";
+        throw std::invalid_argument(errorMsg);
+    }
+
     return this->GetPieceNameFromBoard(fileNum, rankNum) == EMPTYSQUARE;
 }
 
@@ -228,29 +236,27 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
     if (Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to))
     {
         //check if something is blocking the movement
-        isMoveLegal &= !(Analyzer::IsPieceMovementBlocked(*this, from, to));
+        if (!Analyzer::IsPieceMovementBlocked(*this, from, to))
+        {
+            //makes sure pawn doesnt capture on an empty square
+            if (pieceName == PieceName::pawn)
+            {
+                if (moveFlag == MoveFlag::pawnDiagonalMove)
+                {
+                    isMoveLegal &= (!this->IsSquareEmpty(to)) && (sideToMove != this->GetPieceColorFromBoard(to));
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
     else
     {
         isMoveLegal &= false;
     }
 
-    //check if the move can take another pieces
-    //add if else statement because the pawn movement is an edge cases
-    if (pieceName == PieceName::pawn)
-    {
-        if (moveFlag == MoveFlag::pawnDiagonalMove)
-        {
-            isMoveLegal &= (!this->IsSquareEmpty(to)) && (sideToMove != this->GetPieceColorFromBoard(to));
-        }
-    }
-    else
-    {
-        if (!this->IsSquareEmpty(to))
-        {
-            isMoveLegal &= sideToMove != this->GetPieceColorFromBoard(to);
-        }
-    }
     return isMoveLegal;
 }
 
