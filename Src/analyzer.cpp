@@ -269,7 +269,7 @@ bool Analyzer::IsSquareUnderAttack(const Board &board, PieceColors enemyPieceCol
                         {
                             return true;
                         }
-                        else if (moveFlag == MoveFlag::normal)
+                        else if (moveFlag == MoveFlag::normal && pieceName != PieceName::pawn)
                         {
                             return true;
                         }

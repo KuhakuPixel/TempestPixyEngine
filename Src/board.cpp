@@ -53,8 +53,8 @@ Square::Square(int fileNum, int rankNum)
     {
         throw std::invalid_argument("invalid rank value ,must be in between 1 and 8 (inclusive)\n");
     }
-    this->rank = CharHelper::FromAlphabetIndex(rankNum - 1, false);
-    this->file = static_cast<char>(fileNum);
+    this->rank = static_cast<char>(rankNum);
+    this->file = CharHelper::FromAlphabetIndex(fileNum - 1, false);
 }
 
 Square::Square(std::string square)

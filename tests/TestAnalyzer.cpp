@@ -217,7 +217,7 @@ TEST_CASE("Test Is Square under attack", "[IsSquareUnderAttack]")
 
     std::tie(fenPosition, square, attackingColor, expect) = GENERATE(
         table<std::string, std::string, PieceColors, bool>({
-            {},
+            {"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1", "e5", PieceColors::black, false},
         }));
 
     SECTION("Test piece correct movements")
