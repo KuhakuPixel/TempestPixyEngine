@@ -246,7 +246,7 @@ MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
 
     return moveFlag;
 }
-bool Analyzer::IsSquareUnderAttack(const Board &board, PieceColors enemyPieceColor, Square targetSq)
+bool Analyzer::IsSquareAttacked(const Board &board, PieceColors enemyPieceColor, Square targetSq)
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
     {
@@ -280,4 +280,18 @@ bool Analyzer::IsSquareUnderAttack(const Board &board, PieceColors enemyPieceCol
     }
 
     return false;
+}
+
+bool Analyzer::IsSquareAttacked(
+    const Board &board,
+    PieceColors enemyPieceColor,
+    std::vector<std::string> squares)
+{
+    bool isSquareAttacked = false;
+    for (int i = 0; i < squares.size(); i++)
+    {
+        if (Analyzer::IsSquareAttacked(board, enemyPieceColor, squares.at(i)))
+            return true;
+    }
+    return isSquareAttacked;
 }

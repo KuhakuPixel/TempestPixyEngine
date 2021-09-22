@@ -93,3 +93,15 @@ PieceColors ChessLib::ToPieceColorEnum(char pieceChar)
         throw std::invalid_argument(errorMsg);
     }
 }
+
+PieceColors ChessLib::InvertPieceColor(PieceColors color)
+{
+    if (color == PieceColors::black)
+        return PieceColors::white;
+    else if (color == PieceColors::white)
+        return PieceColors::black;
+    else
+    {
+        return PieceColors::null;
+    }
+}

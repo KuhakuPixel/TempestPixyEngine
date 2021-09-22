@@ -11,7 +11,7 @@
 #include "analyzer.h"
 #include "stringHelper.h"
 #include "chessLib.h"
-
+#include <algorithm>
 Square::Square(char file, char rank)
 {
     int fileNum = CharHelper::ToAlphabetIndex(file) + 1;
@@ -264,21 +264,68 @@ bool Board::IsMoveLegal(PieceColors sideToMove, Square from, Square to)
         return false;
     bool isMoveLegal = true;
     PieceName pieceName = this->GetPieceNameEnumFromBoard(from);
-
     MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
     //check if the current side move their own piece
-    isMoveLegal &= (currentTurn == sideToMove);
+    isMoveLegal &= (this->currentTurn == sideToMove);
     if (Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to))
     {
-        //check if something is blocking the movement
         if (!Analyzer::IsPieceMovementBlocked(*this, from, to))
         {
+            PieceColors waitingSide = ChessLib::InvertPieceColor(sideToMove);
             //makes sure pawn doesnt capture on an empty square
             if (pieceName == PieceName::pawn)
             {
                 if (moveFlag == MoveFlag::pawnDiagonalMove)
                 {
                     isMoveLegal &= (!this->IsSquareEmpty(to)) && (sideToMove != this->GetPieceColorFromBoard(to));
+                }
+            }
+            else if (pieceName == PieceName::king)
+            {
+                std::vector<MoveFlag> castlingRights = playersToCastlingRightsMap.at(sideToMove);
+                if (moveFlag == MoveFlag::longCastle)
+                {
+                    isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
+                    if (sideToMove == PieceColors::white)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            *this,
+                            PieceColors::black,
+                            {"e1", "d1", "c1"});
+                        isMoveLegal &= canCastle;
+                    }
+                    else if (sideToMove == PieceColors::black)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            *this,
+                            PieceColors::white,
+                            {"e8", "d8", "c8"});
+                        isMoveLegal &= canCastle;
+                    }
+                }
+                else if (moveFlag == MoveFlag::shortCastle)
+                {
+                    isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
+                    if (sideToMove == PieceColors::white)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            *this,
+                            PieceColors::black,
+                            {"e1", "f1", "g1"});
+                        isMoveLegal &= canCastle;
+                    }
+                    else if (sideToMove == PieceColors::black)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            *this,
+                            PieceColors::white,
+                            {"e8", "f8", "g8"});
+                        isMoveLegal &= canCastle;
+                    }
+                }
+                else
+                {
+                    isMoveLegal &= !Analyzer::IsSquareAttacked(*this, waitingSide, to);
                 }
             }
         }
@@ -339,14 +386,22 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
             this->PlacePiece(pieceToMove, to);
             break;
         }
+        case MoveFlag::pawnDiagonalMove:
+        {
+            this->PlacePiece(EMPTYSQUARE, from);
+            this->PlacePiece(pieceToMove, to);
+            break;
+        }
         case MoveFlag::shortCastle:
         {
             if (sideToMove == PieceColors::white)
             {
+
                 this->PlacePiece(EMPTYSQUARE, from);
                 this->PlacePiece('K', to);
                 this->PlacePiece(EMPTYSQUARE, Square('h', '1'));
                 this->PlacePiece('R', Square('f', '1'));
+                this->playersToCastlingRightsMap.at(PieceColors::white).clear();
             }
             else if (sideToMove == PieceColors::black)
             {
@@ -354,6 +409,7 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
                 this->PlacePiece('k', to);
                 this->PlacePiece(EMPTYSQUARE, Square('h', '8'));
                 this->PlacePiece('r', Square('f', '8'));
+                this->playersToCastlingRightsMap.at(PieceColors::black).clear();
             }
             break;
         }
@@ -365,6 +421,7 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
                 this->PlacePiece('K', to);
                 this->PlacePiece(EMPTYSQUARE, Square('a', '1'));
                 this->PlacePiece('R', Square('d', '1'));
+                this->playersToCastlingRightsMap.at(PieceColors::white).clear();
             }
             else if (sideToMove == PieceColors::black)
             {
@@ -372,8 +429,14 @@ void Board::Move(std::string moveNotation, bool allowIllegalMove)
                 this->PlacePiece('k', to);
                 this->PlacePiece(EMPTYSQUARE, Square('a', '8'));
                 this->PlacePiece('r', Square('d', '8'));
+                this->playersToCastlingRightsMap.at(PieceColors::black).clear();
             }
             break;
+        }
+
+        default:
+        {
+            throw std::invalid_argument("Invalid Moveflags");
         }
         }
 

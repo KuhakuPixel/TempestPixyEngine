@@ -42,4 +42,5 @@ public:
 
     static std::string GetPieceNameStr(PieceName pieceName);
     static std::string GetPieceColorStr(PieceColors pieceName);
+    static PieceColors InvertPieceColor(PieceColors color);
 };

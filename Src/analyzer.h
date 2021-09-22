@@ -22,5 +22,7 @@ public:
     ///                                                   there are friendly pieces or ect))
     static bool DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to);
     static MoveFlag GetMoveFlag(const Board &board, Square from, Square to);
-    static bool IsSquareUnderAttack(const Board &board, PieceColors enemyPieceColor, Square square);
+    static bool IsSquareAttacked(const Board &board, PieceColors enemyPieceColor, Square square);
+    ///check if one of the squares is under attack
+    static bool IsSquareAttacked(const Board &board, PieceColors enemyPieceColor, std::vector<std::string> squares);
 };

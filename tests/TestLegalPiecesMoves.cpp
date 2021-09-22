@@ -178,3 +178,27 @@ TEST_CASE("Test knight legal moves", "[BoardLegalMoves]")
         TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
     }
 }
+
+TEST_CASE("Test Illegal king moves by check", "[BoardLegalMoves]")
+{
+    std::string fenPosition;
+    PieceColors sideToMove;
+    std::string move;
+    bool isMoveLegal;
+
+    std::tie(fenPosition, sideToMove, move, isMoveLegal) = GENERATE(
+        table<std::string, PieceColors, std::string, bool>({
+            //test knight movements
+            {"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", PieceColors::white, "e1e2", true},
+            {"rnbqk1nr/pppp1ppp/8/2b1p3/4P3/2N5/PPPPKPPP/R1BQ1BNR w kq - 4 4", PieceColors::white, "e2e3", false},
+            {"rnb1k1nr/pppq1ppp/3p4/4p3/1K2P3/2N5/PPPP1PPP/R1BQ1BNR w kq - 1 7", PieceColors::white, "b4b5", false},
+            {"rnb1k1nr/pppq1ppp/3p4/4p3/1K2P3/2N5/PPPP1PPP/R1BQ1BNR w kq - 1 7", PieceColors::white, "b4a4", false},
+            {"r1b1k1nr/pppq1ppp/2np4/4p3/2K1P3/2N5/PPPP1PPP/R1BQ1BNR w kq - 3 8", PieceColors::white, "c4b4", false},
+
+        }));
+
+    SECTION("Test king moves illegal")
+    {
+        TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
+    }
+}

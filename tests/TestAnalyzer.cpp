@@ -49,7 +49,7 @@ void TestIsSquareUnderAttack(std::string fenPosition, std::string square, PieceC
 {
     Board board = Board();
     board.LoadFromFen(fenPosition);
-    bool actual = Analyzer::IsSquareUnderAttack(board, attackingColor, Square(square));
+    bool actual = Analyzer::IsSquareAttacked(board, attackingColor, Square(square));
     if (actual != expect)
     {
         printf("test cases failed \n");
@@ -208,20 +208,42 @@ TEST_CASE("Test Is Piece Movement Blocked", "[PiecesCorrectMovements]")
     }
 }
 
-TEST_CASE("Test Is Square under attack", "[IsSquareUnderAttack]")
+TEST_CASE("Test Is Square under attack", "[IsSquareAttacked]")
 {
     std::string fenPosition;
     std::string square;
     PieceColors attackingColor;
-    bool expect;
+    bool isSquareAttacked;
 
-    std::tie(fenPosition, square, attackingColor, expect) = GENERATE(
+    std::tie(fenPosition, square, attackingColor, isSquareAttacked) = GENERATE(
         table<std::string, std::string, PieceColors, bool>({
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "d4", PieceColors::black, true},
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "c6", PieceColors::black, true},
+            {"rnbqkbnr/pp1pp1pp/8/2p2p2/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3", "e4", PieceColors::black, true},
+            {"rnbqkbnr/pppp1p1p/8/4P1p1/5p2/2N2N2/PPPP2PP/R1BQKB1R w KQkq - 0 6", "d6", PieceColors::white, true},
+            {"rnbqkbnr/pppp1p1p/8/4P1p1/5p2/2N2N2/PPPP2PP/R1BQKB1R w KQkq - 0 6", "f6", PieceColors::white, true},
+            {"r1bqkbnr/pppp1p1p/2n5/4P1p1/5p1P/2N5/PPPP2P1/R1BQKBNR b KQkq - 0 7", "g5", PieceColors::white, true},
+            {"rnb2bnr/pp1p1ppp/8/2p1p1k1/4P1q1/8/PPPP1P1P/RNBQKB2 w - - 2 16", "h3", PieceColors::white, true},
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "a3", PieceColors::white, true},
+            {"rnbqkbnr/pp1ppppp/8/2p5/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2", "a3", PieceColors::white, true},
+            {"rnbqkbnr/pp1ppppp/8/2p5/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2", "a3", PieceColors::white, true},
+            {"rnb2bnr/pp1p1ppp/8/2p1p1k1/4P1q1/8/PPPP1P1P/RNBQKB2 w - - 2 16", "c4", PieceColors::white, true},
+
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "d5", PieceColors::black, false},
             {"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1", "e5", PieceColors::black, false},
+            {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "d4", PieceColors::white, false},
+            {"rnbqkbnr/pppp1p1p/8/4P1p1/5p2/2N2N2/PPPP2PP/R1BQKB1R w KQkq - 0 6", "e6", PieceColors::white, false},
+            {"rnbqkbnr/pppp1p1p/8/4P1p1/5p2/2N2N2/PPPP2PP/R1BQKB1R w KQkq - 0 6", "e6", PieceColors::white, false},
+            {"1r6/6p1/b4pk1/P7/1B3K2/5P2/6P1/7R w - - 2 46", "e6", PieceColors::white, false},
+            {"1r6/6p1/b4pk1/P7/1B3K2/5P2/6P1/7R w - - 2 46", "b5", PieceColors::white, false},
+            {"1r6/6p1/b4pk1/P7/1B3K2/5P2/6P1/7R w - - 2 46", "c8", PieceColors::white, false},
+            {"1r6/6p1/b4pk1/P7/1B3K2/5P2/6P1/7R w - - 2 46", "b3", PieceColors::black, false},
+            {"1r6/6p1/b4pk1/P7/1B3K2/5P2/6P1/7R w - - 2 46", "c7", PieceColors::black, false},
+
         }));
 
     SECTION("Test piece correct movements")
     {
-        TestIsSquareUnderAttack(fenPosition, square, attackingColor, expect);
+        TestIsSquareUnderAttack(fenPosition, square, attackingColor, isSquareAttacked);
     }
 }
