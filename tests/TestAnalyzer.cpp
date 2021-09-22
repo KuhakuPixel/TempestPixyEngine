@@ -44,7 +44,6 @@ void TestIsPieceMovementBlocked(std::string fenPosition, std::string move, bool 
     }
     REQUIRE(actual == expect);
 }
-
 TEST_CASE("Test Piece correct movement", "[PiecesCorrectMovements]")
 {
     PieceName pieceName;
@@ -172,6 +171,22 @@ TEST_CASE("Test Is Piece Movement Blocked", "[PiecesCorrectMovements]")
             {"r3kbnr/pppqpppp/8/3p1b2/P2n1B2/4PN2/1PP2PPP/RN1QKB1R w KQkq - 0 6", "d1d4", false},
             {"r3kbnr/pppqpppp/8/3p1b2/P2n1B2/4PN2/1PP2PPP/RN1QKB1R w KQkq - 0 6", "d1e2", false},
             {"r3kbnr/pppqpppp/8/3p1b2/P1Pn1B2/4PN2/1P3PPP/RN1QKB1R b KQkq - 0 6", "d1d3", false},
+
+            //pawns
+            {"rnbqkbnr/ppppp1pp/8/4P3/8/N4p2/PPPP1PPP/R1BQKBNR w KQkq - 0 4", "f2f3", true},
+            {"rnbqkbnr/ppppp1pp/8/4P3/8/N4p2/PPPP1PPP/R1BQKBNR w KQkq - 0 4", "f2f4", true},
+            {"r2qkbnr/ppp1pppp/2n5/3p1b2/3P1B2/5N2/PPP1PPPP/RN1QKB1R w KQkq - 4 4", "e2e4", false},
+            //king
+            {"r2qkbnr/ppp1ppp1/2n5/3p1b1p/3P1B2/5N2/PPPKPPPP/RN1Q1B1R w kq - 0 5", "d2d1", true},
+            {"r2qkbnr/ppp1ppp1/2n5/3p1b1p/3P1B2/5N2/PPPKPPPP/RN1Q1B1R w kq - 0 5", "d2c2", true},
+            {"r2qkbnr/ppp1ppp1/2n5/3p1b1p/3P1B2/5N2/PPPKPPPP/RN1Q1B1R w kq - 0 5", "d2e2", true},
+            {"r2qkbnr/ppp1ppp1/2n5/3p1b1p/3P1B2/5N2/PPPKPPPP/RN1Q1B1R w kq - 0 5", "d2c3", false},
+            {"r2qkbnr/ppp1ppp1/2n5/3p1b1p/3P1B2/5N2/PPPKPPPP/RN1Q1B1R w kq - 0 5", "d2d3", false},
+            //knight
+            {"rn1qkb1r/pp2pppp/2p2nb1/8/3P1P2/6N1/PPP3PP/R1BQKBNR b KQkq - 0 7", "f6h5", false},
+            {"rn1qkb1r/pp2pppp/2p2nb1/8/3P1P2/6N1/PPP3PP/R1BQKBNR b KQkq - 0 7", "f6g4", false},
+            {"rn1qkb1r/pp2pppp/2p2nb1/8/3P1P2/6N1/PPP3PP/R1BQKBNR b KQkq - 0 7", "f6h7", true},
+            {"rn1qkb1r/pp2pppp/2p2nb1/8/3P1P2/6N1/PPP3PP/R1BQKBNR b KQkq - 0 7", "f6e8", true},
         }));
 
     SECTION("Test piece correct movements")
