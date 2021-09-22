@@ -56,6 +56,41 @@ Square::Square(int fileNum, int rankNum)
     this->rank = CharHelper::FromAlphabetIndex(rankNum - 1, false);
     this->file = static_cast<char>(fileNum);
 }
+
+Square::Square(std::string square)
+{
+    if (square.length() == 2)
+    {
+        char file = square[0];
+        char rank = square[1];
+        int fileNum = CharHelper::ToAlphabetIndex(file) + 1;
+        int rankNum = CharHelper::ToInt(rank);
+        if (fileNum > 0 && fileNum <= 8)
+        {
+            this->fileNum = fileNum;
+        }
+        else
+        {
+            throw std::invalid_argument("invalid file value ,must be in between A and H (inclusive)\n");
+        }
+        if (rankNum > 0 && rankNum <= 8)
+        {
+            this->rankNum = rankNum;
+        }
+        else
+        {
+            throw std::invalid_argument("invalid rank value ,must be in between 1 and 8 (inclusive)\n");
+        }
+        this->file = file;
+        this->rank = rank;
+    }
+    else
+    {
+        std::string errorMsg = std::string("square string 's length must be exactly 2") + "\n" +
+                               "square : " + square;
+        throw std::invalid_argument(errorMsg);
+    }
+}
 std::string Square::GetBoardNotation()
 {
     return std::string() + this->file + this->rank;

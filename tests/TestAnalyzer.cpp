@@ -44,6 +44,19 @@ void TestIsPieceMovementBlocked(std::string fenPosition, std::string move, bool 
     }
     REQUIRE(actual == expect);
 }
+
+void TestIsSquareUnderAttack(std::string fenPosition, std::string square, PieceColors attackingColor, bool expect)
+{
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+    bool actual = Analyzer::IsSquareUnderAttack(board, attackingColor, Square(square));
+    if (actual != expect)
+    {
+        printf("test cases failed \n");
+        printf("fenPosition : %s \n square: %s\n attackingColor: %s\n", fenPosition.c_str(), square.c_str(), ChessLib::GetPieceColorStr(attackingColor).c_str());
+    }
+    REQUIRE(actual == expect);
+}
 TEST_CASE("Test Piece correct movement", "[PiecesCorrectMovements]")
 {
     PieceName pieceName;
@@ -192,5 +205,23 @@ TEST_CASE("Test Is Piece Movement Blocked", "[PiecesCorrectMovements]")
     SECTION("Test piece correct movements")
     {
         TestIsPieceMovementBlocked(fenPosition, move, expect);
+    }
+}
+
+TEST_CASE("Test Is Square under attack", "[IsSquareUnderAttack]")
+{
+    std::string fenPosition;
+    std::string square;
+    PieceColors attackingColor;
+    bool expect;
+
+    std::tie(fenPosition, square, attackingColor, expect) = GENERATE(
+        table<std::string, std::string, PieceColors, bool>({
+            {},
+        }));
+
+    SECTION("Test piece correct movements")
+    {
+        TestIsSquareUnderAttack(fenPosition, square, attackingColor, expect);
     }
 }
