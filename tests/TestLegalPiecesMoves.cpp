@@ -199,16 +199,52 @@ TEST_CASE("Test Illegal king moves by check", "[BoardLegalMoves]")
 
     std::tie(fenPosition, sideToMove, move, isMoveLegal) = GENERATE(
         table<std::string, PieceColors, std::string, bool>({
-            //test knight movements
+
             {"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", PieceColors::white, "e1e2", true},
             {"rnbqk1nr/pppp1ppp/8/2b1p3/4P3/2N5/PPPPKPPP/R1BQ1BNR w kq - 4 4", PieceColors::white, "e2e3", false},
             {"rnb1k1nr/pppq1ppp/3p4/4p3/1K2P3/2N5/PPPP1PPP/R1BQ1BNR w kq - 1 7", PieceColors::white, "b4b5", false},
             {"rnb1k1nr/pppq1ppp/3p4/4p3/1K2P3/2N5/PPPP1PPP/R1BQ1BNR w kq - 1 7", PieceColors::white, "b4a4", false},
             {"r1b1k1nr/pppq1ppp/2np4/4p3/2K1P3/2N5/PPPP1PPP/R1BQ1BNR w kq - 3 8", PieceColors::white, "c4b4", false},
 
+            //test moving other piece when king is in check
+            {"8/8/1P6/KP6/Pr6/8/3b4/Q3k3 b - - 0 1", PieceColors::black, "d2e3", false},
+
         }));
 
     SECTION("Test king moves illegal")
+    {
+        TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
+    }
+}
+
+TEST_CASE("Test Absolute Pin move", "[BoardLegalMoves]")
+{
+    std::string fenPosition;
+    PieceColors sideToMove;
+    std::string move;
+    bool isMoveLegal;
+
+    std::tie(fenPosition, sideToMove, move, isMoveLegal) = GENERATE(
+        table<std::string, PieceColors, std::string, bool>({
+            //knight pinned
+            {"rnbqk2r/ppp2ppp/8/3pP3/1b1Pnp2/2NB1N2/PPP3PP/R1BQK2R w KQkq - 3 8", PieceColors::white, "c3b5", false},
+            {"rnbqk2r/ppp2ppp/8/3pP3/1b1P1p2/2NB1NnP/PPP3P1/R1BQK2R w KQkq - 1 9", PieceColors::white, "c3b5", false},
+            //pawn pinned
+            {"8/4k3/8/8/8/1rP1K3/8/8 w - - 0 1", PieceColors::white, "c3c4", false},
+            {"8/8/6k1/1K2Pr2/8/8/8/8 w - - 0 1", PieceColors::white, "e5e6", false},
+            //bishop pinned
+            {"8/8/4r1k1/8/8/4B3/4K3/8 w - - 0 1", PieceColors::white, "e3g5", false},
+            {"8/8/6k1/8/8/8/r2BK3/8 w - - 0 1", PieceColors::white, "d2f4", false},
+            //queen pinned
+            {"3r4/8/8/8/8/8/1k6/r4QK1 w - - 0 1", PieceColors::white, "f1f2", false},
+            {"1r4bk/8/8/3Q4/2K5/8/8/8 w - - 0 1", PieceColors::white, "d5e5", false},
+            //rook pinned
+            {"8/8/8/3K4/3R4/8/8/3rk3 w - - 0 1", PieceColors::white, "d4e4", false},
+            {"R7/8/8/K7/1R6/8/3b4/4k3 w - - 0 1", PieceColors::white, "b4b1", false},
+
+        }));
+
+    SECTION("Test Absolute Pin move")
     {
         TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
     }

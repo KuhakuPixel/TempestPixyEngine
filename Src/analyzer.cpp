@@ -154,11 +154,8 @@ bool Analyzer::IsMoveLegal(const Board &board, PieceColors sideToMove, Square fr
             else if (pieceName == PieceName::king)
             {
                 std::vector<MoveFlag> castlingRights = board.GetCastlingRights(sideToMove);
-                if (moveFlag == MoveFlag::normal)
-                {
-                    isMoveLegal &= !Analyzer::IsSquareAttacked(board, waitingSide, to);
-                }
-                else if (moveFlag == MoveFlag::longCastle)
+
+                if (moveFlag == MoveFlag::longCastle)
                 {
                     isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
                     if (sideToMove == PieceColors::white)
@@ -371,11 +368,11 @@ bool Analyzer::IsSquareAttacked(const Board &board, PieceColors enemyPieceColor,
                 {
                     if (!Analyzer::IsPieceMovementBlocked(board, pieceOriginalSq, targetSq))
                     {
-                        if (moveFlag == MoveFlag::pawnDiagonalMove)
+                        if (pieceName == PieceName::pawn && moveFlag == MoveFlag::pawnDiagonalMove)
                         {
                             return true;
                         }
-                        else if (moveFlag == MoveFlag::normal && pieceName != PieceName::pawn)
+                        else if (pieceName != PieceName::pawn && moveFlag == MoveFlag::normal)
                         {
                             return true;
                         }
