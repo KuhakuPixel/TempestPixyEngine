@@ -53,7 +53,7 @@ TEST_CASE("Test pawn legal moves", "[BoardLegalMoves]")
             //test capture
             {"r1bqkbnr/pppp2pp/2n5/4pp2/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", PieceColors::white, "e4f5", true},
             {"r1bqkbnr/pppp2pp/2n5/4pp2/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4", PieceColors::white, "e4d5", false},
-            {"rnbqkbnr/ppp1pppp/8/3p4/4PP2/8/PPPP2PP/RNBgQKBNR b KQkq - 0 2", PieceColors::black, "d5e4", true},
+            {"rnbqkbnr/ppp1pppp/8/3p4/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2", PieceColors::black, "d5e4", true},
             {"rnbqkbnr/ppp1pppp/8/3p4/4PP2/8/PPPP2PP/RNBQKBNR b KQkq - 0 2", PieceColors::black, "d5c4", false},
             //test pawn can move 2 squares
             {"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", PieceColors::white, "d2d4", true},

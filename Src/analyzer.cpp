@@ -136,6 +136,12 @@ bool Analyzer::IsMoveLegal(const Board &board, PieceColors sideToMove, Square fr
     {
         if (!Analyzer::IsPieceMovementBlocked(board, from, to))
         {
+            //generate pseudo legal move to check if a move exposes the king
+            Board pseudoBoard = Board();
+            pseudoBoard.LoadPseudoBoard(board);
+            pseudoBoard.Move(from, to, true);
+            isMoveLegal &= !Analyzer::IsKingInCheck(pseudoBoard, sideToMove);
+
             PieceColors waitingSide = ChessLib::InvertPieceColor(sideToMove);
             //makes sure pawn doesnt capture on an empty square
             if (pieceName == PieceName::pawn)

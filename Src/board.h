@@ -70,7 +70,7 @@ public:
     PieceColors GetPieceColorFromBoard(int fileNum, int rankNum) const;
     PieceColors GetPieceColorFromBoard(Square square) const;
 
-    void LoadBoard(char board[8][8]);
+    void LoadPseudoBoard(const Board &board);
     void LoadFromFen(std::string fen);
 
     std::string ExportFen();
@@ -82,4 +82,9 @@ public:
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
     void Move(std::string moveNotation, bool psuedoLegalMove = false);
+
+    ///The move format is in long algebraic notation.
+    ///A nullmove from the Engine to the GUI should be send as 0000.
+    ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
+    void Move(Square from, Square to, bool psuedoLegalMove = false);
 };

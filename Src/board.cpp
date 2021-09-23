@@ -190,9 +190,9 @@ PieceName Board::GetPieceNameEnumFromBoard(Square square) const
 {
     return ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(square));
 }
-void Board::LoadBoard(char board[8][8])
+void Board::LoadPseudoBoard(const Board &board)
 {
-    memcpy(this->board, board, sizeof(char) * 8 * 8);
+    memcpy(this->board, board.board, sizeof(char) * 8 * 8);
 }
 void Board::LoadFromFen(std::string fen)
 {
@@ -279,7 +279,13 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
     char pieceToMove = this->GetPieceNameFromBoard(from);
     PieceName pieceName = ChessLib::ToPieceNameEnum(pieceToMove);
     PieceColors sideToMove = ChessLib::ToPieceColorEnum(pieceToMove);
-    if (Analyzer::IsMoveLegal(*this, sideToMove, from, to) || psuedoLegalMove)
+
+    bool isMoveLegal = false;
+    if (!psuedoLegalMove)
+        isMoveLegal = Analyzer::IsMoveLegal(*this, sideToMove, from, to);
+    else
+        isMoveLegal = true;
+    if (isMoveLegal)
     {
 
         MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
@@ -358,4 +364,9 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
     {
         throw std::invalid_argument("move is not legal,try again\n");
     }
+}
+
+void Board::Move(Square from, Square to, bool psuedoLegalMove)
+{
+    this->Move(from.GetBoardNotation() + to.GetBoardNotation(), psuedoLegalMove);
 }
