@@ -2,6 +2,7 @@
 #include "../Src/board.h"
 #include "../Src/stringHelper.h"
 #include "../Src/chessLib.h"
+#include "../Src/analyzer.h"
 #include <vector>
 #include <string>
 
@@ -13,7 +14,17 @@ void TestPiecesLegalMove(std::string fenPosition, PieceColors sideToMove, std::s
 {
     Board board = Board();
     board.LoadFromFen(fenPosition);
-    bool actual = board.IsMoveLegal(sideToMove, move);
+
+    bool actual;
+    try
+    {
+        actual = Analyzer::IsMoveLegal(board, sideToMove, move);
+    }
+    //ref: https://stackoverflow.com/questions/6755991/catching-stdexception-by-reference/6756040#6756040
+    catch (const std::exception &e)
+    {
+        printf("%s \n", e.what());
+    }
     if (actual != expect)
     {
         printf("test cases failed \n");

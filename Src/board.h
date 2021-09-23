@@ -26,7 +26,7 @@ struct Square
 class Board
 {
 private:
-    std::map<PieceColors, std::vector<MoveFlag>> playersToCastlingRightsMap = {
+    std::map<PieceColors, std::vector<MoveFlag>> castlingRights = {
         {PieceColors::white, {MoveFlag::shortCastle, MoveFlag::longCastle}},
         {PieceColors::black, {MoveFlag::shortCastle, MoveFlag::longCastle}},
     };
@@ -55,7 +55,7 @@ public:
     //https://stackoverflow.com/questions/28987916/cannot-call-a-method-of-const-reference-parameter-in-c
     PieceColors GetCurrentTurn() const;
     std::string GetCurrentTurnStr() const;
-
+    std::vector<MoveFlag> GetCastlingRights(PieceColors color) const;
     bool IsSquareEmpty(int fileNum, int rankNum) const;
     bool IsSquareEmpty(Square square) const;
     void PlacePiece(char piece, int fileNum, int rankNum);
@@ -78,14 +78,8 @@ public:
     ///w for white , b for black
     void DisplayBoard(char orientation = 'w');
 
-    bool IsMoveLegal(PieceColors sideToMove, Square from, Square to);
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
-    bool IsMoveLegal(PieceColors sideToMove, std::string moveNotation);
-
-    ///The move format is in long algebraic notation.
-    ///A nullmove from the Engine to the GUI should be send as 0000.
-    ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
-    void Move(std::string moveNotation, bool allowIllegalMove = false);
+    void Move(std::string moveNotation, bool psuedoLegalMove = false);
 };

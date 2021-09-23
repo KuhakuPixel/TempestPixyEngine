@@ -1,10 +1,6 @@
--Create a function to check if a square is attack,useful to check  example :
-	-Check if a move is illegal by king is capturable
-	-Check if checkmate? and ect
-	-Should be put in a separate class probably since it will be used by the search and eval algoritm
+Check if the king isin check already
+Check if another pieces move exposes the king(illegal by discovery?)
 
--the function to check if a square is under attack can fail if it is a pawn because 
- the pawn moves differently when attacking
-
-
-Next:Improve the script to compile the program (maybe using python because it has more features than the bash script and it should only be used when needed) 
+Add unit test for when castling
+Add unit tests when making  a move that still put the king in check 
+Add so that the player can promote
