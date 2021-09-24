@@ -26,11 +26,8 @@ struct Square
 class Board
 {
 private:
-    std::map<PieceColors, std::vector<MoveFlag>> castlingRights = {
-        {PieceColors::white, {MoveFlag::shortCastle, MoveFlag::longCastle}},
-        {PieceColors::black, {MoveFlag::shortCastle, MoveFlag::longCastle}},
-    };
-
+    std::vector<MoveFlag> blackCastlingRights = {MoveFlag::shortCastle, MoveFlag::longCastle};
+    std::vector<MoveFlag> whiteCastlingRights = {MoveFlag::shortCastle, MoveFlag::longCastle};
     PieceColors currentTurn = PieceColors::white;
     char board[8][8] = {
 

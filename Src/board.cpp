@@ -131,7 +131,15 @@ std::string Board::GetCurrentTurnStr() const
 }
 std::vector<MoveFlag> Board::GetCastlingRights(PieceColors color) const
 {
-    return this->castlingRights.at(color);
+    if (color == PieceColors::white)
+        return this->whiteCastlingRights;
+    else if (color == PieceColors::black)
+        return this->blackCastlingRights;
+    else
+    {
+        std::string errorMsg = std::string("invalid color : ") + ChessLib::GetPieceColorStr(color);
+        throw std::invalid_argument(errorMsg);
+    }
 }
 
 bool Board::IsSquareEmpty(int fileNum, int rankNum) const
@@ -295,6 +303,61 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
         {
             this->PlacePiece(EMPTYSQUARE, from);
             this->PlacePiece(pieceToMove, to);
+
+            //remove castling right
+            if (ChessLib::ToPieceNameEnum(pieceToMove) == PieceName::king)
+            {
+                if (sideToMove == PieceColors::white)
+                {
+                    if (this->whiteCastlingRights.size() > 0)
+                        this->whiteCastlingRights.clear();
+                }
+                else if (sideToMove == PieceColors::black)
+                {
+                    if (this->blackCastlingRights.size() > 0)
+                        this->blackCastlingRights.clear();
+                }
+            }
+            else if (sideToMove == PieceColors::black)
+            {
+            }
+
+            else if (ChessLib::ToPieceNameEnum(pieceToMove) == PieceName::rook)
+            {
+                //a rook or king move will remove the castling rights
+                if (sideToMove == PieceColors::white)
+                {
+                    if (from.file == 'h' && from.rank == '1')
+                    {
+                        std::vector<MoveFlag>::iterator pos = std::find(this->whiteCastlingRights.begin(), this->whiteCastlingRights.end(), MoveFlag::shortCastle);
+                        if (pos != this->whiteCastlingRights.end())
+                            this->whiteCastlingRights.erase(pos);
+                    }
+
+                    if (from.file == 'a' && from.rank == '1')
+                    {
+                        std::vector<MoveFlag>::iterator pos = std::find(this->whiteCastlingRights.begin(), this->whiteCastlingRights.end(), MoveFlag::longCastle);
+                        if (pos != this->whiteCastlingRights.end())
+                            this->whiteCastlingRights.erase(pos);
+                    }
+                }
+                else if (sideToMove == PieceColors::black)
+                {
+                    if (from.file == 'h' && from.rank == '8')
+                    {
+                        std::vector<MoveFlag>::iterator pos = std::find(this->blackCastlingRights.begin(), this->blackCastlingRights.end(), MoveFlag::shortCastle);
+                        if (pos != this->blackCastlingRights.end())
+                            this->blackCastlingRights.erase(pos);
+                    }
+
+                    if (from.file == 'a' && from.rank == '8')
+                    {
+                        std::vector<MoveFlag>::iterator pos = std::find(this->blackCastlingRights.begin(), this->blackCastlingRights.end(), MoveFlag::longCastle);
+                        if (pos != this->blackCastlingRights.end())
+                            this->blackCastlingRights.erase(pos);
+                    }
+                }
+            }
             break;
         }
         case MoveFlag::pawnDiagonalMove:
@@ -312,7 +375,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
                 this->PlacePiece('K', to);
                 this->PlacePiece(EMPTYSQUARE, Square('h', '1'));
                 this->PlacePiece('R', Square('f', '1'));
-                this->castlingRights.at(PieceColors::white).clear();
+                this->whiteCastlingRights.clear();
             }
             else if (sideToMove == PieceColors::black)
             {
@@ -320,7 +383,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
                 this->PlacePiece('k', to);
                 this->PlacePiece(EMPTYSQUARE, Square('h', '8'));
                 this->PlacePiece('r', Square('f', '8'));
-                this->castlingRights.at(PieceColors::black).clear();
+                this->blackCastlingRights.clear();
             }
             break;
         }
@@ -332,7 +395,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
                 this->PlacePiece('K', to);
                 this->PlacePiece(EMPTYSQUARE, Square('a', '1'));
                 this->PlacePiece('R', Square('d', '1'));
-                this->castlingRights.at(PieceColors::white).clear();
+                this->whiteCastlingRights.clear();
             }
             else if (sideToMove == PieceColors::black)
             {
@@ -340,7 +403,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
                 this->PlacePiece('k', to);
                 this->PlacePiece(EMPTYSQUARE, Square('a', '8'));
                 this->PlacePiece('r', Square('d', '8'));
-                this->castlingRights.at(PieceColors::black).clear();
+                this->blackCastlingRights.clear();
             }
             break;
         }
