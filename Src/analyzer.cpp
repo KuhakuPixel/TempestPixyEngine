@@ -123,12 +123,13 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
     }
     return pieceMovementIsBlocked;
 }
-bool Analyzer::IsMoveLegal(const Board &board, PieceColors sideToMove, Square from, Square to)
+bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
 {
     if (board.IsSquareEmpty(from))
         return false;
     bool isMoveLegal = true;
     PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
+    PieceColors sideToMove = board.GetPieceColorFromBoard(from);
     MoveFlag moveFlag = Analyzer::GetMoveFlag(board, from, to);
     //check if the current side move their own piece
     isMoveLegal &= (board.GetCurrentTurn() == sideToMove);
@@ -210,7 +211,7 @@ bool Analyzer::IsMoveLegal(const Board &board, PieceColors sideToMove, Square fr
     return isMoveLegal;
 }
 
-bool Analyzer::IsMoveLegal(const Board &board, PieceColors sideToMove, std::string moveNotation)
+bool Analyzer::IsMoveLegal(const Board &board, std::string moveNotation)
 {
     if (moveNotation.size() < 4)
     {
@@ -223,7 +224,7 @@ bool Analyzer::IsMoveLegal(const Board &board, PieceColors sideToMove, std::stri
     }
     Square fromSquare = Square(moveNotation[0], moveNotation[1]);
     Square toSquare = Square(moveNotation[2], moveNotation[3]);
-    return Analyzer::IsMoveLegal(board, sideToMove, fromSquare, toSquare);
+    return Analyzer::IsMoveLegal(board, fromSquare, toSquare);
 }
 bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {

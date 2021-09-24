@@ -16,11 +16,11 @@ public:
     static void AnalyzeAttack(const Board &board, PieceColors attackingSide);
     static bool IsPieceMovementBlocked(const Board &board, Square from, Square to);
 
-    static bool IsMoveLegal(const Board &board, PieceColors sideToMove, Square from, Square to);
+    static bool IsMoveLegal(const Board &board, Square from, Square to);
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
-    static bool IsMoveLegal(const Board &board, PieceColors sideToMove, std::string moveNotation);
+    static bool IsMoveLegal(const Board &board, std::string moveNotation);
     ///This function will check if the piece moves acording to the rule and nothing else
     ///for example pawn only move sideway when capturing (this function will return true if the pawn moves diaoganlly even
     ///                                                   if the the pawn cant take on that square (because in check,there

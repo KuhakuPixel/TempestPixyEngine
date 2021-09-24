@@ -290,7 +290,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
 
     bool isMoveLegal = false;
     if (!psuedoLegalMove)
-        isMoveLegal = Analyzer::IsMoveLegal(*this, sideToMove, from, to);
+        isMoveLegal = Analyzer::IsMoveLegal(*this, from, to);
     else
         isMoveLegal = true;
     if (isMoveLegal)

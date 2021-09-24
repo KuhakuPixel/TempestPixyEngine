@@ -13,7 +13,6 @@ char CharHelper::FromAlphabetIndex(int index, bool toUpper)
     }
     else
     {
-
         return tolower(char(index + 65));
     }
 }
