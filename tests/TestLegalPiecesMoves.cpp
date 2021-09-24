@@ -32,6 +32,32 @@ void TestPiecesLegalMove(std::string fenPosition, PieceColors sideToMove, std::s
     }
     REQUIRE(actual == expect);
 }
+void TestPiecesLegalMove(std::string fenPosition, PieceColors sideToMove, std::vector<std::string> moves, bool expect)
+{
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+
+    for (int i = 0; i < moves.size(); i++)
+    {
+        bool isMoveLegal = Analyzer::IsMoveLegal(board, sideToMove, moves[i]);
+        if (i < moves.size() - 1)
+        {
+            if (isMoveLegal)
+                board.Move(moves[i]);
+        }
+        else if (i == moves.size() - 1)
+        {
+            if (isMoveLegal != expect)
+            {
+                printf("test cases failed \n");
+                printf("fenPosition : %s \n move: %s\n", fenPosition.c_str(), moves[i].c_str());
+                throw std::invalid_argument("move is invalid\n");
+            }
+            REQUIRE(isMoveLegal == expect);
+            break;
+        }
+    }
+}
 
 TEST_CASE("Test pawn legal moves", "[BoardLegalMoves]")
 {
@@ -247,5 +273,99 @@ TEST_CASE("Test Absolute Pin move", "[BoardLegalMoves]")
     SECTION("Test Absolute Pin move")
     {
         TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
+    }
+}
+
+TEST_CASE("Test Castling", "[BoardLegalMoves]")
+{
+    std::string fenPosition;
+    PieceColors sideToMove;
+    std::string move;
+    bool isMoveLegal;
+
+    std::tie(fenPosition, sideToMove, move, isMoveLegal) = GENERATE(
+        table<std::string, PieceColors, std::string, bool>({
+            //white short castle
+            {"rnbqk2r/1ppp1ppp/p6n/2b1P3/5p2/2NP1N2/PPP1B1PP/R1BQK2R w KQkq - 0 8", PieceColors::white, "e1g1", false},
+            {"rnbqk2r/ppppbppp/7n/4P3/5p2/2NP1N2/PPP1B1PP/R1BQK2R w KQkq - 3 8", PieceColors::white, "e1g1", true},
+            //white long castle
+            {"r1b1kbnr/1p1p4/p1n1pp1p/1Bp3q1/3PP2P/2NQ1N2/PPP2PP1/R3K2R w KQkq - 0 11", PieceColors::white, "e1c1", false},
+            {"r1b1kbnr/1p1p1pq1/p1n1p2p/1Bp5/3PP2P/2NQ1N2/PPP2PP1/R3K2R w KQkq - 3 11", PieceColors::white, "e1g1", true},
+
+        }));
+
+    SECTION("Test Castling")
+    {
+        TestPiecesLegalMove(fenPosition, sideToMove, move, isMoveLegal);
+    }
+}
+
+TEST_CASE("Test Loosing castling rights", "[BoardLegalMoves]")
+{
+    std::string fenPosition;
+    PieceColors sideToMove;
+    std::vector<std::string> moves;
+    bool isMoveLegal;
+
+    std::tie(fenPosition, sideToMove, moves, isMoveLegal) = GENERATE(
+        table<std::string, PieceColors, std::vector<std::string>, bool>({
+            //white loose castling rights because of a rook(a1) move
+            {
+                "r1bqkb1r/ppp1ppp1/2np1n1p/8/2B1P2P/5N2/PPPP1PP1/RNBQK2R w KQkq - 0 5",
+                PieceColors::white,
+                {
+                    "h1h2",
+                    "a7a6",
+                    "h2h1",
+                    "a6a5",
+                    "e1g1",
+                },
+                false,
+            },
+            //white loose castling right because of a rook (h1) move
+            {
+                "r1bqk1n1/4b2r/2n5/8/2BQ4/2N1BN2/8/R3K2R w KQ - 10 6",
+                PieceColors::white,
+                {
+                    "a1a2",
+                    "a8a7",
+                    "a2a1",
+                    "a7a8",
+                    "e1c1",
+                },
+                false,
+            },
+
+            //white loose castling right because of a king move
+            {
+                "rnbqk2r/6b1/5n2/8/2B5/5N2/8/RNBQK2R w KQkq - 4 3",
+                PieceColors::white,
+                {
+                    "e1e2",
+                    "e8e7",
+                    "e2e1",
+                    "e7e8",
+                    "e1g1",
+                },
+                false,
+            },
+            //white loose castling right because of a king move
+            {
+                "rn1qkb2/3b3r/5n2/3Q4/8/2N1B3/8/R3KBNR w KQq - 6 4",
+                PieceColors::white,
+                {
+                    "e1e2",
+                    "e8e7",
+                    "e2e1",
+                    "e7e8",
+                    "e1c1",
+                },
+                false,
+            },
+        }));
+
+    SECTION("Test Loosing castling rights")
+    {
+        TestPiecesLegalMove(fenPosition, sideToMove, moves, isMoveLegal);
     }
 }

@@ -318,10 +318,6 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
                         this->blackCastlingRights.clear();
                 }
             }
-            else if (sideToMove == PieceColors::black)
-            {
-            }
-
             else if (ChessLib::ToPieceNameEnum(pieceToMove) == PieceName::rook)
             {
                 //a rook or king move will remove the castling rights
