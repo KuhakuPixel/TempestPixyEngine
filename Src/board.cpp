@@ -53,7 +53,7 @@ Square::Square(int fileNum, int rankNum)
     {
         throw std::invalid_argument("invalid rank value ,must be in between 1 and 8 (inclusive)\n");
     }
-    this->rank = static_cast<char>(rankNum);
+    this->rank = static_cast<char>(rankNum + 48);
     this->file = CharHelper::FromAlphabetIndex(fileNum - 1, false);
 }
 
@@ -280,7 +280,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
     if (isdigit(moveNotation[0]) || !isdigit(moveNotation[1]) ||
         isdigit(moveNotation[2]) || !isdigit(moveNotation[3]))
     {
-        throw std::invalid_argument("invalid move notation : " + moveNotation);
+        throw std::invalid_argument("invalid move notation " + moveNotation);
     }
     Square from = Square(moveNotation[0], moveNotation[1]);
     Square to = Square(moveNotation[2], moveNotation[3]);
