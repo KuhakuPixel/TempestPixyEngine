@@ -85,47 +85,12 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
 
                 PieceName piece = board.GetPieceNameEnumFromBoard(fileItr, rankItr);
                 std::vector<Vector2> moveVectors = pieceToMoveVectorMap.at(piece);
-                switch (piece)
-                {
-                case PieceName::pawn:
-                {
-                    if (sideToMove == PieceColors::white)
-                    {
-                        for (int i = 0; i < moveVectors.size(); i++)
-                        {
-                            int toFileNum = from.fileNum + moveVectors.at(i).x;
-                            int toRankNum = from.rankNum + moveVectors.at(i).y;
-                            if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                            {
-                                Square to = Square(toFileNum, toRankNum);
-                                if (Analyzer::IsMoveLegal(board, from, to))
-                                    moves.push_back(from.GetNotation() + to.GetNotation());
-                            }
-                        }
-                    }
-                    if (sideToMove == PieceColors::black)
-                    {
-                        for (int i = 0; i < moveVectors.size(); i++)
-                        {
-                            int toFileNum = from.fileNum + moveVectors.at(i).x;
-                            int toRankNum = from.rankNum + moveVectors.at(i).y * -1;
-                            if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                            {
-                                Square to = Square(toFileNum, toRankNum);
-                                if (Analyzer::IsMoveLegal(board, from, to))
-                                    moves.push_back(from.GetNotation() + to.GetNotation());
-                            }
-                        }
-                    }
-                    break;
-                }
-
-                case PieceName::knight:
+                if (piece == PieceName::pawn)
                 {
                     for (int i = 0; i < moveVectors.size(); i++)
                     {
                         int toFileNum = from.fileNum + moveVectors.at(i).x;
-                        int toRankNum = from.rankNum + moveVectors.at(i).y;
+                        int toRankNum = sideToMove == PieceColors::white ? (from.rankNum + moveVectors.at(i).y * 1) : (from.rankNum + moveVectors.at(i).y * -1);
                         if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
                         {
                             Square to = Square(toFileNum, toRankNum);
@@ -133,10 +98,8 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
                                 moves.push_back(from.GetNotation() + to.GetNotation());
                         }
                     }
-                    break;
                 }
-
-                case PieceName::rook:
+                else
                 {
                     for (int i = 0; i < moveVectors.size(); i++)
                     {
@@ -153,68 +116,6 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
                             toRankNum += moveVectors.at(i).y;
                         }
                     }
-                    break;
-                }
-
-                case PieceName::bishop:
-                {
-                    for (int i = 0; i < moveVectors.size(); i++)
-                    {
-                        int toFileNum = from.fileNum + moveVectors.at(i).x;
-                        int toRankNum = from.rankNum + moveVectors.at(i).y;
-                        while (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                        {
-                            Square to = Square(toFileNum, toRankNum);
-                            if (Analyzer::IsMoveLegal(board, from, to))
-                                moves.push_back(from.GetNotation() + to.GetNotation());
-                            else
-                                break;
-                            toFileNum += moveVectors.at(i).x;
-                            toRankNum += moveVectors.at(i).y;
-                        }
-                    }
-                    break;
-                }
-
-                case PieceName::king:
-                {
-                    for (int i = 0; i < moveVectors.size(); i++)
-                    {
-                        int toFileNum = from.fileNum + moveVectors.at(i).x;
-                        int toRankNum = from.rankNum + moveVectors.at(i).y;
-                        if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                        {
-                            Square to = Square(toFileNum, toRankNum);
-                            if (Analyzer::IsMoveLegal(board, from, to))
-                                moves.push_back(from.GetNotation() + to.GetNotation());
-                        }
-                    }
-                    break;
-                }
-
-                case PieceName::queen:
-                {
-                    for (int i = 0; i < moveVectors.size(); i++)
-                    {
-                        int toFileNum = from.fileNum + moveVectors.at(i).x;
-                        int toRankNum = from.rankNum + moveVectors.at(i).y;
-                        while (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                        {
-                            Square to = Square(toFileNum, toRankNum);
-                            if (Analyzer::IsMoveLegal(board, from, to))
-                                moves.push_back(from.GetNotation() + to.GetNotation());
-                            else
-                                break;
-                            toFileNum += moveVectors.at(i).x;
-                            toRankNum += moveVectors.at(i).y;
-                        }
-                    }
-                    break;
-                }
-
-                default:
-                    throw std::invalid_argument("Invalid Piece name");
-                    break;
                 }
             }
         }
