@@ -1,6 +1,1 @@
-Check if the king isin check already
-Check if another pieces move exposes the king(illegal by discovery?)
-
-Add unit test for when castling
-Add unit tests when making  a move that still put the king in check 
-Add so that the player can promote
+Add a map that contains the move vector(which can be iterated) for all of the pieces

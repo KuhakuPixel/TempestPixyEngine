@@ -91,7 +91,7 @@ Square::Square(std::string square)
         throw std::invalid_argument(errorMsg);
     }
 }
-std::string Square::GetBoardNotation()
+std::string Square::GetNotation()
 {
     return std::string() + this->file + this->rank;
 }
@@ -427,5 +427,5 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
 
 void Board::Move(Square from, Square to, bool psuedoLegalMove)
 {
-    this->Move(from.GetBoardNotation() + to.GetBoardNotation(), psuedoLegalMove);
+    this->Move(from.GetNotation() + to.GetNotation(), psuedoLegalMove);
 }

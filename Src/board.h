@@ -16,7 +16,7 @@ struct Square
     ///square size must be exactly 2
     ///for example :e2 ,h3 and ect
     Square(std::string square);
-    std::string GetBoardNotation();
+    std::string GetNotation();
 
     ///the first element of the tuple is the original square
     ///the second element of the tuple is the destination square

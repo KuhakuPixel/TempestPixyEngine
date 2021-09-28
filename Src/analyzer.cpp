@@ -17,7 +17,7 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
 
         std::string errorMsg = std::string("Piece movement is not correct / according to rules\n ") +
                                "pieceName:" + ChessLib::GetPieceNameStr(pieceName) + "\n" + "pieceColor:" + ChessLib::GetPieceColorStr(pieceColor) + "\n" +
-                               "move:" + from.GetBoardNotation() + to.GetBoardNotation() + "\n";
+                               "move:" + from.GetNotation() + to.GetNotation() + "\n";
         throw std::invalid_argument(errorMsg);
     }
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
@@ -123,111 +123,7 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
     }
     return pieceMovementIsBlocked;
 }
-bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
-{
-    if (board.IsSquareEmpty(from) &&
-        //check if move is out of bound
-        !((from.fileNum >= 1 && from.fileNum <= 8) && (to.fileNum >= 1 && to.fileNum <= 8)))
-        return false;
-    bool isMoveLegal = true;
-    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
-    PieceColors sideToMove = board.GetPieceColorFromBoard(from);
-    MoveFlag moveFlag = Analyzer::GetMoveFlag(board, from, to);
-    //check if the current side move their own piece
-    isMoveLegal &= (board.GetCurrentTurn() == sideToMove);
-    if (Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to))
-    {
-        if (!Analyzer::IsPieceMovementBlocked(board, from, to))
-        {
-            //generate pseudo legal move to check if a move exposes the king
-            Board pseudoBoard = Board();
-            pseudoBoard.LoadPseudoBoard(board);
-            pseudoBoard.Move(from, to, true);
-            isMoveLegal &= !Analyzer::IsKingInCheck(pseudoBoard, sideToMove);
 
-            PieceColors waitingSide = ChessLib::InvertPieceColor(sideToMove);
-            //makes sure pawn doesnt capture on an empty square
-            if (pieceName == PieceName::pawn)
-            {
-                if (moveFlag == MoveFlag::pawnDiagonalMove)
-                {
-                    isMoveLegal &= (!board.IsSquareEmpty(to)) && (sideToMove != board.GetPieceColorFromBoard(to));
-                }
-            }
-            else if (pieceName == PieceName::king)
-            {
-                std::vector<MoveFlag> castlingRights = board.GetCastlingRights(sideToMove);
-
-                if (moveFlag == MoveFlag::longCastle)
-                {
-                    isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
-                    if (sideToMove == PieceColors::white)
-                    {
-                        bool canCastle = !Analyzer::IsSquareAttacked(
-                            board,
-                            PieceColors::black,
-                            {"e1", "d1", "c1"});
-                        isMoveLegal &= canCastle;
-                    }
-                    else if (sideToMove == PieceColors::black)
-                    {
-                        bool canCastle = !Analyzer::IsSquareAttacked(
-                            board,
-                            PieceColors::white,
-                            {"e8", "d8", "c8"});
-                        isMoveLegal &= canCastle;
-                    }
-                }
-                else if (moveFlag == MoveFlag::shortCastle)
-                {
-                    isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
-                    if (sideToMove == PieceColors::white)
-                    {
-                        bool canCastle = !Analyzer::IsSquareAttacked(
-                            board,
-                            PieceColors::black,
-                            {"e1", "f1", "g1"});
-                        isMoveLegal &= canCastle;
-                    }
-                    else if (sideToMove == PieceColors::black)
-                    {
-                        bool canCastle = !Analyzer::IsSquareAttacked(
-                            board,
-                            PieceColors::white,
-                            {"e8", "f8", "g8"});
-                        isMoveLegal &= canCastle;
-                    }
-                }
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
-        isMoveLegal &= false;
-    }
-
-    return isMoveLegal;
-}
-
-bool Analyzer::IsMoveLegal(const Board &board, std::string moveNotation)
-{
-    if (moveNotation.size() < 4)
-    {
-        throw std::invalid_argument("move size must be at least 4");
-    }
-    if (isdigit(moveNotation[0]) || !isdigit(moveNotation[1]) ||
-        isdigit(moveNotation[2]) || !isdigit(moveNotation[3]))
-    {
-        throw std::invalid_argument("invalid move notation : " + moveNotation);
-    }
-    Square fromSquare = Square(moveNotation[0], moveNotation[1]);
-    Square toSquare = Square(moveNotation[2], moveNotation[3]);
-    return Analyzer::IsMoveLegal(board, fromSquare, toSquare);
-}
 bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
     bool isMoveLegal = true;
@@ -301,7 +197,7 @@ MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
     MoveFlag moveFlag = MoveFlag::normal;
     PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
     PieceColors pieceColor = board.GetPieceColorFromBoard(from);
-    std::string move = from.GetBoardNotation() + to.GetBoardNotation();
+    std::string move = from.GetNotation() + to.GetNotation();
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
 
     int xAbs = std::abs(moveDir.x);
@@ -419,4 +315,110 @@ bool Analyzer::IsKingInCheck(const Board &board, PieceColors kingColor)
         }
     }
     return false;
+}
+
+bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
+{
+    if (board.IsSquareEmpty(from) ||
+        //check if move is out of bound
+        !((from.fileNum >= 1 && from.fileNum <= 8) && (to.fileNum >= 1 && to.fileNum <= 8)))
+        return false;
+    bool isMoveLegal = true;
+    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
+    PieceColors sideToMove = board.GetPieceColorFromBoard(from);
+    MoveFlag moveFlag = Analyzer::GetMoveFlag(board, from, to);
+    //check if the current side move their own piece
+    isMoveLegal &= (board.GetCurrentTurn() == sideToMove);
+    if (Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to))
+    {
+        if (!Analyzer::IsPieceMovementBlocked(board, from, to))
+        {
+            //generate pseudo legal move to check if a move exposes the king
+            Board pseudoBoard = Board();
+            pseudoBoard.LoadPseudoBoard(board);
+            pseudoBoard.Move(from, to, true);
+            isMoveLegal &= !Analyzer::IsKingInCheck(pseudoBoard, sideToMove);
+
+            PieceColors waitingSide = ChessLib::InvertPieceColor(sideToMove);
+            //makes sure pawn doesnt capture on an empty square
+            if (pieceName == PieceName::pawn)
+            {
+                if (moveFlag == MoveFlag::pawnDiagonalMove)
+                {
+                    isMoveLegal &= (!board.IsSquareEmpty(to)) && (sideToMove != board.GetPieceColorFromBoard(to));
+                }
+            }
+            else if (pieceName == PieceName::king)
+            {
+                std::vector<MoveFlag> castlingRights = board.GetCastlingRights(sideToMove);
+
+                if (moveFlag == MoveFlag::longCastle)
+                {
+                    isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
+                    if (sideToMove == PieceColors::white)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            board,
+                            PieceColors::black,
+                            {"e1", "d1", "c1"});
+                        isMoveLegal &= canCastle;
+                    }
+                    else if (sideToMove == PieceColors::black)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            board,
+                            PieceColors::white,
+                            {"e8", "d8", "c8"});
+                        isMoveLegal &= canCastle;
+                    }
+                }
+                else if (moveFlag == MoveFlag::shortCastle)
+                {
+                    isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
+                    if (sideToMove == PieceColors::white)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            board,
+                            PieceColors::black,
+                            {"e1", "f1", "g1"});
+                        isMoveLegal &= canCastle;
+                    }
+                    else if (sideToMove == PieceColors::black)
+                    {
+                        bool canCastle = !Analyzer::IsSquareAttacked(
+                            board,
+                            PieceColors::white,
+                            {"e8", "f8", "g8"});
+                        isMoveLegal &= canCastle;
+                    }
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        isMoveLegal &= false;
+    }
+
+    return isMoveLegal;
+}
+
+bool Analyzer::IsMoveLegal(const Board &board, std::string moveNotation)
+{
+    if (moveNotation.size() < 4)
+    {
+        throw std::invalid_argument("move size must be at least 4");
+    }
+    if (isdigit(moveNotation[0]) || !isdigit(moveNotation[1]) ||
+        isdigit(moveNotation[2]) || !isdigit(moveNotation[3]))
+    {
+        throw std::invalid_argument("invalid move notation : " + moveNotation);
+    }
+    Square fromSquare = Square(moveNotation[0], moveNotation[1]);
+    Square toSquare = Square(moveNotation[2], moveNotation[3]);
+    return Analyzer::IsMoveLegal(board, fromSquare, toSquare);
 }

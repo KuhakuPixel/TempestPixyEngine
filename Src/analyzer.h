@@ -15,7 +15,6 @@ class Analyzer
 public:
     static void AnalyzeAttack(const Board &board, PieceColors attackingSide);
     static bool IsPieceMovementBlocked(const Board &board, Square from, Square to);
-
     static bool IsMoveLegal(const Board &board, Square from, Square to);
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
