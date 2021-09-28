@@ -151,7 +151,18 @@ bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColo
     case PieceName::king:
     {
         bool isNormalKingMove = (xAbs == 1 && yAbs == 0) || (yAbs == 1 && xAbs == 0) || (xAbs == 1 && yAbs == 1);
-        bool isCastlingMove = (xAbs == 2 && yAbs == 0);
+        bool isCastlingMove = true;
+        //check if king is castling on the right square
+        if (pieceColor == PieceColors::white)
+        {
+            isCastlingMove &= (from.fileNum == 5 && from.rankNum == 1 && to.fileNum == 7 && to.rankNum == 1) || //short castle
+                              (from.fileNum == 5 && from.rankNum == 1 && to.fileNum == 3 && to.rankNum == 1);   //long castle
+        }
+        else if (pieceColor == PieceColors::black)
+        {
+            isCastlingMove &= (from.fileNum == 5 && from.rankNum == 8 && to.fileNum == 7 && to.rankNum == 8) || //short castle
+                              (from.fileNum == 5 && from.rankNum == 8 && to.fileNum == 3 && to.rankNum == 8);   //long castle
+        }
         isMoveLegal &= isNormalKingMove || isCastlingMove;
 
         break;

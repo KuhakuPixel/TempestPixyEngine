@@ -300,6 +300,8 @@ TEST_CASE("Test Castling", "[BoardLegalMoves]")
             //white long castle
             {"r1b1kbnr/1p1p4/p1n1pp1p/1Bp3q1/3PP2P/2NQ1N2/PPP2PP1/R3K2R w KQkq - 0 11", "e1c1", false},
             {"r1b1kbnr/1p1p1pq1/p1n1p2p/1Bp5/3PP2P/2NQ1N2/PPP2PP1/R3K2R w KQkq - 3 11", "e1g1", true},
+            //test illegal castle
+            {"rnbq1bnr/pppp1ppp/4k3/4p3/4P3/4K3/PPPP1PPP/RNBQ1BNR w - - 4 4", "e3g3", false},
 
         }));
 
