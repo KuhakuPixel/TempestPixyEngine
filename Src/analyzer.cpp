@@ -125,7 +125,9 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
 }
 bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
 {
-    if (board.IsSquareEmpty(from))
+    if (board.IsSquareEmpty(from) &&
+        //check if move is out of bound
+        !((from.fileNum >= 1 && from.fileNum <= 8) && (to.fileNum >= 1 && to.fileNum <= 8)))
         return false;
     bool isMoveLegal = true;
     PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
