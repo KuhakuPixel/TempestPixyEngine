@@ -1,1 +1,8 @@
-Add a map that contains the move vector(which can be iterated) for all of the pieces
+I have read about how the search will actually be implemented in a tree like datastructure
+The problem is now that we need to determine what type of object will be in the tree
+(How much overhead it should have like should it have a pointer to the first position)
+(should it have the number of depth? so it is easily known when to stop calculating for moves))
+
+
+After that there will be an algorithm that can min max a tree like structure
+
