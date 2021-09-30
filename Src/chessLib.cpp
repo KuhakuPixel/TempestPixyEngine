@@ -31,7 +31,36 @@ std::string ChessLib::ExpandFenPosition(std::string fenPosition, char emptySquar
     }
     return expanded;
 }
-
+std::string ChessLib::ShrinkFenPosition(std::string fenPosition, char emptySquare)
+{
+    std::string shrinked = "";
+    for (int i = 0; i < fenPosition.length(); i++)
+    {
+        int emptySquareCount = 0;
+        if (fenPosition[i] == emptySquare)
+        {
+            for (int j = i; i < fenPosition.length(); j++)
+            {
+                if (fenPosition[j] == emptySquare)
+                {
+                    emptySquareCount++;
+                    i++;
+                }
+                else
+                {
+                    i--;
+                    break;
+                }
+            }
+            shrinked += std::to_string(emptySquareCount);
+        }
+        else
+        {
+            shrinked += fenPosition[i];
+        }
+    }
+    return shrinked;
+}
 PieceName ChessLib::ToPieceNameEnum(char pieceChar)
 {
     std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping = {

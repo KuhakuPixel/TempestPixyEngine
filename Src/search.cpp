@@ -1,5 +1,11 @@
 #include "search.h"
 #include "analyzer.h"
+#include "tree.hh"
+SearchNode::SearchNode(const Board &currentBoard, PieceColors sideToMove, std::string move)
+    : currentBoard(currentBoard),
+      sideToMove(sideToMove),
+      move(move){};
+
 const std::map<PieceName, std::vector<Vector2>> Search::pieceToMoveVectorMap = {
     {
         PieceName::pawn,
@@ -122,3 +128,29 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     }
     return moves;
 }
+
+/*
+int Search::SearchMoves(const Board &board, PieceColors sideToMove, int maxDepth)
+{
+    tree<SearchNode> searchTrees;
+    auto head = searchTrees.set_head(SearchNode(board, sideToMove, ""));
+    std::vector<tree<SearchNode>::pre_order_iterator> previousNodes = {};
+    previousNodes.push_back(head);
+    for (int currentDepth = 0; currentDepth <= maxDepth; currentDepth++)
+    {
+        std::vector<tree<SearchNode>::pre_order_iterator> currentNodes = {};
+        for (int j = 0; j < previousNodes.size(); j++)
+        {
+            std::vector<std::string> moves = Search::GenerateMoves(board, sideToMove);
+            for (int k = 0; k < moves.size(); k++)
+            {
+                auto searchNodeItr = searchTrees.append_child(head, SearchNode(board, sideToMove, moves.at(k)));
+                currentNodes.push_back(searchNodeItr);
+            }
+        }
+        previousNodes.clear();
+        previousNodes = currentNodes;
+    }
+    return -1;
+}
+*/

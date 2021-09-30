@@ -10,4 +10,3 @@ TEST_CASE("Test Load fen to board", "[LoadFen]")
         //board.DisplayBoard();
     }
 }
-

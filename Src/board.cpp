@@ -220,7 +220,8 @@ void Board::LoadFromFen(std::string fen)
         {
             //need to inverse because the fen pos will start with the black pieces
             //and the black pieces start on the 8th rank
-            this->PlacePiece(fenPositions[rankItr - 1][fileItr - 1], fileItr, 8 - rankItr + 1);
+            char piece = fenPositions[rankItr - 1][fileItr - 1];
+            this->PlacePiece(piece, fileItr, 8 - rankItr + 1);
         }
     }
     //load side to move
@@ -233,6 +234,14 @@ void Board::LoadFromFen(std::string fen)
 }
 std::string Board::ExportFen()
 {
+    std::string fen = "";
+    std::string fenPos = "";
+    for (int i = 0; i++; i < 8)
+    {
+        fenPos += std::string(this->board[i]);
+        if (i < 7)
+            fenPos += "/";
+    }
     return "";
 }
 void Board::DisplayBoard(char orientation)

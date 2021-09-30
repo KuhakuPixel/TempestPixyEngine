@@ -69,7 +69,6 @@ public:
 
     void LoadPseudoBoard(const Board &board);
     void LoadFromFen(std::string fen);
-
     std::string ExportFen();
 
     ///w for white , b for black

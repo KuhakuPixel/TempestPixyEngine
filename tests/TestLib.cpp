@@ -96,4 +96,25 @@ TEST_CASE("Test expand fen position", "[fen]")
         REQUIRE(actual == expect);
     }
 }
+TEST_CASE("Test shrink fen position", "[fen]")
+{
+    SECTION("TestShrinkFenPosition1")
+    {
+        std::string actual = ChessLib::ShrinkFenPosition("rn-qkbnr/pp--pppp/--p-----/---pPb--/---P----/--------/PPP--PPP/RNBQKBNR", '-');
+        std::string expect = "rn1qkbnr/pp2pppp/2p5/3pPb2/3P4/8/PPP2PPP/RNBQKBNR";
+        REQUIRE(actual == expect);
+    }
+    SECTION("TestShrinkFenPosition2")
+    {
 
+        std::string actual = ChessLib::ShrinkFenPosition("rnbq-k-r/ppp--pb-/---p-n-p/------p-/----P---/--NP-NBP/PPP-B-P-/R--QK--R", '-');
+        std::string expect = "rnbq1k1r/ppp2pb1/3p1n1p/6p1/4P3/2NP1NBP/PPP1B1P1/R2QK2R";
+        REQUIRE(actual == expect);
+    }
+    SECTION("TestShrinkFenPosition3")
+    {
+        std::string actual = ChessLib::ShrinkFenPosition("r-bqkb-r/ppp--ppp/--n-pn--/-B-p----/---P-B--/----P---/PPP--PPP/RN-QK-NR", '-');
+        std::string expect = "r1bqkb1r/ppp2ppp/2n1pn2/1B1p4/3P1B2/4P3/PPP2PPP/RN1QK1NR";
+        REQUIRE(actual == expect);
+    }
+}

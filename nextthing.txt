@@ -6,3 +6,7 @@ The problem is now that we need to determine what type of object will be in the 
 
 After that there will be an algorithm that can min max a tree like structure
 
+
+
+
+

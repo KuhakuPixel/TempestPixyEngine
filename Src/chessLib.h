@@ -36,7 +36,7 @@ public:
     ///to rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR
     ///(assuming [emptySquare] is '-')
     static std::string ExpandFenPosition(std::string fenPosition, char emptySquare);
-
+    static std::string ShrinkFenPosition(std::string fenPosition, char emptySquare);
     static PieceName ToPieceNameEnum(char pieceChar);
     static PieceColors ToPieceColorEnum(char pieceChar);
 
