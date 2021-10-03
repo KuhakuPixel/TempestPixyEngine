@@ -57,6 +57,24 @@ void TestIsSquareUnderAttack(std::string fenPosition, std::string square, PieceC
     }
     REQUIRE(actual == expect);
 }
+
+void TestGetGameResult(std::string fenPosition, PieceColors sideToMove, GameResult expect)
+{
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+    GameResult actual = Analyzer::GetGameResult(board, sideToMove);
+    if (actual != expect)
+    {
+        printf("test cases failed \n");
+        printf("fenPosition : %s \n sideToMove: %s\n actual:%s \n expect:%s",
+               fenPosition.c_str(),
+               ChessLib::GetPieceColorStr(sideToMove).c_str(),
+               ChessLib::GetGameResultStr(actual).c_str(),
+               ChessLib::GetGameResultStr(expect).c_str());
+    }
+    REQUIRE(actual == expect);
+}
+
 TEST_CASE("Test Piece correct movement", "[PiecesCorrectMovements]")
 {
     PieceName pieceName;
@@ -245,5 +263,39 @@ TEST_CASE("Test Is Square under attack", "[IsSquareAttacked]")
     SECTION("Test piece correct movements")
     {
         TestIsSquareUnderAttack(fenPosition, square, attackingColor, isSquareAttacked);
+    }
+}
+
+TEST_CASE("Test Get Game Result", "[GetGameResult]")
+{
+    std::string fenPosition;
+    PieceColors sideToMove;
+    GameResult gameResult;
+
+    std::tie(fenPosition, sideToMove, gameResult) = GENERATE(
+        table<std::string, PieceColors, GameResult>({
+            //check mate by queen
+            {"4k3/4Q3/4K3/8/8/8/8/8 b - - 0 1", PieceColors::black, GameResult::whiteWins},
+            //mate by rook
+            {"4k1R1/8/4K3/8/8/8/8/8 b - - 0 1", PieceColors::black, GameResult::whiteWins},
+            //mate by 2 bishops
+            {"4k3/2K5/3B2B1/8/8/8/8/8 b - - 0 1", PieceColors::black, GameResult::whiteWins},
+            //mate in middle game
+            {"r5kr/4qp1p/p4p1B/1pp5/8/1PPP2R1/1P3PPP/R5K1 b - - 1 4", PieceColors::black, GameResult::whiteWins},
+            //mate by back rank
+            {"1R4k1/5ppp/8/8/8/8/5PPP/6K1 b - - 0 3", PieceColors::black, GameResult::whiteWins},
+            //stalemate
+            {"k7/2Q5/8/6K1/8/8/8/8 b - - 0 1", PieceColors::black, GameResult::stalemate},
+            {"4k3/4P3/4K3/8/8/8/8/8 b - - 0 1", PieceColors::black, GameResult::stalemate},
+            //king is in check but not over
+            {"4k3/4Q3/8/8/8/8/1P6/7K b - - 0 1", PieceColors::black, GameResult::ongoing},                               //black king can still takes queen
+            {"r1bqkbnr/pppp1Qpp/2n5/4p3/4P3/8/PPPP1PPP/RNB1KBNR b KQkq - 0 3", PieceColors::black, GameResult::ongoing}, //black king can still takes queen
+            {"2R3k1/5ppp/8/8/1b6/8/5PPP/6K1 b - - 0 1", PieceColors::black, GameResult::ongoing},                        //backrank check but can be blocked by bishops
+
+        }));
+
+    SECTION("Test piece correct movements")
+    {
+        TestGetGameResult(fenPosition, sideToMove, gameResult);
     }
 }

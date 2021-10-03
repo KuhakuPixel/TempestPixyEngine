@@ -88,9 +88,11 @@ TEST_CASE("Test Generate Moves", "[TestGenerateMoves]")
             //middle game of magnus and garry kasparov
             {"r1b2rk1/1pqn1ppp/2p2n2/p5B1/PbBP4/1NN5/1PQ2PPP/R4RK1 w - - 1 15", PieceColors::white, 53},
             {"4R3/2Q5/6R1/1K1B1N1P/3B4/3N4/P6P/1k6 w - - 0 1", PieceColors::white, 103},
+            //only 1 move (block the rook with the bishop)
+            {"2R3k1/5ppp/8/8/1b6/8/5PPP/6K1 b - - 0 1", PieceColors::black, 1},
         }));
 
-    SECTION("Test piece correct movements")
+    SECTION("Test generating movements")
     {
         TestGenerateMoves(fenPosition, sideToMove, expect);
     }

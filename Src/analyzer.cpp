@@ -2,6 +2,7 @@
 #include "math.h"
 #include "board.h"
 #include "chessLib.h"
+#include "search.h"
 #include <cmath>
 #include <stdexcept>
 #include <sstream>
@@ -10,8 +11,8 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
 {
 
     bool pieceMovementIsBlocked = false;
-    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
-    PieceColors pieceColor = board.GetPieceColorFromBoard(from);
+    PieceName pieceName = board.GetPieceNameEnum(from);
+    PieceColors pieceColor = board.GetPieceColor(from);
     if (!DoesPieceMoveCorrectly(pieceName, pieceColor, from, to))
     {
 
@@ -117,7 +118,7 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
     }
     }
 
-    if (board.GetPieceColorFromBoard(to) == pieceColor)
+    if (board.GetPieceColor(to) == pieceColor)
     {
         return true;
     }
@@ -206,8 +207,8 @@ bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColo
 MoveFlag Analyzer::GetMoveFlag(const Board &board, Square from, Square to)
 {
     MoveFlag moveFlag = MoveFlag::normal;
-    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
-    PieceColors pieceColor = board.GetPieceColorFromBoard(from);
+    PieceName pieceName = board.GetPieceNameEnum(from);
+    PieceColors pieceColor = board.GetPieceColor(from);
     std::string move = from.GetNotation() + to.GetNotation();
     Vector2 moveDir = Vector2::Direction(Vector2(from.fileNum, from.rankNum), Vector2(to.fileNum, to.rankNum));
 
@@ -267,8 +268,8 @@ bool Analyzer::IsSquareAttacked(const Board &board, PieceColors enemyPieceColor,
         {
             if (!board.IsSquareEmpty(fileItr, rankItr))
             {
-                PieceName pieceName = board.GetPieceNameEnumFromBoard(fileItr, rankItr);
-                PieceColors pieceColor = board.GetPieceColorFromBoard(fileItr, rankItr);
+                PieceName pieceName = board.GetPieceNameEnum(fileItr, rankItr);
+                PieceColors pieceColor = board.GetPieceColor(fileItr, rankItr);
                 if (pieceColor != enemyPieceColor)
                     continue;
                 Square pieceOriginalSq = Square(fileItr, rankItr);
@@ -318,8 +319,8 @@ bool Analyzer::IsKingInCheck(const Board &board, PieceColors kingColor)
     {
         for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
-            if (board.GetPieceNameEnumFromBoard(fileItr, rankItr) == PieceName::king &&
-                board.GetPieceColorFromBoard(fileItr, rankItr) == kingColor)
+            if (board.GetPieceNameEnum(fileItr, rankItr) == PieceName::king &&
+                board.GetPieceColor(fileItr, rankItr) == kingColor)
             {
                 return IsSquareAttacked(board, ChessLib::InvertPieceColor(kingColor), fileItr, rankItr);
             }
@@ -335,8 +336,8 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
         !((from.fileNum >= 1 && from.fileNum <= 8) && (to.fileNum >= 1 && to.fileNum <= 8)))
         return false;
     bool isMoveLegal = true;
-    PieceName pieceName = board.GetPieceNameEnumFromBoard(from);
-    PieceColors sideToMove = board.GetPieceColorFromBoard(from);
+    PieceName pieceName = board.GetPieceNameEnum(from);
+    PieceColors sideToMove = board.GetPieceColor(from);
     MoveFlag moveFlag = Analyzer::GetMoveFlag(board, from, to);
     //check if the current side move their own piece
     isMoveLegal &= (board.GetCurrentTurn() == sideToMove);
@@ -356,7 +357,7 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
             {
                 if (moveFlag == MoveFlag::pawnDiagonalMove)
                 {
-                    isMoveLegal &= (!board.IsSquareEmpty(to)) && (sideToMove != board.GetPieceColorFromBoard(to));
+                    isMoveLegal &= (!board.IsSquareEmpty(to)) && (sideToMove != board.GetPieceColor(to));
                 }
             }
             else if (pieceName == PieceName::king)
@@ -365,6 +366,7 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
 
                 if (moveFlag == MoveFlag::longCastle)
                 {
+                    //check for castling rights
                     isMoveLegal &= std::find(castlingRights.begin(), castlingRights.end(), moveFlag) != castlingRights.end();
                     if (sideToMove == PieceColors::white)
                     {
@@ -372,7 +374,9 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
                             board,
                             PieceColors::black,
                             {"e1", "d1", "c1"});
-                        isMoveLegal &= canCastle;
+                        isMoveLegal &= canCastle &&
+                                       board.GetPieceNameEnum(Square("a1")) == PieceName::rook &&
+                                       board.GetPieceColor(Square("a1")) == PieceColors::white;
                     }
                     else if (sideToMove == PieceColors::black)
                     {
@@ -380,7 +384,9 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
                             board,
                             PieceColors::white,
                             {"e8", "d8", "c8"});
-                        isMoveLegal &= canCastle;
+                        isMoveLegal &= canCastle &&
+                                       board.GetPieceNameEnum(Square("a8")) == PieceName::rook &&
+                                       board.GetPieceColor(Square("a8")) == PieceColors::black;
                     }
                 }
                 else if (moveFlag == MoveFlag::shortCastle)
@@ -392,7 +398,9 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
                             board,
                             PieceColors::black,
                             {"e1", "f1", "g1"});
-                        isMoveLegal &= canCastle;
+                        isMoveLegal &= canCastle &&
+                                       board.GetPieceNameEnum(Square("h1")) == PieceName::rook &&
+                                       board.GetPieceColor(Square("h1")) == PieceColors::white;
                     }
                     else if (sideToMove == PieceColors::black)
                     {
@@ -400,7 +408,9 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to)
                             board,
                             PieceColors::white,
                             {"e8", "f8", "g8"});
-                        isMoveLegal &= canCastle;
+                        isMoveLegal &= canCastle &&
+                                       board.GetPieceNameEnum(Square("h8")) == PieceName::rook &&
+                                       board.GetPieceColor(Square("h8")) == PieceColors::black;
                     }
                 }
             }
@@ -432,4 +442,27 @@ bool Analyzer::IsMoveLegal(const Board &board, std::string moveNotation)
     Square fromSquare = Square(moveNotation[0], moveNotation[1]);
     Square toSquare = Square(moveNotation[2], moveNotation[3]);
     return Analyzer::IsMoveLegal(board, fromSquare, toSquare);
+}
+
+GameResult Analyzer::GetGameResult(const Board &board, PieceColors sideToMove)
+{
+    if (sideToMove == PieceColors::null)
+    {
+        std::string errorMsg = std::string("sideToMove is null in  GetGameResult function\n ") +
+                               "sideToMove:" + ChessLib::GetPieceColorStr(sideToMove) + "\n";
+        throw std::invalid_argument(errorMsg);
+    }
+
+    GameResult gameState = GameResult::ongoing;
+    std::vector<std::string> legalMoves = Search::GenerateMoves(board, sideToMove);
+    bool isKingInCheck = Analyzer::IsKingInCheck(board, sideToMove);
+
+    if (legalMoves.size() == 0 && !isKingInCheck)
+        gameState = GameResult::stalemate;
+    else if (legalMoves.size() == 0 && isKingInCheck)
+        gameState = sideToMove == PieceColors::white ? GameResult::blackWins : GameResult::whiteWins;
+    else
+        gameState = GameResult::ongoing;
+
+    return gameState;
 }

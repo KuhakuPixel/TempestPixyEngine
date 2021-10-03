@@ -30,6 +30,6 @@ public:
     static bool IsSquareAttacked(const Board &board, PieceColors attackingColor, int fileNum, int rankNum);
     ///check if one of the squares is under attack
     static bool IsSquareAttacked(const Board &board, PieceColors attackingColor, std::vector<std::string> squares);
-
     static bool IsKingInCheck(const Board &board, PieceColors kingColor);
+    static GameResult GetGameResult(const Board &board, PieceColors sideToMove);
 };

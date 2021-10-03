@@ -84,12 +84,12 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     {
         for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
-            if (board.GetPieceColorFromBoard(fileItr, rankItr) == sideToMove &&
+            if (board.GetPieceColor(fileItr, rankItr) == sideToMove &&
                 !board.IsSquareEmpty(fileItr, rankItr))
             {
                 Square from = Square(fileItr, rankItr);
 
-                PieceName piece = board.GetPieceNameEnumFromBoard(fileItr, rankItr);
+                PieceName piece = board.GetPieceNameEnum(fileItr, rankItr);
                 std::vector<Vector2> moveVectors = pieceToMoveVectorMap.at(piece);
                 if (piece == PieceName::pawn)
                 {
@@ -116,8 +116,6 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
                             Square to = Square(toFileNum, toRankNum);
                             if (Analyzer::IsMoveLegal(board, from, to))
                                 moves.push_back(from.GetNotation() + to.GetNotation());
-                            else
-                                break;
                             toFileNum += moveVectors.at(i).x;
                             toRankNum += moveVectors.at(i).y;
                         }

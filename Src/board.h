@@ -58,14 +58,14 @@ public:
     void PlacePiece(char piece, int fileNum, int rankNum);
     void PlacePiece(char piece, Square square);
 
-    char GetPieceNameFromBoard(int fileNum, int rankNum) const;
-    char GetPieceNameFromBoard(Square square) const;
+    char GetPieceName(int fileNum, int rankNum) const;
+    char GetPieceName(Square square) const;
 
-    PieceName GetPieceNameEnumFromBoard(int fileNum, int rankNum) const;
-    PieceName GetPieceNameEnumFromBoard(Square square) const;
+    PieceName GetPieceNameEnum(int fileNum, int rankNum) const;
+    PieceName GetPieceNameEnum(Square square) const;
 
-    PieceColors GetPieceColorFromBoard(int fileNum, int rankNum) const;
-    PieceColors GetPieceColorFromBoard(Square square) const;
+    PieceColors GetPieceColor(int fileNum, int rankNum) const;
+    PieceColors GetPieceColor(Square square) const;
 
     void LoadPseudoBoard(const Board &board);
     void LoadFromFen(std::string fen);

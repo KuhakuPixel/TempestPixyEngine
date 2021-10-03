@@ -27,7 +27,14 @@ enum class MoveFlag
     promotion,
     null,
 };
+enum class GameResult
+{
+    whiteWins,
+    stalemate,
+    blackWins,
+    ongoing,
 
+};
 class ChessLib
 {
 
@@ -42,5 +49,6 @@ public:
 
     static std::string GetPieceNameStr(PieceName pieceName);
     static std::string GetPieceColorStr(PieceColors pieceName);
+    static std::string GetGameResultStr(GameResult gameResult);
     static PieceColors InvertPieceColor(PieceColors color);
 };

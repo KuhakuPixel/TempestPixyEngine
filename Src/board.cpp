@@ -152,12 +152,12 @@ bool Board::IsSquareEmpty(int fileNum, int rankNum) const
         throw std::invalid_argument(errorMsg);
     }
 
-    return this->GetPieceNameFromBoard(fileNum, rankNum) == EMPTYSQUARE;
+    return this->GetPieceName(fileNum, rankNum) == EMPTYSQUARE;
 }
 
 bool Board::IsSquareEmpty(Square square) const
 {
-    return this->GetPieceNameFromBoard(square) == EMPTYSQUARE;
+    return this->GetPieceName(square) == EMPTYSQUARE;
 }
 
 void Board::PlacePiece(char piece, int fileNum, int rankNum)
@@ -169,34 +169,34 @@ void Board::PlacePiece(char piece, Square square)
     this->PlacePiece(piece, square.fileNum, square.rankNum);
 }
 
-char Board::GetPieceNameFromBoard(int fileNum, int rankNum) const
+char Board::GetPieceName(int fileNum, int rankNum) const
 {
     return board[8 - rankNum][fileNum - 1];
 }
 
-char Board::GetPieceNameFromBoard(Square square) const
+char Board::GetPieceName(Square square) const
 {
-    return this->GetPieceNameFromBoard(square.fileNum, square.rankNum);
+    return this->GetPieceName(square.fileNum, square.rankNum);
 }
 
-PieceColors Board::GetPieceColorFromBoard(int fileNum, int rankNum) const
+PieceColors Board::GetPieceColor(int fileNum, int rankNum) const
 {
-    char piece = this->GetPieceNameFromBoard(fileNum, rankNum);
+    char piece = this->GetPieceName(fileNum, rankNum);
 
     return ChessLib::ToPieceColorEnum(piece);
 }
-PieceColors Board::GetPieceColorFromBoard(Square square) const
+PieceColors Board::GetPieceColor(Square square) const
 {
-    return this->GetPieceColorFromBoard(square.fileNum, square.rankNum);
+    return this->GetPieceColor(square.fileNum, square.rankNum);
 }
 
-PieceName Board::GetPieceNameEnumFromBoard(int fileNum, int rankNum) const
+PieceName Board::GetPieceNameEnum(int fileNum, int rankNum) const
 {
-    return ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(fileNum, rankNum));
+    return ChessLib::ToPieceNameEnum(this->GetPieceName(fileNum, rankNum));
 }
-PieceName Board::GetPieceNameEnumFromBoard(Square square) const
+PieceName Board::GetPieceNameEnum(Square square) const
 {
-    return ChessLib::ToPieceNameEnum(this->GetPieceNameFromBoard(square));
+    return ChessLib::ToPieceNameEnum(this->GetPieceName(square));
 }
 void Board::LoadPseudoBoard(const Board &board)
 {
@@ -293,7 +293,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
     }
     Square from = Square(moveNotation[0], moveNotation[1]);
     Square to = Square(moveNotation[2], moveNotation[3]);
-    char pieceToMove = this->GetPieceNameFromBoard(from);
+    char pieceToMove = this->GetPieceName(from);
     PieceName pieceName = ChessLib::ToPieceNameEnum(pieceToMove);
     PieceColors sideToMove = ChessLib::ToPieceColorEnum(pieceToMove);
 

@@ -243,6 +243,7 @@ TEST_CASE("Test Illegal king moves by check", "[BoardLegalMoves]")
 
             //test moving other piece when king is in check
             {"8/8/1P6/KP6/Pr6/8/3b4/Q3k3 b - - 0 1", "d2e3", false},
+            {"2R3k1/5ppp/8/8/1b6/8/5PPP/6K1 b - - 0 1", "b4f8", true},
 
         }));
 

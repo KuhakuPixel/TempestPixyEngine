@@ -15,6 +15,11 @@ std::string ChessLib::GetPieceColorStr(PieceColors pieceColors)
     std::string pieceColorStr[] = {"white", "black", "null"};
     return pieceColorStr[(int)pieceColors];
 }
+std::string ChessLib::GetGameResultStr(GameResult gameResult)
+{
+    std::string gameResultStr[] = {"whiteWins", "stalemate", "blackWins", "ongoing"};
+    return gameResultStr[(int)gameResult];
+}
 std::string ChessLib::ExpandFenPosition(std::string fenPosition, char emptySquare)
 {
     std::string expanded = "";
