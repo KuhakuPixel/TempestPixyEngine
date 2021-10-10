@@ -89,9 +89,9 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
             {
                 Square from = Square(fileItr, rankItr);
 
-                PieceName piece = board.GetPieceNameEnum(fileItr, rankItr);
-                std::vector<Vector2> moveVectors = pieceToMoveVectorMap.at(piece);
-                if (piece == PieceName::pawn)
+                PieceName pieceName = board.GetPieceNameEnum(fileItr, rankItr);
+                std::vector<Vector2> moveVectors = pieceToMoveVectorMap.at(pieceName);
+                if (pieceName == PieceName::pawn)
                 {
                     for (int i = 0; i < moveVectors.size(); i++)
                     {
@@ -116,8 +116,15 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
                             Square to = Square(toFileNum, toRankNum);
                             if (Analyzer::IsMoveLegal(board, from, to))
                                 moves.push_back(from.GetNotation() + to.GetNotation());
-                            toFileNum += moveVectors.at(i).x;
-                            toRankNum += moveVectors.at(i).y;
+                            if (pieceName == PieceName::king || pieceName == PieceName::knight)
+                            {
+                                break;
+                            }
+                            else if (pieceName == PieceName::bishop || pieceName == PieceName::rook || pieceName == PieceName::queen)
+                            {
+                                toFileNum += moveVectors.at(i).x;
+                                toRankNum += moveVectors.at(i).y;
+                            }
                         }
                     }
                 }
