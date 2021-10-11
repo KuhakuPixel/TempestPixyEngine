@@ -77,6 +77,55 @@ const std::map<PieceName, std::vector<Vector2>> Search::pieceToMoveVectorMap = {
     },
 };
 
+std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int fileNum, int rankNum)
+{
+    std::vector<std::string> moves = {};
+    if (!board.IsSquareEmpty(fileNum, rankNum))
+    {
+        PieceName pieceName = board.GetPieceNameEnum(fileNum, rankNum);
+        PieceColors sideToMove = board.GetPieceColor(fileNum, rankNum);
+        Square from = Square(fileNum, rankNum);
+        std::vector<Vector2> moveVectors = Search::pieceToMoveVectorMap.at(pieceName);
+        if (pieceName == PieceName::pawn)
+        {
+            for (int i = 0; i < moveVectors.size(); i++)
+            {
+                int toFileNum = from.fileNum + moveVectors.at(i).x;
+                int toRankNum = sideToMove == PieceColors::white ? (from.rankNum + moveVectors.at(i).y * 1) : (from.rankNum + moveVectors.at(i).y * -1);
+                if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
+                {
+                    Square to = Square(toFileNum, toRankNum);
+                    if (Analyzer::IsMoveLegal(board, from, to, false))
+                        moves.push_back(from.GetNotation() + to.GetNotation());
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < moveVectors.size(); i++)
+            {
+                int toFileNum = from.fileNum + moveVectors.at(i).x;
+                int toRankNum = from.rankNum + moveVectors.at(i).y;
+                while (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
+                {
+                    Square to = Square(toFileNum, toRankNum);
+                    if (Analyzer::IsMoveLegal(board, from, to, false))
+                        moves.push_back(from.GetNotation() + to.GetNotation());
+                    if (pieceName == PieceName::king || pieceName == PieceName::knight)
+                    {
+                        break;
+                    }
+                    else if (pieceName == PieceName::bishop || pieceName == PieceName::rook || pieceName == PieceName::queen)
+                    {
+                        toFileNum += moveVectors.at(i).x;
+                        toRankNum += moveVectors.at(i).y;
+                    }
+                }
+            }
+        }
+    }
+    return moves;
+}
 std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors sideToMove)
 {
     std::vector<std::string> moves = {};
@@ -87,47 +136,8 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
             if (board.GetPieceColor(fileItr, rankItr) == sideToMove &&
                 !board.IsSquareEmpty(fileItr, rankItr))
             {
-                Square from = Square(fileItr, rankItr);
-
-                PieceName pieceName = board.GetPieceNameEnum(fileItr, rankItr);
-                std::vector<Vector2> moveVectors = pieceToMoveVectorMap.at(pieceName);
-                if (pieceName == PieceName::pawn)
-                {
-                    for (int i = 0; i < moveVectors.size(); i++)
-                    {
-                        int toFileNum = from.fileNum + moveVectors.at(i).x;
-                        int toRankNum = sideToMove == PieceColors::white ? (from.rankNum + moveVectors.at(i).y * 1) : (from.rankNum + moveVectors.at(i).y * -1);
-                        if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                        {
-                            Square to = Square(toFileNum, toRankNum);
-                            if (Analyzer::IsMoveLegal(board, from, to))
-                                moves.push_back(from.GetNotation() + to.GetNotation());
-                        }
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < moveVectors.size(); i++)
-                    {
-                        int toFileNum = from.fileNum + moveVectors.at(i).x;
-                        int toRankNum = from.rankNum + moveVectors.at(i).y;
-                        while (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                        {
-                            Square to = Square(toFileNum, toRankNum);
-                            if (Analyzer::IsMoveLegal(board, from, to))
-                                moves.push_back(from.GetNotation() + to.GetNotation());
-                            if (pieceName == PieceName::king || pieceName == PieceName::knight)
-                            {
-                                break;
-                            }
-                            else if (pieceName == PieceName::bishop || pieceName == PieceName::rook || pieceName == PieceName::queen)
-                            {
-                                toFileNum += moveVectors.at(i).x;
-                                toRankNum += moveVectors.at(i).y;
-                            }
-                        }
-                    }
-                }
+                std::vector<std::string> pieceLegalMoves = Search::GeneratePieceLegalMoves(board, fileItr, rankItr);
+                moves.insert(moves.end(), pieceLegalMoves.begin(), pieceLegalMoves.end());
             }
         }
     }
