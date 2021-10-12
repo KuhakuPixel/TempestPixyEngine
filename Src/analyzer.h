@@ -13,7 +13,8 @@ class Analyzer
 
 {
 public:
-    static bool IsPieceMovementBlocked(const Board &board, Square from, Square to);
+    ///[canGoToSamePieceColor] if true it will not be considered a blocked movement if there is a piece of the same color on the [to] square
+    static bool IsPieceMovementBlocked(const Board &board, Square from, Square to, bool canGoToSamePieceColor = false);
     ///[checkMatchingPieceColor] : determine whether to check if the current side move the  enemy's pieces
     static bool IsMoveLegal(const Board &board, Square from, Square to, bool checkMatchingPieceColor = true);
     ///The move format is in long algebraic notation.
@@ -33,9 +34,6 @@ public:
     static bool IsSquareAttacked(const Board &board, PieceColors attackingColor, std::vector<std::string> squares);
     static int GetDefendedPiecesCount(const Board &board, PieceColors side);
     static int GetHangingPiecesCount(const Board &board, PieceColors side);
-    ///Get the number of legal moves that a piece standing on the specified squares
-    ///returns 0 if empty square
-    static int GetPieceLegalMoveCount(const Board &board, PieceColors side, int fileNum, int rankNum);
     static bool IsKingInCheck(const Board &board, PieceColors kingColor);
     static GameResult GetGameResult(const Board &board, PieceColors sideToMove);
 };

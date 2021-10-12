@@ -74,7 +74,38 @@ void TestGetGameResult(std::string fenPosition, PieceColors sideToMove, GameResu
     }
     REQUIRE(actual == expect);
 }
-
+void TestGetDefendedPiecesCount(std::string fenPosition, PieceColors side, int expect)
+{
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+    int actual = Analyzer::GetDefendedPiecesCount(board, side);
+    if (actual != expect)
+    {
+        printf("TestGetDefendedPiecesCount test cases failed \n");
+        printf("fenPosition : %s \n side : %s\n actual:%d \n expect:%d",
+               fenPosition.c_str(),
+               ChessLib::GetPieceColorStr(side).c_str(),
+               actual,
+               expect);
+    }
+    REQUIRE(actual == expect);
+}
+void TestGetHangingPiecesCount(std::string fenPosition, PieceColors side, int expect)
+{
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+    int actual = Analyzer::GetHangingPiecesCount(board, side);
+    if (actual != expect)
+    {
+        printf("TestGetHangingPiecesCount test cases failed \n");
+        printf("fenPosition : %s \n side : %s\n actual:%d \n expect:%d",
+               fenPosition.c_str(),
+               ChessLib::GetPieceColorStr(side).c_str(),
+               actual,
+               expect);
+    }
+    REQUIRE(actual == expect);
+}
 TEST_CASE("Test Piece correct movement", "[PiecesCorrectMovements]")
 {
     PieceName pieceName;
@@ -297,5 +328,53 @@ TEST_CASE("Test Get Game Result", "[GetGameResult]")
     SECTION("Test piece correct movements")
     {
         TestGetGameResult(fenPosition, sideToMove, gameResult);
+    }
+}
+TEST_CASE("Test Get Defended Pieces count", "[GetDefendedPiecesCount]")
+{
+    std::string fenPosition;
+    PieceColors side;
+    int defendedPiecesCount;
+
+    std::tie(fenPosition, side, defendedPiecesCount) = GENERATE(
+        table<std::string, PieceColors, int>({
+            //opening
+            {"rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2", PieceColors::white, 14},
+            {"rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 1 2", PieceColors::black, 13},
+            //middle game
+            {"3rr1k1/1np2qpp/1p2bp2/pPn1p3/P3P3/B1P1N2P/2B2PP1/RQ2R1K1 b - - 9 26", PieceColors::white, 13},
+            {"3rr1k1/1np2qpp/1p2bp2/pPn1p3/P3P3/B1P1N2P/2B2PP1/RQ2R1K1 b - - 9 26", PieceColors::black, 14},
+            //end game
+            {"8/1R6/1p3kp1/N1n1p3/8/1r6/4K3/8 w - - 1 78", PieceColors::white, 1},
+            {"8/1R6/1p3kp1/N1n1p3/8/1r6/4K3/8 w - - 1 78", PieceColors::black, 5},
+        }));
+
+    SECTION("Test piece correct movements")
+    {
+        TestGetDefendedPiecesCount(fenPosition, side, defendedPiecesCount);
+    }
+}
+TEST_CASE("Test Get hanging Pieces count", "[GetHangingPiecesCount]")
+{
+    std::string fenPosition;
+    PieceColors side;
+    int defendedPiecesCount;
+
+    std::tie(fenPosition, side, defendedPiecesCount) = GENERATE(
+        table<std::string, PieceColors, int>({
+            //opening
+            {"rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4", PieceColors::white, 3},
+            {"rnbqk2r/pppp1ppp/4pn2/8/1bPP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 2 4", PieceColors::black, 4},
+            //middle game
+            {"rnb1k2r/pp1p1ppp/4p3/q1p5/2PPQ3/6P1/PP1NPP1P/R3KB1R b KQkq - 0 9", PieceColors::white, 2},
+            {"rnb1k2r/pp1p1ppp/4p3/q1p5/2PPQ3/6P1/PP1NPP1P/R3KB1R b KQkq - 0 9", PieceColors::black, 5},
+            //end game
+            {"8/3rkp2/1P2p3/6rp/1R1P2P1/3K1P2/8/2R5 b - - 0 37", PieceColors::white, 4},
+            {"8/3rkp2/1P2p3/6rp/1R1P2P1/3K1P2/8/2R5 b - - 0 37", PieceColors::black, 1},
+        }));
+
+    SECTION("Test piece correct movements")
+    {
+        TestGetHangingPiecesCount(fenPosition, side, defendedPiecesCount);
     }
 }

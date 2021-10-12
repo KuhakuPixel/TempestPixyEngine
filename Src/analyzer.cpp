@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <algorithm>
-bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to)
+bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to, bool canGoToSamePieceColor)
 {
 
     bool pieceMovementIsBlocked = false;
@@ -36,7 +36,7 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
             }
             else if (moveDir.x == 0 && moveDir.y == 2)
             {
-                pieceMovementIsBlocked = !board.IsSquareEmpty(from.fileNum, 3);
+                pieceMovementIsBlocked = !board.IsSquareEmpty(from.fileNum, 3) || !board.IsSquareEmpty(to);
             }
         }
         else if (pieceColor == PieceColors::black)
@@ -47,7 +47,7 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
             }
             else if (moveDir.x == 0 && moveDir.y == -2)
             {
-                pieceMovementIsBlocked = !board.IsSquareEmpty(from.fileNum, 6);
+                pieceMovementIsBlocked = !board.IsSquareEmpty(from.fileNum, 6) || !board.IsSquareEmpty(to);
             }
         }
         break;
@@ -117,11 +117,14 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
         break;
     }
     }
-
-    if (board.GetPieceColor(to) == pieceColor)
+    if (!canGoToSamePieceColor)
     {
-        return true;
+        if (board.GetPieceColor(to) == pieceColor)
+        {
+            return true;
+        }
     }
+
     return pieceMovementIsBlocked;
 }
 
@@ -389,7 +392,7 @@ bool Analyzer::IsSquareAttacked(const Board &board, PieceColors attackingColor, 
 
                 if (Analyzer::DoesPieceMoveCorrectly(pieceName, pieceColor, pieceOriginalSq, targetSq))
                 {
-                    if (!Analyzer::IsPieceMovementBlocked(board, pieceOriginalSq, targetSq))
+                    if (!Analyzer::IsPieceMovementBlocked(board, pieceOriginalSq, targetSq, true))
                     {
                         if (pieceName == PieceName::pawn && moveFlag == MoveFlag::pawnDiagonalMove)
                         {
@@ -463,59 +466,6 @@ int Analyzer::GetHangingPiecesCount(const Board &board, PieceColors side)
     }
     return hangingPiecesCount;
 }
-int Analyzer::GetPieceLegalMoveCount(const Board &board, PieceColors side, int fileNum, int rankNum)
-{
-    if (!board.IsSquareEmpty(fileNum, rankNum))
-    {
-        int legalMovesCount = 0;
-        PieceName pieceName = board.GetPieceNameEnum(fileNum, rankNum);
-        PieceColors sideToMove = board.GetPieceColor(fileNum, rankNum);
-        Square from = Square(fileNum, rankNum);
-        std::vector<Vector2> moveVectors = Search::pieceToMoveVectorMap.at(pieceName);
-        if (pieceName == PieceName::pawn)
-        {
-            for (int i = 0; i < moveVectors.size(); i++)
-            {
-                int toFileNum = from.fileNum + moveVectors.at(i).x;
-                int toRankNum = sideToMove == PieceColors::white ? (from.rankNum + moveVectors.at(i).y * 1) : (from.rankNum + moveVectors.at(i).y * -1);
-                if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                {
-                    Square to = Square(toFileNum, toRankNum);
-                    if (Analyzer::IsMoveLegal(board, from, to))
-                        legalMovesCount++;
-                }
-            }
-        }
-        else
-        {
-            for (int i = 0; i < moveVectors.size(); i++)
-            {
-                int toFileNum = from.fileNum + moveVectors.at(i).x;
-                int toRankNum = from.rankNum + moveVectors.at(i).y;
-                while (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
-                {
-                    Square to = Square(toFileNum, toRankNum);
-                    if (Analyzer::IsMoveLegal(board, from, to))
-                        legalMovesCount++;
-                    if (pieceName == PieceName::king || pieceName == PieceName::knight)
-                    {
-                        break;
-                    }
-                    else if (pieceName == PieceName::bishop || pieceName == PieceName::rook || pieceName == PieceName::queen)
-                    {
-                        toFileNum += moveVectors.at(i).x;
-                        toRankNum += moveVectors.at(i).y;
-                    }
-                }
-            }
-        }
-        return legalMovesCount;
-    }
-    else
-    {
-        return 0;
-    }
-}
 bool Analyzer::IsKingInCheck(const Board &board, PieceColors kingColor)
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
@@ -531,7 +481,6 @@ bool Analyzer::IsKingInCheck(const Board &board, PieceColors kingColor)
     }
     return false;
 }
-
 GameResult Analyzer::GetGameResult(const Board &board, PieceColors sideToMove)
 {
     if (sideToMove == PieceColors::null)
