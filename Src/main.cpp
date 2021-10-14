@@ -4,6 +4,7 @@
 #include "CharHelper.h"
 #include "math.h"
 #include "chessLib.h"
+#include "evaluation.h"
 void StartEngine()
 {
     Board board = Board();
@@ -12,6 +13,7 @@ void StartEngine()
 
     while (true)
     {
+        printf("Current evaluation : %f\n", Evaluation::Evaluate(board));
         std::string colorToMove = board.GetCurrentTurnStr();
         printf("Side to move %s \n", colorToMove.c_str());
         board.DisplayBoard('w');
