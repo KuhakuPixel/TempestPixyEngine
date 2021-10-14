@@ -1,6 +1,8 @@
 #include "search.h"
 #include "analyzer.h"
 #include "tree.hh"
+#include "evaluation.h"
+#include <limits>
 SearchNode::SearchNode(const Board &currentBoard, PieceColors sideToMove, std::string move)
     : currentBoard(currentBoard),
       sideToMove(sideToMove),
@@ -144,28 +146,45 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     return moves;
 }
 
-/*
-int Search::SearchMoves(const Board &board, PieceColors sideToMove, int maxDepth)
+double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth)
 {
-    tree<SearchNode> searchTrees;
-    auto head = searchTrees.set_head(SearchNode(board, sideToMove, ""));
-    std::vector<tree<SearchNode>::pre_order_iterator> previousNodes = {};
-    previousNodes.push_back(head);
-    for (int currentDepth = 0; currentDepth <= maxDepth; currentDepth++)
+
+    std::string bestMove = "EMPTY";
+    PieceColors sideToMove = board.GetCurrentTurn();
+    double bestValue = (sideToMove == PieceColors::white) ? -std::numeric_limits<double>::infinity() : std::numeric_limits<double>::infinity();
+    if (currentDepth < maxDepth)
     {
-        std::vector<tree<SearchNode>::pre_order_iterator> currentNodes = {};
-        for (int j = 0; j < previousNodes.size(); j++)
+        std::vector<std::string> generatedMoves = Search::GenerateMoves(board, sideToMove);
+        for (int i = 0; i < generatedMoves.size(); i++)
         {
-            std::vector<std::string> moves = Search::GenerateMoves(board, sideToMove);
-            for (int k = 0; k < moves.size(); k++)
+            Board tempBoard = Board(board);
+            tempBoard.Move(generatedMoves.at(i));
+            if (sideToMove == PieceColors::white)
             {
-                auto searchNodeItr = searchTrees.append_child(head, SearchNode(board, sideToMove, moves.at(k)));
-                currentNodes.push_back(searchNodeItr);
+                double value = SearchPosition(board, currentDepth + 1, maxDepth);
+                if (value > bestValue)
+                {
+                    bestValue = value;
+                    bestMove = generatedMoves.at(i);
+                }
+            }
+            else if (sideToMove == PieceColors::black)
+            {
+                double value = SearchPosition(board, currentDepth + 1, maxDepth);
+                if (value < bestValue)
+                {
+                    bestValue = value;
+                    bestMove = generatedMoves.at(i);
+                }
             }
         }
-        previousNodes.clear();
-        previousNodes = currentNodes;
+        if (currentDepth == 0)
+            printf("Best move for %s is %s\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), bestMove.c_str());
+        return bestValue;
     }
-    return -1;
+    else if (currentDepth == maxDepth)
+    {
+        bestValue = Evaluation::Evaluate(board);
+    }
+    return bestValue;
 }
-*/

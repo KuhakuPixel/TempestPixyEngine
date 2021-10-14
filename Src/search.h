@@ -23,5 +23,5 @@ public:
     static std::vector<std::string> GenerateMoves(const Board &board, PieceColors sideToMove);
 
     static const std::map<PieceName, std::vector<Vector2>> pieceToMoveVectorMap;
-    static int SearchMoves(const Board &board, PieceColors sideToMove, int depth);
+    static double SearchPosition(const Board &board,int currentDepth, int maxDepth);
 };
