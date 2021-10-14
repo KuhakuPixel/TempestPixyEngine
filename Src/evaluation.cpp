@@ -28,7 +28,7 @@ float Evaluation::EvaluateMaterial(const Board &board, PieceColors sideToEvaluat
     }
     return evalValue;
 }
-float Evaluation::EvaluateSide(const Board &board, PieceColors sideToEvaluate)
+double Evaluation::EvaluateSide(const Board &board, PieceColors sideToEvaluate)
 {
     int evaluation = EvaluateMaterial(board, sideToEvaluate) +
                      Analyzer::GetDefendedPiecesCount(board, sideToEvaluate) * 0.05 +
@@ -36,7 +36,7 @@ float Evaluation::EvaluateSide(const Board &board, PieceColors sideToEvaluate)
                      Search::GenerateMoves(board, sideToEvaluate).size() * 0.15;
     return evaluation;
 }
-float Evaluation::Evaluate(const Board &board)
+double Evaluation::Evaluate(const Board &board)
 {
 
     return EvaluateSide(board, PieceColors::white) - EvaluateSide(board, PieceColors::black);
