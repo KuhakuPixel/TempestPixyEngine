@@ -57,7 +57,8 @@ public:
     bool IsSquareEmpty(Square square) const;
     void PlacePiece(char piece, int fileNum, int rankNum);
     void PlacePiece(char piece, Square square);
-
+    void PlacePiece(PieceName pieceName, PieceColors pieceColor, int fileNum, int rankNum);
+    void PlacePiece(PieceName pieceName, PieceColors pieceColor, Square square);
     char GetPieceName(int fileNum, int rankNum) const;
     char GetPieceName(Square square) const;
 

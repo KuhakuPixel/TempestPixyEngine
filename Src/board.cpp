@@ -168,7 +168,19 @@ void Board::PlacePiece(char piece, Square square)
 {
     this->PlacePiece(piece, square.fileNum, square.rankNum);
 }
-
+void Board::PlacePiece(PieceName pieceName, PieceColors pieceColor, int fileNum, int rankNum)
+{
+    this->PlacePiece(
+        ChessLib::ToPieceNameChar(pieceName, pieceColor),
+        fileNum,
+        rankNum);
+}
+void Board::PlacePiece(PieceName pieceName, PieceColors pieceColor, Square square)
+{
+    this->PlacePiece(
+        ChessLib::ToPieceNameChar(pieceName, pieceColor),
+        square);
+}
 char Board::GetPieceName(int fileNum, int rankNum) const
 {
     return board[8 - rankNum][fileNum - 1];
@@ -323,7 +335,10 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
         case MoveFlag::normal:
         {
             this->PlacePiece(EMPTYSQUARE, from);
-            this->PlacePiece(pieceToMove, to);
+            if (newPromotedPiece == PieceName::null)
+                this->PlacePiece(pieceToMove, to);
+            else
+                this->PlacePiece(newPromotedPiece, sideToMove, to);
 
             //remove castling right
             if (ChessLib::ToPieceNameEnum(pieceToMove) == PieceName::king)
