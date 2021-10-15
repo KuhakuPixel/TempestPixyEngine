@@ -111,7 +111,7 @@ void TestGetHangingPiecesCount(std::string fenPosition, PieceColors side, int ex
 //https://stackoverflow.com/questions/43762651/how-does-stdtie-work
 //https://stackoverflow.com/questions/20705702/stl-pair-like-triplet-class-do-i-roll-my-own
 
-void TestPiecesLegalMove(std::string fenPosition, std::string move, bool expect)
+void TestIsMoveLegal(std::string fenPosition, std::string move, bool expect)
 {
     Board board = Board();
     board.LoadFromFen(fenPosition);
@@ -133,7 +133,7 @@ void TestPiecesLegalMove(std::string fenPosition, std::string move, bool expect)
     }
     REQUIRE(actual == expect);
 }
-void TestPiecesLegalMove(std::string fenPosition, std::vector<std::string> moves, bool expect)
+void TestIsMoveLegal(std::string fenPosition, std::vector<std::string> moves, bool expect)
 {
     Board board = Board();
     board.LoadFromFen(fenPosition);
@@ -477,7 +477,7 @@ TEST_CASE("Test pawn legal moves", "[BoardLegalMoves]")
 
     SECTION("Test pawn moves")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 
@@ -504,7 +504,7 @@ TEST_CASE("Test bishop legal moves", "[BoardLegalMoves]")
 
     SECTION("Test Bishops moves")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 TEST_CASE("Test rook legal moves", "[BoardLegalMoves]")
@@ -530,7 +530,7 @@ TEST_CASE("Test rook legal moves", "[BoardLegalMoves]")
 
     SECTION("Test rook moves")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 
@@ -567,7 +567,7 @@ TEST_CASE("Test queen legal moves", "[BoardLegalMoves]")
 
     SECTION("Test queen moves")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 TEST_CASE("Test knight legal moves", "[BoardLegalMoves]")
@@ -593,7 +593,7 @@ TEST_CASE("Test knight legal moves", "[BoardLegalMoves]")
 
     SECTION("Test Knight moves")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 
@@ -621,7 +621,7 @@ TEST_CASE("Test Illegal king moves by check", "[BoardLegalMoves]")
 
     SECTION("Test king moves illegal")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 
@@ -654,10 +654,69 @@ TEST_CASE("Test Absolute Pin move", "[BoardLegalMoves]")
 
     SECTION("Test Absolute Pin move")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
+TEST_CASE("Test Promotion", "[BoardLegalMoves]")
+{
+    std::string fenPosition;
 
+    std::string move;
+    bool isMoveLegal;
+
+    std::tie(fenPosition, move, isMoveLegal) = GENERATE(
+        table<std::string, std::string, bool>({
+            //normal promotion
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8q", true},
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8N", true},
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8B", true},
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8R", true},
+
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1q", true},
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1r", true},
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1b", true},
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1n", true},
+            //illegal promoting to a pawn king or none
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8", false},
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8P", false},
+            {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8k", false},
+
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1", false},
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1p", false},
+            {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1k", false},
+            //illegal promotion(havent reached the end yet)
+            {"8/8/1k3P2/8/8/2K5/8/8 w - - 0 1", "f6f7q", false},
+            {"8/8/1k3P2/8/8/2K5/8/8 w - - 0 1", "f6f7r", false},
+            {"8/8/1k3P2/8/8/2K5/8/8 w - - 0 1", "f6f7n", false},
+            {"8/8/1k3P2/8/8/2K5/8/8 w - - 0 1", "f6f7b", false},
+            {"8/8/1k3P2/8/8/2K5/8/8 w - - 0 1", "f6f7k", false},
+
+            {"8/8/8/3K4/8/6p1/8/4k3 b - - 42 22", "g3g2q", false},
+            {"8/8/8/3K4/8/6p1/8/4k3 b - - 42 22", "g3g2r", false},
+            {"8/8/8/3K4/8/6p1/8/4k3 b - - 42 22", "g3g2n", false},
+            {"8/8/8/3K4/8/6p1/8/4k3 b - - 42 22", "g3g2b", false},
+            {"8/8/8/3K4/8/6p1/8/4k3 b - - 42 22", "g3g2k", false},
+
+            //piece other than pawn promoting illegaly
+
+            {"8/8/8/3K4/8/8/6R1/3k4 w - - 43 23", "g2g8q", false},
+            {"8/8/8/3K4/8/8/6R1/3k4 w - - 43 23", "g2g8r", false},
+            {"8/8/8/3K4/8/8/6R1/3k4 w - - 43 23", "g2g8n", false},
+            {"8/8/8/3K4/8/8/6R1/3k4 w - - 43 23", "g2g8b", false},
+            {"8/8/8/3K4/8/8/6R1/3k4 w - - 43 23", "g2g8k", false},
+
+            {"6r1/8/8/3K4/8/8/8/4k3 b - - 42 22", "g8g1q", false},
+            {"6r1/8/8/3K4/8/8/8/4k3 b - - 42 22", "g8g1r", false},
+            {"6r1/8/8/3K4/8/8/8/4k3 b - - 42 22", "g8g1n", false},
+            {"6r1/8/8/3K4/8/8/8/4k3 b - - 42 22", "g8g1b", false},
+            {"6r1/8/8/3K4/8/8/8/4k3 b - - 42 22", "g8g1k", false},
+        }));
+
+    SECTION("Test Promotion")
+    {
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
+    }
+}
 TEST_CASE("Test Castling", "[BoardLegalMoves]")
 {
     std::string fenPosition;
@@ -680,7 +739,7 @@ TEST_CASE("Test Castling", "[BoardLegalMoves]")
 
     SECTION("Test Castling")
     {
-        TestPiecesLegalMove(fenPosition, move, isMoveLegal);
+        TestIsMoveLegal(fenPosition, move, isMoveLegal);
     }
 }
 
@@ -750,6 +809,6 @@ TEST_CASE("Test Loosing castling rights", "[BoardLegalMoves]")
 
     SECTION("Test Loosing castling rights")
     {
-        TestPiecesLegalMove(fenPosition, moves, isMoveLegal);
+        TestIsMoveLegal(fenPosition, moves, isMoveLegal);
     }
 }
