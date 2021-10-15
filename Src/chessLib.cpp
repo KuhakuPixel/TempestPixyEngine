@@ -3,7 +3,38 @@
 #include <stdexcept>
 #include "CharHelper.h"
 #include <map>
+const std::map<char, PieceName> ChessLib::pieceAbbreviationsToPieceNameMapping = {
+    {'K', PieceName::king},
+    {'Q', PieceName::queen},
+    {'R', PieceName::rook},
+    {'N', PieceName::knight},
+    {'B', PieceName::bishop},
+    {'P', PieceName::pawn},
 
+    {'k', PieceName::king},
+    {'q', PieceName::queen},
+    {'r', PieceName::rook},
+    {'n', PieceName::knight},
+    {'b', PieceName::bishop},
+    {'p', PieceName::pawn},
+    {EMPTYSQUARE, PieceName::null},
+};
+const std::map<char, PieceColors> ChessLib::pieceAbbreviationsToPieceColorMapping = {
+    {'K', PieceColors::white},
+    {'Q', PieceColors::white},
+    {'R', PieceColors::white},
+    {'N', PieceColors::white},
+    {'B', PieceColors::white},
+    {'P', PieceColors::white},
+
+    {'k', PieceColors::black},
+    {'q', PieceColors::black},
+    {'r', PieceColors::black},
+    {'n', PieceColors::black},
+    {'b', PieceColors::black},
+    {'p', PieceColors::black},
+    {EMPTYSQUARE, PieceColors::null},
+};
 std::string ChessLib::GetPieceNameStr(PieceName pieceName)
 {
     std::string pieceNames[] = {"king", "queen", "pawn", "rook", "knight", "bishop", "null"};
@@ -68,22 +99,7 @@ std::string ChessLib::ShrinkFenPosition(std::string fenPosition, char emptySquar
 }
 PieceName ChessLib::ToPieceNameEnum(char pieceChar)
 {
-    std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping = {
-        {'K', PieceName::king},
-        {'Q', PieceName::queen},
-        {'R', PieceName::rook},
-        {'N', PieceName::knight},
-        {'B', PieceName::bishop},
-        {'P', PieceName::pawn},
 
-        {'k', PieceName::king},
-        {'q', PieceName::queen},
-        {'r', PieceName::rook},
-        {'n', PieceName::knight},
-        {'b', PieceName::bishop},
-        {'p', PieceName::pawn},
-        {EMPTYSQUARE, PieceName::null},
-    };
     if (pieceAbbreviationsToPieceNameMapping.count(pieceChar) == 1)
     {
         return pieceAbbreviationsToPieceNameMapping.at(pieceChar);
@@ -99,22 +115,7 @@ PieceName ChessLib::ToPieceNameEnum(char pieceChar)
 
 PieceColors ChessLib::ToPieceColorEnum(char pieceChar)
 {
-    std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping = {
-        {'K', PieceColors::white},
-        {'Q', PieceColors::white},
-        {'R', PieceColors::white},
-        {'N', PieceColors::white},
-        {'B', PieceColors::white},
-        {'P', PieceColors::white},
 
-        {'k', PieceColors::black},
-        {'q', PieceColors::black},
-        {'r', PieceColors::black},
-        {'n', PieceColors::black},
-        {'b', PieceColors::black},
-        {'p', PieceColors::black},
-        {EMPTYSQUARE, PieceColors::null},
-    };
     if (pieceAbbreviationsToPieceColorMapping.count(pieceChar) == 1)
     {
         return pieceAbbreviationsToPieceColorMapping.at(pieceChar);

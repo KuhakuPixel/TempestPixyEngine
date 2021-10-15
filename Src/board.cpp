@@ -293,6 +293,18 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
     }
     Square from = Square(moveNotation[0], moveNotation[1]);
     Square to = Square(moveNotation[2], moveNotation[3]);
+
+    PieceName newPromotedPiece = PieceName::null;
+    //last char of a long algebraic notation is the piece to promote to
+    if (moveNotation.size() == 5)
+        newPromotedPiece = ChessLib::ToPieceNameEnum(moveNotation[4]);
+
+    this->Move(from, to, psuedoLegalMove, newPromotedPiece);
+}
+
+void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newPromotedPiece)
+{
+
     char pieceToMove = this->GetPieceName(from);
     PieceName pieceName = ChessLib::ToPieceNameEnum(pieceToMove);
     PieceColors sideToMove = ChessLib::ToPieceColorEnum(pieceToMove);
@@ -365,6 +377,13 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
             }
             break;
         }
+        case MoveFlag::promotion:
+        {
+            this->PlacePiece(EMPTYSQUARE, from);
+            this->PlacePiece(pieceToMove, to);
+            break;
+        }
+
         case MoveFlag::pawnDiagonalMove:
         {
             this->PlacePiece(EMPTYSQUARE, from);
@@ -432,9 +451,4 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
     {
         throw std::invalid_argument("move is not legal,try again\n");
     }
-}
-
-void Board::Move(Square from, Square to, bool psuedoLegalMove)
-{
-    this->Move(from.GetNotation() + to.GetNotation(), psuedoLegalMove);
 }

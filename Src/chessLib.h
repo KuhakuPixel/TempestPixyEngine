@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 #define EMPTYSQUARE '-'
 enum class PieceColors
 {
@@ -39,6 +40,8 @@ class ChessLib
 {
 
 public:
+    static const std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping;
+    static const std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping;
     ///Expand number to empty square like rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
     ///to rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR
     ///(assuming [emptySquare] is '-')

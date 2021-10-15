@@ -82,5 +82,5 @@ public:
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)
-    void Move(Square from, Square to, bool psuedoLegalMove = false);
+    void Move(Square from, Square to, bool psuedoLegalMove = false, PieceName newPromotedPiece = PieceName::null);
 };
