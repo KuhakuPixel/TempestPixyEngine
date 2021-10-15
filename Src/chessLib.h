@@ -50,7 +50,7 @@ public:
     static std::string ShrinkFenPosition(std::string fenPosition, char emptySquare);
     static PieceName ToPieceNameEnum(char pieceChar);
     static PieceColors ToPieceColorEnum(char pieceChar);
-    static char ToPieceNameAbbreviations(PieceName pieceName, PieceColors pieceColor);
+    static char ToPieceNameChar(PieceName pieceName, PieceColors pieceColor);
     static std::string GetPieceNameStr(PieceName pieceName);
     static std::string GetPieceColorStr(PieceColors pieceName);
     static std::string GetGameResultStr(GameResult gameResult);

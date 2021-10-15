@@ -138,7 +138,7 @@ PieceColors ChessLib::ToPieceColorEnum(char pieceChar)
         throw std::invalid_argument(errorMsg);
     }
 }
-char ChessLib::ToPieceNameAbbreviations(PieceName pieceName, PieceColors pieceColor)
+char ChessLib::ToPieceNameChar(PieceName pieceName, PieceColors pieceColor)
 {
     char piece = pieceNameToPieceAbbreviationsMapping.at(pieceName);
     return pieceColor == PieceColors::white ? toupper(piece) : tolower(piece);
