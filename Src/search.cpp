@@ -158,7 +158,7 @@ double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth
         for (int i = 0; i < generatedMoves.size(); i++)
         {
             Board tempBoard = Board(board);
-            tempBoard.Move(generatedMoves.at(i));
+            tempBoard.Move(generatedMoves.at(i), false);
             if (sideToMove == PieceColors::white)
             {
                 double value = SearchPosition(board, currentDepth + 1, maxDepth);
@@ -167,6 +167,7 @@ double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth
                     bestValue = value;
                     bestMove = generatedMoves.at(i);
                 }
+                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth);
             }
             else if (sideToMove == PieceColors::black)
             {
@@ -176,6 +177,7 @@ double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth
                     bestValue = value;
                     bestMove = generatedMoves.at(i);
                 }
+                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth);
             }
         }
         if (currentDepth == 0)

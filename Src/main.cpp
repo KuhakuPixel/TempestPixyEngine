@@ -5,6 +5,7 @@
 #include "math.h"
 #include "chessLib.h"
 #include "evaluation.h"
+#include "search.h"
 void StartEngine()
 {
     Board board = Board();
@@ -13,6 +14,8 @@ void StartEngine()
 
     while (true)
     {
+        if (board.GetCurrentTurn() == PieceColors::black)
+            Search::SearchPosition(board, 0, 2);
         printf("Current evaluation : %f\n", Evaluation::Evaluate(board));
         std::string colorToMove = board.GetCurrentTurnStr();
         printf("Side to move %s \n", colorToMove.c_str());

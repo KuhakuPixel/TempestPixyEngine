@@ -31,9 +31,9 @@ float Evaluation::EvaluateMaterial(const Board &board, PieceColors sideToEvaluat
 double Evaluation::EvaluateSide(const Board &board, PieceColors sideToEvaluate)
 {
     int evaluation = EvaluateMaterial(board, sideToEvaluate) +
-                     Analyzer::GetDefendedPiecesCount(board, sideToEvaluate) * 0.05 +
-                     Analyzer::GetHangingPiecesCount(board, sideToEvaluate) * -0.03 +
-                     Search::GenerateMoves(board, sideToEvaluate).size() * 0.15;
+                     Analyzer::GetDefendedPiecesCount(board, sideToEvaluate) * 0.5 +
+                     Analyzer::GetHangingPiecesCount(board, sideToEvaluate) * -0.3;
+
     return evaluation;
 }
 double Evaluation::Evaluate(const Board &board)
