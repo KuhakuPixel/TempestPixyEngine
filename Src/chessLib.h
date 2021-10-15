@@ -42,6 +42,7 @@ class ChessLib
 public:
     static const std::map<char, PieceName> pieceAbbreviationsToPieceNameMapping;
     static const std::map<char, PieceColors> pieceAbbreviationsToPieceColorMapping;
+    static const std::map<PieceName, char> pieceNameToPieceAbbreviationsMapping;
     ///Expand number to empty square like rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
     ///to rnbqkbnr/pppppppp/--------/--------/--------/--------/PPPPPPPP/RNBQKBNR
     ///(assuming [emptySquare] is '-')
@@ -49,7 +50,7 @@ public:
     static std::string ShrinkFenPosition(std::string fenPosition, char emptySquare);
     static PieceName ToPieceNameEnum(char pieceChar);
     static PieceColors ToPieceColorEnum(char pieceChar);
-
+    static char ToPieceNameAbbreviations(PieceName pieceName, PieceColors pieceColor);
     static std::string GetPieceNameStr(PieceName pieceName);
     static std::string GetPieceColorStr(PieceColors pieceName);
     static std::string GetGameResultStr(GameResult gameResult);

@@ -35,6 +35,16 @@ const std::map<char, PieceColors> ChessLib::pieceAbbreviationsToPieceColorMappin
     {'p', PieceColors::black},
     {EMPTYSQUARE, PieceColors::null},
 };
+const std::map<PieceName, char> ChessLib::pieceNameToPieceAbbreviationsMapping = {
+    {PieceName::king, 'K'},
+    {PieceName::queen, 'Q'},
+    {PieceName::rook, 'R'},
+    {PieceName::knight, 'N'},
+    {PieceName::bishop, 'B'},
+    {PieceName::pawn, 'P'},
+    {PieceName::null, EMPTYSQUARE}
+
+};
 std::string ChessLib::GetPieceNameStr(PieceName pieceName)
 {
     std::string pieceNames[] = {"king", "queen", "pawn", "rook", "knight", "bishop", "null"};
@@ -128,7 +138,11 @@ PieceColors ChessLib::ToPieceColorEnum(char pieceChar)
         throw std::invalid_argument(errorMsg);
     }
 }
-
+char ChessLib::ToPieceNameAbbreviations(PieceName pieceName, PieceColors pieceColor)
+{
+    char piece = pieceNameToPieceAbbreviationsMapping.at(pieceName);
+    return pieceColor == PieceColors::white ? toupper(piece) : tolower(piece);
+}
 PieceColors ChessLib::InvertPieceColor(PieceColors color)
 {
     if (color == PieceColors::black)
