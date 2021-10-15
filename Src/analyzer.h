@@ -34,6 +34,7 @@ public:
     static bool IsSquareAttacked(const Board &board, PieceColors attackingColor, std::vector<std::string> squares);
     static int GetDefendedPiecesCount(const Board &board, PieceColors side);
     static int GetHangingPiecesCount(const Board &board, PieceColors side);
+    static int GetPieceCount(const Board &board, PieceName pieceName, PieceColors side);
     static bool IsKingInCheck(const Board &board, PieceColors kingColor);
     static GameResult GetGameResult(const Board &board, PieceColors sideToMove);
 };

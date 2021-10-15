@@ -323,7 +323,7 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
 
     bool isMoveLegal = false;
     if (!psuedoLegalMove)
-        isMoveLegal = Analyzer::IsMoveLegal(*this, from, to);
+        isMoveLegal = Analyzer::IsMoveLegal(*this, from, to, true, newPromotedPiece);
     else
         isMoveLegal = true;
     if (isMoveLegal)
@@ -390,12 +390,6 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
                     }
                 }
             }
-            break;
-        }
-        case MoveFlag::promotion:
-        {
-            this->PlacePiece(EMPTYSQUARE, from);
-            this->PlacePiece(pieceToMove, to);
             break;
         }
 

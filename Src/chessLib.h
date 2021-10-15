@@ -25,7 +25,6 @@ enum class MoveFlag
     pawnDiagonalMove,
     shortCastle,
     longCastle,
-    promotion,
     null,
 };
 enum class GameResult

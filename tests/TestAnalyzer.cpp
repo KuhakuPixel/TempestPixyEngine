@@ -107,6 +107,26 @@ void TestGetHangingPiecesCount(std::string fenPosition, PieceColors side, int ex
     REQUIRE(actual == expect);
 }
 
+void TestGetPieceCountAfterPromotion(std::string fenPosition, std::string move, PieceName pieceName, PieceColors side, int expect)
+{
+
+    Board board = Board();
+    board.LoadFromFen(fenPosition);
+    board.Move(move);
+    int actual = Analyzer::GetPieceCount(board, pieceName, side);
+    if (actual != expect)
+    {
+        printf("TestGetPieceCountAfterPromotion test cases failed \n");
+        printf("fenPosition : %s \n side : %s\n Move : %s\n actual:%d \n expect:%d",
+               fenPosition.c_str(),
+               ChessLib::GetPieceColorStr(side).c_str(),
+               move.c_str(),
+               actual,
+               expect);
+    }
+    REQUIRE(actual == expect);
+}
+
 //reference : https://github.com/catchorg/Catch2/issues/850
 //https://stackoverflow.com/questions/43762651/how-does-stdtie-work
 //https://stackoverflow.com/questions/20705702/stl-pair-like-triplet-class-do-i-roll-my-own
@@ -671,6 +691,7 @@ TEST_CASE("Test Promotion", "[BoardLegalMoves]")
             {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8N", true},
             {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8B", true},
             {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8R", true},
+            {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8q", true},
 
             {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1q", true},
             {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1r", true},
@@ -715,6 +736,35 @@ TEST_CASE("Test Promotion", "[BoardLegalMoves]")
     SECTION("Test Promotion")
     {
         TestIsMoveLegal(fenPosition, move, isMoveLegal);
+    }
+}
+TEST_CASE("Test Get Piece Count after promotion", "[GetHangingPiecesCount]")
+{
+    std::string fenPosition;
+    std::string move;
+    PieceName pieceName;
+    PieceColors side;
+    int piecesCount;
+
+    std::tie(fenPosition, move, pieceName, side, piecesCount) = GENERATE(
+        table<std::string, std::string, PieceName, PieceColors, int>({
+            //counting pieces after promotion
+            {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8q", PieceName::queen, PieceColors::white, 1},
+            /*
+            {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8r", PieceName::rook, PieceColors::white, 1},
+            {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8n", PieceName::knight, PieceColors::white, 1},
+            {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8b", PieceName::bishop, PieceColors::white, 1},
+
+            {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1q", PieceName::queen, PieceColors::black, 2},
+            {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1r", PieceName::rook, PieceColors::black, 1},
+            {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1n", PieceName::knight, PieceColors::black, 1},
+            {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1b", PieceName::bishop, PieceColors::black, 1},
+            */
+        }));
+
+    SECTION("Test Get Piece Count after promotion")
+    {
+        TestGetPieceCountAfterPromotion(fenPosition, move, pieceName, side, piecesCount);
     }
 }
 TEST_CASE("Test Castling", "[BoardLegalMoves]")

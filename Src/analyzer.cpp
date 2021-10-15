@@ -496,6 +496,24 @@ int Analyzer::GetHangingPiecesCount(const Board &board, PieceColors side)
     }
     return hangingPiecesCount;
 }
+
+int Analyzer::GetPieceCount(const Board &board, PieceName pieceName, PieceColors side)
+{
+    int pieceCount = 0;
+    for (int rankItr = 1; rankItr <= 8; rankItr++)
+    {
+        for (int fileItr = 1; fileItr <= 8; fileItr++)
+        {
+            if (!board.IsSquareEmpty(fileItr, rankItr))
+            {
+                if (board.GetPieceColor(fileItr, rankItr) == side &&
+                    board.GetPieceNameEnum(fileItr, rankItr) == pieceName)
+                    pieceCount++;
+            }
+        }
+    }
+    return pieceCount;
+}
 bool Analyzer::IsKingInCheck(const Board &board, PieceColors kingColor)
 {
     for (int rankItr = 1; rankItr <= 8; rankItr++)
