@@ -16,7 +16,7 @@ public:
     ///[canGoToSamePieceColor] if true it will not be considered a blocked movement if there is a piece of the same color on the [to] square
     static bool IsPieceMovementBlocked(const Board &board, Square from, Square to, bool canGoToSamePieceColor = false);
     ///[checkMatchingPieceColor] : determine whether to check if the current side move the  enemy's pieces
-    static bool IsMoveLegal(const Board &board, Square from, Square to, bool checkMatchingPieceColor = true);
+    static bool IsMoveLegal(const Board &board, Square from, Square to, bool checkMatchingPieceColor = true, PieceName newPromotedPiece = PieceName::null);
     ///The move format is in long algebraic notation.
     ///A nullmove from the Engine to the GUI should be send as 0000.
     ///Examples:  e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)

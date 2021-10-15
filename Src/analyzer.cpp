@@ -128,7 +128,7 @@ bool Analyzer::IsPieceMovementBlocked(const Board &board, Square from, Square to
     return pieceMovementIsBlocked;
 }
 
-bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to, bool checkMatchingPieceColor)
+bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to, bool checkMatchingPieceColor, PieceName newPromotedPiece)
 {
     if (board.IsSquareEmpty(from) ||
         //check if move is out of bound
@@ -138,8 +138,33 @@ bool Analyzer::IsMoveLegal(const Board &board, Square from, Square to, bool chec
     PieceName pieceName = board.GetPieceNameEnum(from);
     PieceColors sideToMove = board.GetPieceColor(from);
     MoveFlag moveFlag = Analyzer::GetMoveFlag(board, from, to);
+
     //check if the current side move their own piece
     isMoveLegal &= (board.GetCurrentTurn() == sideToMove) || !checkMatchingPieceColor;
+
+    //check if promotion is legal
+    if ((newPromotedPiece != PieceName::null) && pieceName == PieceName::pawn)
+    {
+        bool whiteOnPromotionSquare = ((sideToMove == PieceColors::white) && to.rankNum == 8);
+        bool blackOnPromotionSquare = ((sideToMove == PieceColors::black) && to.rankNum == 1);
+        //if none of the side are standing on promotionSquares
+        if (!(whiteOnPromotionSquare || blackOnPromotionSquare))
+            return false;
+        //cannot promote to a pawn or a king
+        if ((newPromotedPiece == PieceName::pawn) || (newPromotedPiece == PieceName::king))
+            return false;
+    }
+    else if (newPromotedPiece == PieceName::null && pieceName == PieceName::pawn)
+    {
+        bool whiteOnPromotionSquare = ((sideToMove == PieceColors::white) && to.rankNum == 8);
+        bool blackOnPromotionSquare = ((sideToMove == PieceColors::black) && to.rankNum == 1);
+        //if pawn is standing on promotion square than it has to promote
+        if (whiteOnPromotionSquare || blackOnPromotionSquare)
+            return false;
+    }
+    else if ((newPromotedPiece != PieceName::null) && (pieceName != PieceName::pawn))
+        return false;
+
     if (Analyzer::DoesPieceMoveCorrectly(pieceName, sideToMove, from, to))
     {
         if (!Analyzer::IsPieceMovementBlocked(board, from, to))
@@ -238,7 +263,12 @@ bool Analyzer::IsMoveLegal(const Board &board, std::string moveNotation, bool ch
     }
     Square fromSquare = Square(moveNotation[0], moveNotation[1]);
     Square toSquare = Square(moveNotation[2], moveNotation[3]);
-    return Analyzer::IsMoveLegal(board, fromSquare, toSquare, checkMatchingPieceColor);
+
+    //last char of a long algebraic notation is the piece to promote to
+    PieceName newPromotedPiece = PieceName::null;
+    if (moveNotation.size() == 5)
+        newPromotedPiece = ChessLib::ToPieceNameEnum(moveNotation[4]);
+    return Analyzer::IsMoveLegal(board, fromSquare, toSquare, checkMatchingPieceColor, newPromotedPiece);
 }
 bool Analyzer::DoesPieceMoveCorrectly(PieceName pieceName, PieceColors pieceColor, Square from, Square to)
 {
