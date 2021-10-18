@@ -9,7 +9,7 @@ double EvaluationVector::GetStaticEvaluation()
 {
     return this->evaluation[PieceColors::white] - this->evaluation[PieceColors::black];
 }
-const std::map<PieceName, int> Evaluation::pieceNameToValue = {
+const std::map<PieceName, int> Evaluation::pieceNameToValueMap = {
     {PieceName::pawn, 1},
     {PieceName::bishop, 3},
     {PieceName::knight, 3},
@@ -17,37 +17,49 @@ const std::map<PieceName, int> Evaluation::pieceNameToValue = {
     {PieceName::queen, 9},
     {PieceName::king, 0},
 };
-float Evaluation::EvaluateMaterial(const Board &board, PieceColors sideToEvaluate)
+void Evaluation::EvaluateMaterial(EvaluationVector &evaluationVector, PieceName pieceName, PieceColors pieceColor)
 {
-    int evalValue = 0;
+    evaluationVector.IncrementEvaluation(pieceColor, Evaluation::pieceNameToValueMap.at(pieceName));
+}
+void Evaluation::EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, int fileNum, int rankNum)
+{
+}
+double Evaluation::Evaluate(const Board &board)
+{
+    EvaluationVector evalVector = EvaluationVector();
     for (int rankItr = 1; rankItr <= 8; rankItr++)
     {
         for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
             if (!board.IsSquareEmpty(fileItr, rankItr))
             {
-                if (board.GetPieceColor(fileItr, rankItr) == sideToEvaluate)
+                PieceName pieceName = board.GetPieceNameEnum(fileItr, rankItr);
+                PieceColors pieceColor = board.GetPieceColor(fileItr, rankItr);
+                EvaluateMaterial(evalVector, pieceName, pieceColor);
+                switch (pieceName)
                 {
-                    PieceName pieceName = board.GetPieceNameEnum(fileItr, rankItr);
-                    evalValue += Evaluation::pieceNameToValue.at(pieceName);
+                case PieceName::pawn:
+                {
+                }
+                case PieceName::knight:
+                {
+                    EvaluateKnight(board, evalVector, fileItr, rankItr);
+                }
+                case PieceName::bishop:
+                {
+                }
+                case PieceName::rook:
+                {
+                }
+                case PieceName::queen:
+                {
+                }
+                case PieceName::king:
+                {
+                }
                 }
             }
         }
     }
-    return evalValue;
-}
-double Evaluation::EvaluateSide(const Board &board, PieceColors sideToEvaluate)
-{
-    int evaluation = EvaluateMaterial(board, sideToEvaluate) +
-                     Analyzer::GetDefendedPiecesCount(board, sideToEvaluate) * 0.5 +
-                     Analyzer::GetHangingPiecesCount(board, sideToEvaluate) * -0.3;
-
-    return evaluation;
-}
-double Evaluation::Evaluate(const Board &board)
-{
-    //lets evaluate every side at once because seems much simpler
-
-    return EvaluateSide(board, PieceColors::white) - EvaluateSide(board, PieceColors::black);
-    //evaluate black and white
+    return evalVector.GetStaticEvaluation();
 }
