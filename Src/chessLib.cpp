@@ -154,3 +154,8 @@ PieceColors ChessLib::InvertPieceColor(PieceColors color)
         return PieceColors::null;
     }
 }
+ESquare ChessLib::ToESquare(int fileNum, int rankNum)
+{
+    int index = (rankNum - 1) * 8 + (fileNum - 1);
+    return static_cast<ESquare>(index);
+}

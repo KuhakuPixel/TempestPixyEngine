@@ -5,6 +5,16 @@
 #include <vector>
 #include <string>
 
+void TestToESquare(int fileNum, int rankNum, ESquare expect)
+{
+    ESquare actual = ChessLib::ToESquare(fileNum, rankNum);
+    if (actual != expect)
+    {
+        printf("test cases failed \n");
+        printf("fileNum : %d \nrankNum : %d \nactual : %d \nexpect : %d", fileNum, rankNum, actual, (int)expect);
+    }
+    REQUIRE(actual == expect);
+}
 //reference : https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md#top
 /*
 
@@ -116,5 +126,30 @@ TEST_CASE("Test shrink fen position", "[fen]")
         std::string actual = ChessLib::ShrinkFenPosition("r-bqkb-r/ppp--ppp/--n-pn--/-B-p----/---P-B--/----P---/PPP--PPP/RN-QK-NR", '-');
         std::string expect = "r1bqkb1r/ppp2ppp/2n1pn2/1B1p4/3P1B2/4P3/PPP2PPP/RN1QK1NR";
         REQUIRE(actual == expect);
+    }
+}
+
+TEST_CASE("Test ToESquare", "[ToESquare]")
+{
+    int fileNum;
+    int rankNum;
+    ESquare expect;
+
+    std::tie(fileNum, rankNum, expect) = GENERATE(
+        table<int, int, ESquare>({
+            {1, 1, ESquare::A1},
+            {4, 3, ESquare::D3},
+            {7, 5, ESquare::G5},
+            {6, 4, ESquare::F4},
+
+            {8, 8, ESquare::H8},
+            {2, 5, ESquare::B5},
+            {3, 2, ESquare::C2},
+            {5, 6, ESquare::E6},
+        }));
+
+    SECTION("Test ToESquare")
+    {
+        TestToESquare(fileNum, rankNum, expect);
     }
 }
