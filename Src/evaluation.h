@@ -2,6 +2,18 @@
 #include "board.h"
 #include "chessLib.h"
 #include <map>
+class EvaluationVector
+{
+private:
+    std::map<PieceColors, double> evaluation = {
+        {PieceColors::white, 0},
+        {PieceColors::black, 0},
+    };
+
+public:
+    void IncrementEvaluation(PieceColors side, double value);
+    double GetStaticEvaluation();
+};
 class Evaluation
 {
 public:

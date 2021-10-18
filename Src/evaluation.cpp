@@ -1,6 +1,14 @@
 #include "evaluation.h"
 #include "analyzer.h"
 #include "search.h"
+void EvaluationVector::IncrementEvaluation(PieceColors side, double value)
+{
+    this->evaluation[side] += value;
+}
+double EvaluationVector::GetStaticEvaluation()
+{
+    return this->evaluation[PieceColors::white] - this->evaluation[PieceColors::black];
+}
 const std::map<PieceName, int> Evaluation::pieceNameToValue = {
     {PieceName::pawn, 1},
     {PieceName::bishop, 3},
@@ -38,6 +46,7 @@ double Evaluation::EvaluateSide(const Board &board, PieceColors sideToEvaluate)
 }
 double Evaluation::Evaluate(const Board &board)
 {
+    //lets evaluate every side at once because seems much simpler
 
     return EvaluateSide(board, PieceColors::white) - EvaluateSide(board, PieceColors::black);
     //evaluate black and white
