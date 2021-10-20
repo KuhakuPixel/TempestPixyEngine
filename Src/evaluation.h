@@ -5,7 +5,7 @@
 class EvaluationVector
 {
 private:
-    std::map<PieceColors, double> evaluation = {
+    std::map<PieceColors, double> pieceColorToEvaluation = {
         {PieceColors::white, 0},
         {PieceColors::black, 0},
     };
@@ -16,12 +16,31 @@ public:
 };
 class Evaluation
 {
+private:
+    std::map<ESquare, int> knightSquaresValue;
+    std::map<ESquare, int> bishopSquaresValue;
+
 public:
     static const std::map<PieceName, int> pieceNameToValueMap;
-    static void EvaluateMaterial(EvaluationVector &evaluationVector, PieceName pieceName, PieceColors pieceColors);
-    static double EvaluateHangingPieces(const Board &board, PieceColors sideToEvaluate);
-    static double EvaluateDefendedPieces(const Board &board, PieceColors sideToEvaluate);
-    static double EvaluateKingSafety(const Board &board, PieceColors sideToEvaluate);
-    static void EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, int fileNum, int rankNum);
-    static double Evaluate(const Board &board);
+    Evaluation();
+
+    /// initialize knight square value on
+    /// a1 to a8,a8 to h8,a1 to h1 or h1 to h8.
+    void InitializeKnightPeriphery0(int value);
+    /// initialize knight square value on
+    /// b2 to b7,b7 to g7,b2 to g2 or g2 to g7.
+    void InitializeKnightPeriphery1(int value);
+    /// initialize knight square value on
+    /// c3 to c6,c6 to f6,c3 to f3 or f3 to f6.
+    void InitializeKnightPeriphery2(int value);
+    /// initialize knight square value on
+    /// e4, e5,d4 or d5
+    void InitializeKnightPeriphery3(int value);
+
+    void EvaluateMaterial(EvaluationVector &evaluationVector, PieceName pieceName, PieceColors pieceColors) const;
+    double EvaluateHangingPieces(const Board &board, PieceColors sideToEvaluate) const;
+    double EvaluateDefendedPieces(const Board &board, PieceColors sideToEvaluate) const;
+    double EvaluateKingSafety(const Board &board, PieceColors sideToEvaluate) const;
+    void EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, int fileNum, int rankNum) const;
+    double Evaluate(const Board &board) const;
 };

@@ -10,13 +10,13 @@ void StartEngine()
 {
     Board board = Board();
 
-    //printf("%d\n", CharHelper::ToInt('f'));
-
+    // printf("%d\n", CharHelper::ToInt('f'));
+    Evaluation evaluation = Evaluation();
     while (true)
     {
-        //if (board.GetCurrentTurn() == PieceColors::black)
-        //  Search::SearchPosition(board, 0, 2);
-        //printf("Current evaluation : %f\n", Evaluation::Evaluate(board));
+        if (board.GetCurrentTurn() == PieceColors::black)
+            Search::SearchPosition(board, evaluation, 0, 2);
+        printf("Current evaluation : %f\n", evaluation.Evaluate(board));
         std::string colorToMove = board.GetCurrentTurnStr();
         printf("Side to move %s \n", colorToMove.c_str());
         board.DisplayBoard('w');
@@ -27,7 +27,7 @@ void StartEngine()
         {
             board.Move(move);
         }
-        //ref: https://stackoverflow.com/questions/6755991/catching-stdexception-by-reference/6756040#6756040
+        // ref: https://stackoverflow.com/questions/6755991/catching-stdexception-by-reference/6756040#6756040
         catch (const std::exception &e)
         {
             printf("%s \n", e.what());
@@ -36,7 +36,7 @@ void StartEngine()
 }
 int main(int argc, char *argv[])
 {
-    //printf("%c\n",CharHelper::FromAlphabetIndex(2,false));
+    // printf("%c\n",CharHelper::FromAlphabetIndex(2,false));
     StartEngine();
 
     return 0;

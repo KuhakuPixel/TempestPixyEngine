@@ -1,14 +1,48 @@
 #include "evaluation.h"
 #include "analyzer.h"
 #include "search.h"
+
 void EvaluationVector::IncrementEvaluation(PieceColors side, double value)
 {
-    this->evaluation[side] += value;
+    this->pieceColorToEvaluation[side] += value;
 }
 double EvaluationVector::GetStaticEvaluation()
 {
-    return this->evaluation[PieceColors::white] - this->evaluation[PieceColors::black];
+    return this->pieceColorToEvaluation[PieceColors::white] - this->pieceColorToEvaluation[PieceColors::black];
 }
+Evaluation::Evaluation()
+{
+    for (int i = (int)ESquare::A1; i <= (int)ESquare::H8; i++)
+    {
+        ESquare itr = static_cast<ESquare>(i);
+        this->knightSquaresValue.insert({itr, 0});
+        this->bishopSquaresValue.insert({itr, 0});
+    }
+}
+void Evaluation::InitializeKnightPeriphery0(int value)
+{
+    for (int i = 0; i < 7; i++)
+    {
+        // a1 to h1
+        this->knightSquaresValue.at(static_cast<ESquare>(i)) = value;
+        // a8 to h8
+        this->knightSquaresValue.at(static_cast<ESquare>(56 + i)) = value;
+        // a1 to a8
+        this->knightSquaresValue.at(static_cast<ESquare>(i * 8)) = value;
+        // h1 to h8
+        this->knightSquaresValue.at(static_cast<ESquare>((i * 8) + 7)) = value;
+    }
+}
+void Evaluation::InitializeKnightPeriphery1(int value)
+{
+}
+void Evaluation::InitializeKnightPeriphery2(int value)
+{
+}
+void Evaluation::InitializeKnightPeriphery3(int value)
+{
+}
+
 const std::map<PieceName, int> Evaluation::pieceNameToValueMap = {
     {PieceName::pawn, 1},
     {PieceName::bishop, 3},
@@ -17,14 +51,16 @@ const std::map<PieceName, int> Evaluation::pieceNameToValueMap = {
     {PieceName::queen, 9},
     {PieceName::king, 0},
 };
-void Evaluation::EvaluateMaterial(EvaluationVector &evaluationVector, PieceName pieceName, PieceColors pieceColor)
+void Evaluation::EvaluateMaterial(
+    EvaluationVector &evaluationVector, PieceName pieceName, PieceColors pieceColor) const
 {
     evaluationVector.IncrementEvaluation(pieceColor, Evaluation::pieceNameToValueMap.at(pieceName));
 }
-void Evaluation::EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, int fileNum, int rankNum)
+void Evaluation::EvaluateKnight(
+    const Board &board, EvaluationVector &evaluationVector, int fileNum, int rankNum) const
 {
 }
-double Evaluation::Evaluate(const Board &board)
+double Evaluation::Evaluate(const Board &board) const
 {
     EvaluationVector evalVector = EvaluationVector();
     for (int rankItr = 1; rankItr <= 8; rankItr++)

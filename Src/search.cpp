@@ -1,6 +1,5 @@
 #include "search.h"
 #include "analyzer.h"
-#include "tree.hh"
 #include "evaluation.h"
 #include <limits>
 SearchNode::SearchNode(const Board &currentBoard, PieceColors sideToMove, std::string move)
@@ -146,7 +145,7 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     return moves;
 }
 
-double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth)
+double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth)
 {
 
     std::string bestMove = "EMPTY";
@@ -161,7 +160,7 @@ double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth
             tempBoard.Move(generatedMoves.at(i), false);
             if (sideToMove == PieceColors::white)
             {
-                double value = SearchPosition(board, currentDepth + 1, maxDepth);
+                double value = SearchPosition(board, evaluation, currentDepth + 1, maxDepth);
                 if (value > bestValue)
                 {
                     bestValue = value;
@@ -171,7 +170,7 @@ double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth
             }
             else if (sideToMove == PieceColors::black)
             {
-                double value = SearchPosition(board, currentDepth + 1, maxDepth);
+                double value = SearchPosition(board, evaluation, currentDepth + 1, maxDepth);
                 if (value < bestValue)
                 {
                     bestValue = value;
@@ -186,7 +185,7 @@ double Search::SearchPosition(const Board &board, int currentDepth, int maxDepth
     }
     else if (currentDepth == maxDepth)
     {
-        bestValue = Evaluation::Evaluate(board);
+        bestValue = evaluation.Evaluate(board);
     }
     return bestValue;
 }
