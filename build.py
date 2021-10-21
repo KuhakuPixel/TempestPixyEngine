@@ -69,13 +69,13 @@ else:
 
         compile_cpp_codes(
             ["Src", "tests"],
-            "tests",
+            "build",
             "test",
             debug=False,
             exclude_cpp_files=["TestMain.cpp", "main.cpp"],
             object_files=["tests/TestMain.o"],
         )
-        subprocess.run(["./tests/test"])
+        subprocess.run(["./build/test"])
 
     elif args[0] == "debugtest":
         if not ("TestMain.o" in os.listdir("tests")):
@@ -86,12 +86,12 @@ else:
 
         compile_cpp_codes(
             ["Src", "tests"],
-            "tests",
+            "build",
             "test",
             debug=True,
             exclude_cpp_files=["TestMain.cpp", "main.cpp"],
             object_files=["tests/TestMain.o"],
         )
-        subprocess.run(["gdb", "tests/test"])
+        subprocess.run(["gdb", "build/test"])
     else:
         print("unknown command")
