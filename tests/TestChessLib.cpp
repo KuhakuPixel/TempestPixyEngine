@@ -15,6 +15,36 @@ void TestToESquare(int fileNum, int rankNum, ESquare expect)
     }
     REQUIRE(actual == expect);
 }
+void TestToESquare(Square square, ESquare expect)
+{
+
+    try
+    {
+        ESquare actual = ChessLib::ToESquare(square);
+        if (actual != expect)
+        {
+            printf("test cases failed \n");
+            printf("Square : %s \nactual : %d \nexpect : %d", square.GetNotation().c_str(), actual, (int)expect);
+        }
+        REQUIRE(actual == expect);
+    }
+    // ref: https://stackoverflow.com/questions/6755991/catching-stdexception-by-reference/6756040#6756040
+    catch (const std::exception &e)
+    {
+        printf("encountered error %s \n", e.what());
+    }
+}
+
+void TestToESquare(std::string square, ESquare expect)
+{
+    ESquare actual = ChessLib::ToESquare(square);
+    if (actual != expect)
+    {
+        printf("test cases failed \n");
+        printf("Square : %s \nactual : %d \nexpect : %d", square.c_str(), actual, (int)expect);
+    }
+    REQUIRE(actual == expect);
+}
 //reference : https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md#top
 /*
 
@@ -151,5 +181,43 @@ TEST_CASE("Test ToESquare", "[ToESquare]")
     SECTION("Test ToESquare")
     {
         TestToESquare(fileNum, rankNum, expect);
+    }
+}
+
+TEST_CASE("Test ToESquare 1", "[ToESquare]")
+{
+    Square square = Square("e4");
+    ESquare expect;
+
+    std::tie(square, expect) = GENERATE(
+        table<Square, ESquare>({
+            {Square("e4"), ESquare::E4},
+            {Square("d4"), ESquare::D4},
+            {Square("f8"), ESquare::F8},
+            {Square("a6"), ESquare::A6},
+        }));
+
+    SECTION("Test ToESquare 1")
+    {
+        TestToESquare(square, expect);
+    }
+}
+
+TEST_CASE("Test ToESquare 2", "[ToESquare]")
+{
+    std::string square;
+    ESquare expect;
+
+    std::tie(square, expect) = GENERATE(
+        table<std::string, ESquare>({
+            {"e4", ESquare::E4},
+            {"d4", ESquare::D4},
+            {"f8", ESquare::F8},
+            {"a6", ESquare::A6},
+        }));
+
+    SECTION("Test ToESquare 2")
+    {
+        TestToESquare(square, expect);
     }
 }

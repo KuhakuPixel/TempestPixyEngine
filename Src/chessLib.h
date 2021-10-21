@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include "square.h"
 #define EMPTYSQUARE '-'
 enum class PieceColors
 {
@@ -124,4 +125,6 @@ public:
 
     //square conversion
     static ESquare ToESquare(int fileNum, int rankNum);
+    static ESquare ToESquare(Square square);
+    static ESquare ToESquare(std::string square);
 };

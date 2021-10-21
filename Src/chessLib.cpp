@@ -159,3 +159,11 @@ ESquare ChessLib::ToESquare(int fileNum, int rankNum)
     int index = (rankNum - 1) * 8 + (fileNum - 1);
     return static_cast<ESquare>(index);
 }
+ESquare ChessLib::ToESquare(Square square)
+{
+    return ChessLib::ToESquare(square.fileNum, square.rankNum);
+}
+ESquare ChessLib::ToESquare(std::string square)
+{
+    return ChessLib::ToESquare(Square(square));
+}
