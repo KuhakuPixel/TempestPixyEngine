@@ -22,7 +22,7 @@ private:
 public:
     static const std::map<PieceName, double> pieceNameToValueMap;
     Evaluation();
-
+    void SetPieceSquareValue(PieceName pieceName, std::string square, double value);
     /// initialize knight square value on
     /// a1 to a8,a8 to h8,a1 to h1 or h1 to h8.
     void InitializeKnightPeriphery0(double value);

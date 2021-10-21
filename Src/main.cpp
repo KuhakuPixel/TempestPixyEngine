@@ -19,7 +19,7 @@ void StartEngine()
     while (true)
     {
         if (board.GetCurrentTurn() == PieceColors::black)
-            Search::SearchPosition(board, evaluation, 0, 3);
+            Search::SearchPosition(board, evaluation, 0, 4);
         printf("Current evaluation : %f\n", evaluation.Evaluate(board));
         std::string colorToMove = board.GetCurrentTurnStr();
         printf("Side to move %s \n", colorToMove.c_str());

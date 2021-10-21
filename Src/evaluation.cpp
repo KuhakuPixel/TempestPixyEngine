@@ -23,6 +23,11 @@ Evaluation::Evaluation()
         }
     }
 }
+void Evaluation::SetPieceSquareValue(PieceName pieceName, std::string squareStr, double value)
+{
+    ESquare eSquare = ChessLib::ToESquare(squareStr);
+    this->piecesSquaresValue[pieceName][eSquare] = value;
+}
 void Evaluation::InitializeKnightPeriphery0(double value)
 {
     for (int i = 0; i < 7; i++)
