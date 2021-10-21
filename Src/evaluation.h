@@ -17,30 +17,29 @@ public:
 class Evaluation
 {
 private:
-    std::map<ESquare, int> knightSquaresValue;
-    std::map<ESquare, int> bishopSquaresValue;
+    std::map<PieceName, std::map<ESquare, double>> piecesSquaresValue;
 
 public:
-    static const std::map<PieceName, int> pieceNameToValueMap;
+    static const std::map<PieceName, double> pieceNameToValueMap;
     Evaluation();
 
     /// initialize knight square value on
     /// a1 to a8,a8 to h8,a1 to h1 or h1 to h8.
-    void InitializeKnightPeriphery0(int value);
+    void InitializeKnightPeriphery0(double value);
     /// initialize knight square value on
     /// b2 to b7,b7 to g7,b2 to g2 or g2 to g7.
-    void InitializeKnightPeriphery1(int value);
+    void InitializeKnightPeriphery1(double value);
     /// initialize knight square value on
     /// c3 to c6,c6 to f6,c3 to f3 or f3 to f6.
-    void InitializeKnightPeriphery2(int value);
+    void InitializeKnightPeriphery2(double value);
     /// initialize knight square value on
     /// e4, e5,d4 or d5
-    void InitializeKnightPeriphery3(int value);
+    void InitializeKnightPeriphery3(double value);
 
     void EvaluateMaterial(EvaluationVector &evaluationVector, PieceName pieceName, PieceColors pieceColors) const;
     double EvaluateHangingPieces(const Board &board, PieceColors sideToEvaluate) const;
     double EvaluateDefendedPieces(const Board &board, PieceColors sideToEvaluate) const;
     double EvaluateKingSafety(const Board &board, PieceColors sideToEvaluate) const;
-    void EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, int fileNum, int rankNum) const;
+    void EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, PieceColors pieceColor, int fileNum, int rankNum) const;
     double Evaluate(const Board &board) const;
 };

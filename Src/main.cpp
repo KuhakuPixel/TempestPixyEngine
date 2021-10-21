@@ -12,10 +12,14 @@ void StartEngine()
 
     // printf("%d\n", CharHelper::ToInt('f'));
     Evaluation evaluation = Evaluation();
+    evaluation.InitializeKnightPeriphery0(-0.51);
+    evaluation.InitializeKnightPeriphery1(-0.18);
+    evaluation.InitializeKnightPeriphery2(+0.54);
+    evaluation.InitializeKnightPeriphery3(+0.1);
     while (true)
     {
         if (board.GetCurrentTurn() == PieceColors::black)
-            Search::SearchPosition(board, evaluation, 0, 2);
+            Search::SearchPosition(board, evaluation, 0, 3);
         printf("Current evaluation : %f\n", evaluation.Evaluate(board));
         std::string colorToMove = board.GetCurrentTurnStr();
         printf("Side to move %s \n", colorToMove.c_str());

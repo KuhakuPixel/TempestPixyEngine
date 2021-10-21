@@ -10,12 +10,12 @@ enum class PieceColors
 };
 enum class PieceName
 {
-    king,
-    queen,
     pawn,
-    rook,
     knight,
     bishop,
+    rook,
+    queen,
+    king,
     null,
 
 };
