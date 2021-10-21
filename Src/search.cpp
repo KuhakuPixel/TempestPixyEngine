@@ -166,7 +166,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
                     bestValue = value;
                     bestMove = generatedMoves.at(i);
                 }
-                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth);
+                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth + 1);
             }
             else if (sideToMove == PieceColors::black)
             {
@@ -176,7 +176,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
                     bestValue = value;
                     bestMove = generatedMoves.at(i);
                 }
-                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth);
+                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth + 1);
             }
         }
         if (currentDepth == 0)
