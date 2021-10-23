@@ -5,7 +5,7 @@
 #include "evaluation.h"
 #include <vector>
 #include <map>
-
+#include <string>
 struct SearchNode
 {
     const Board &currentBoard;
@@ -24,5 +24,5 @@ public:
     static std::vector<std::string> GenerateMoves(const Board &board, PieceColors sideToMove);
 
     static const std::map<PieceName, std::vector<Vector2>> pieceToMoveVectorMap;
-    static double SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth);
+    static double SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, std::string *bestMove = nullptr);
 };

@@ -8,8 +8,8 @@
 #include "search.h"
 void StartEngine()
 {
-    Board board = Board();
 
+    Board board = Board();
     // printf("%d\n", CharHelper::ToInt('f'));
     Evaluation evaluation = Evaluation();
     evaluation.InitializeKnightPeriphery0(-0.51);
@@ -19,8 +19,14 @@ void StartEngine()
     while (true)
     {
         if (board.GetCurrentTurn() == PieceColors::black)
-            Search::SearchPosition(board, evaluation, 0, 3);
-        printf("Current evaluation : %f\n", evaluation.Evaluate(board));
+        {
+            std::string bestMove = "";
+            Search::SearchPosition(board, evaluation, 0, 3, &bestMove);
+            printf("Best move is %s\n", bestMove.c_str());
+            board.Move(bestMove);
+            continue;
+        }
+        //printf("Current evaluation : %f\n", evaluation.Evaluate(board));
         std::string colorToMove = board.GetCurrentTurnStr();
         printf("Side to move %s \n", colorToMove.c_str());
         board.DisplayBoard('w');

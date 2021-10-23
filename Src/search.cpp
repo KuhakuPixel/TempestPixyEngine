@@ -145,11 +145,13 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     return moves;
 }
 
-double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth)
+double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, std::string *bestMove)
 {
-    std::string bestMove = "EMPTY";
+    std::string currentBestMove = "EMPTY";
     PieceColors sideToMove = board.GetCurrentTurn();
+    //initialize the best value (will always be initialized to the worst depending on the side to move)
     double bestValue = (sideToMove == PieceColors::white) ? -std::numeric_limits<double>::infinity() : std::numeric_limits<double>::infinity();
+    //if the current depth hasn't reached the maxDepth yet then continue recursively
     if (currentDepth < maxDepth)
     {
         std::vector<std::string> generatedMoves = Search::GenerateMoves(board, sideToMove);
@@ -158,34 +160,38 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             //move newBoard
             Board newBoard = Board(board);
             newBoard.Move(generatedMoves.at(i), false);
+            double newPositionValue = SearchPosition(newBoard, evaluation, currentDepth + 1, maxDepth);
+            //choose the best value and best move according to the sideToMove
             if (sideToMove == PieceColors::white)
             {
-                double value = SearchPosition(newBoard, evaluation, currentDepth + 1, maxDepth);
-                if (value > bestValue)
+                if (newPositionValue > bestValue)
                 {
-                    bestValue = value;
-                    bestMove = generatedMoves.at(i);
+                    bestValue = newPositionValue;
+                    currentBestMove = generatedMoves.at(i);
                 }
-                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth + 1);
             }
             else if (sideToMove == PieceColors::black)
             {
-                double value = SearchPosition(newBoard, evaluation, currentDepth + 1, maxDepth);
-                if (value < bestValue)
+                if (newPositionValue < bestValue)
                 {
-                    bestValue = value;
-                    bestMove = generatedMoves.at(i);
+                    bestValue = newPositionValue;
+                    currentBestMove = generatedMoves.at(i);
                 }
-                printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), value, currentDepth + 1);
             }
+            // printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
         }
         if (currentDepth == 0)
-            printf("Best move for %s is %s\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), bestMove.c_str());
+        {
+            *bestMove = currentBestMove;
+            //printf("Best move for %s is %s\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), currentBestMove.c_str());
+        }
+
         return bestValue;
     }
+    //recursion will stop here once the max depth is reached
     else if (currentDepth == maxDepth)
     {
-        bestValue = evaluation.Evaluate(board);
+        return evaluation.Evaluate(board);
     }
     return bestValue;
 }
