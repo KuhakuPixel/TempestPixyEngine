@@ -21,7 +21,7 @@ void StartEngine()
         if (board.GetCurrentTurn() == PieceColors::black)
         {
             std::string bestMove = "";
-            Search::SearchPosition(board, evaluation, 0, 3, &bestMove);
+            Search::SearchPosition(board, evaluation, 0, 4, -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), &bestMove);
             printf("Best move is %s\n", bestMove.c_str());
             board.Move(bestMove);
             continue;

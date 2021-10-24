@@ -6,14 +6,7 @@
 #include <vector>
 #include <map>
 #include <string>
-struct SearchNode
-{
-    const Board &currentBoard;
-    PieceColors sideToMove;
-    std::string move;
-    SearchNode(const Board &currentBoard, PieceColors sideToMove, std::string move);
-};
-
+#include <limits>
 class Search
 {
 public:
@@ -24,5 +17,11 @@ public:
     static std::vector<std::string> GenerateMoves(const Board &board, PieceColors sideToMove);
 
     static const std::map<PieceName, std::vector<Vector2>> pieceToMoveVectorMap;
-    static double SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, std::string *bestMove = nullptr);
+    static double SearchPosition(const Board &board,
+                                 const Evaluation &evaluation,
+                                 int currentDepth,
+                                 int maxDepth,
+                                 double alpha = -std::numeric_limits<double>::infinity(),
+                                 double beta = std::numeric_limits<double>::infinity(),
+                                 std::string *bestMove = nullptr);
 };

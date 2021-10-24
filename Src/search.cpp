@@ -2,11 +2,6 @@
 #include "analyzer.h"
 #include "evaluation.h"
 #include <limits>
-SearchNode::SearchNode(const Board &currentBoard, PieceColors sideToMove, std::string move)
-    : currentBoard(currentBoard),
-      sideToMove(sideToMove),
-      move(move){};
-
 const std::map<PieceName, std::vector<Vector2>> Search::pieceToMoveVectorMap = {
     {
         PieceName::pawn,
@@ -145,12 +140,14 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     return moves;
 }
 
-double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, std::string *bestMove)
+double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, double alpha, double beta, std::string *bestMove)
 {
     std::string currentBestMove = "EMPTY";
     PieceColors sideToMove = board.GetCurrentTurn();
     //initialize the best value (will always be initialized to the worst depending on the side to move)
-    double bestValue = (sideToMove == PieceColors::white) ? -std::numeric_limits<double>::infinity() : std::numeric_limits<double>::infinity();
+    double bestValue = (sideToMove == PieceColors::white)
+                           ? -std::numeric_limits<double>::infinity()
+                           : std::numeric_limits<double>::infinity();
     //if the current depth hasn't reached the maxDepth yet then continue recursively
     if (currentDepth < maxDepth)
     {
@@ -160,14 +157,18 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             //move newBoard
             Board newBoard = Board(board);
             newBoard.Move(generatedMoves.at(i), false);
-            double newPositionValue = SearchPosition(newBoard, evaluation, currentDepth + 1, maxDepth);
+            double newPositionValue = SearchPosition(newBoard, evaluation, currentDepth + 1, maxDepth, alpha, beta);
             //choose the best value and best move according to the sideToMove
             if (sideToMove == PieceColors::white)
             {
                 if (newPositionValue > bestValue)
                 {
                     bestValue = newPositionValue;
+                    alpha = newPositionValue;
                     currentBestMove = generatedMoves.at(i);
+                    // Alpha Beta Pruning
+                    if (bestValue >= beta)
+                        break;
                 }
             }
             else if (sideToMove == PieceColors::black)
@@ -175,7 +176,11 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
                 if (newPositionValue < bestValue)
                 {
                     bestValue = newPositionValue;
+                    beta = newPositionValue;
                     currentBestMove = generatedMoves.at(i);
+                    // Alpha Beta Pruning
+                    if (bestValue <= alpha)
+                        break;
                 }
             }
             // printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
