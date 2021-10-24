@@ -750,7 +750,7 @@ TEST_CASE("Test Get Piece Count after promotion", "[GetHangingPiecesCount]")
         table<std::string, std::string, PieceName, PieceColors, int>({
             //counting pieces after promotion
             {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8q", PieceName::queen, PieceColors::white, 1},
-            /*
+
             {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8r", PieceName::rook, PieceColors::white, 1},
             {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8n", PieceName::knight, PieceColors::white, 1},
             {"8/1P6/8/3K4/8/8/8/3k4 w - - 43 23", "b7b8b", PieceName::bishop, PieceColors::white, 1},
@@ -759,7 +759,8 @@ TEST_CASE("Test Get Piece Count after promotion", "[GetHangingPiecesCount]")
             {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1r", PieceName::rook, PieceColors::black, 1},
             {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1n", PieceName::knight, PieceColors::black, 1},
             {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1b", PieceName::bishop, PieceColors::black, 1},
-            */
+            //todo : Add testcases to test when pawn is capturing and promoting at the same time
+
         }));
 
     SECTION("Test Get Piece Count after promotion")

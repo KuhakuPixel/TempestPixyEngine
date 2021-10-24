@@ -214,7 +214,7 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
 
     this->Move(from, to, psuedoLegalMove, newPromotedPiece);
 }
-
+//todo : Fix bug where pawn is not promoting to queen if pawn is capturing
 void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newPromotedPiece)
 {
 
