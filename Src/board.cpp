@@ -217,10 +217,8 @@ void Board::Move(std::string moveNotation, bool psuedoLegalMove)
 //todo : Fix bug where pawn is not promoting to queen if pawn is capturing
 void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newPromotedPiece)
 {
-
-    char pieceToMove = this->GetPieceName(from);
-    PieceName pieceName = ChessLib::ToPieceNameEnum(pieceToMove);
-    PieceColors sideToMove = ChessLib::ToPieceColorEnum(pieceToMove);
+    PieceName pieceName = this->GetPieceNameEnum(from);
+    PieceColors sideToMove = this->GetPieceColor(from);
 
     bool isMoveLegal = false;
     if (!psuedoLegalMove)
@@ -229,7 +227,6 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
         isMoveLegal = true;
     if (isMoveLegal)
     {
-
         MoveFlag moveFlag = Analyzer::GetMoveFlag(*this, from, to);
         switch (moveFlag)
         {
@@ -237,12 +234,11 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
         {
             this->PlacePiece(EMPTYSQUARE, from);
             if (newPromotedPiece == PieceName::null)
-                this->PlacePiece(pieceToMove, to);
+                this->PlacePiece(pieceName, sideToMove, to);
             else
                 this->PlacePiece(newPromotedPiece, sideToMove, to);
-
             //remove castling right
-            if (ChessLib::ToPieceNameEnum(pieceToMove) == PieceName::king)
+            if (pieceName == PieceName::king)
             {
                 if (sideToMove == PieceColors::white)
                 {
@@ -255,7 +251,7 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
                         this->blackCastlingRights.clear();
                 }
             }
-            else if (ChessLib::ToPieceNameEnum(pieceToMove) == PieceName::rook)
+            else if (pieceName == PieceName::rook)
             {
                 //a rook or king move will remove the castling rights
                 if (sideToMove == PieceColors::white)
@@ -293,18 +289,19 @@ void Board::Move(Square from, Square to, bool psuedoLegalMove, PieceName newProm
             }
             break;
         }
-
         case MoveFlag::pawnDiagonalMove:
         {
             this->PlacePiece(EMPTYSQUARE, from);
-            this->PlacePiece(pieceToMove, to);
+            if (newPromotedPiece == PieceName::null)
+                this->PlacePiece(pieceName, sideToMove, to);
+            else
+                this->PlacePiece(newPromotedPiece, sideToMove, to);
             break;
         }
         case MoveFlag::shortCastle:
         {
             if (sideToMove == PieceColors::white)
             {
-
                 this->PlacePiece(EMPTYSQUARE, from);
                 this->PlacePiece('K', to);
                 this->PlacePiece(EMPTYSQUARE, Square('h', '1'));

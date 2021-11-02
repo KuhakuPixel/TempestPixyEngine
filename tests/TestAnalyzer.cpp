@@ -153,7 +153,8 @@ void TestIsMoveLegal(std::string fenPosition, std::string move, bool expect)
     }
     REQUIRE(actual == expect);
 }
-void TestIsMoveLegal(std::string fenPosition, std::vector<std::string> moves, bool expect)
+///Testing a sequence of move and test whether the last move is legal or not
+void TestIsLastMoveLegal(std::string fenPosition, std::vector<std::string> moves, bool expect)
 {
     Board board = Board();
     board.LoadFromFen(fenPosition);
@@ -697,7 +698,7 @@ TEST_CASE("Test Promotion", "[BoardLegalMoves]")
             {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1r", true},
             {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1b", true},
             {"8/8/1k3P2/8/8/2K5/6p1/8 b - - 0 1", "g2g1n", true},
-            //illegal promoting to a pawn king or none
+            //illegal promoting to a pawn king or none at all
             {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8", false},
             {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8P", false},
             {"8/5P2/1k6/8/8/2K5/8/8 w - - 0 1", "f7f8k", false},
@@ -759,8 +760,13 @@ TEST_CASE("Test Get Piece Count after promotion", "[GetHangingPiecesCount]")
             {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1r", PieceName::rook, PieceColors::black, 1},
             {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1n", PieceName::knight, PieceColors::black, 1},
             {"8/K7/8/8/8/8/6p1/2qk4 b - - 43 23", "g2g1b", PieceName::bishop, PieceColors::black, 1},
-            //todo : Add testcases to test when pawn is capturing and promoting at the same time
 
+            //pawn capturing and promoting at the same time
+            {"3n4/4P3/8/8/8/5p1K/8/5k2 w - - 0 1", "e7d8q", PieceName::queen, PieceColors::white, 1},
+            {"q7/1P6/8/8/8/5p1K/8/5k2 w - - 0 1", "b7a8r", PieceName::rook, PieceColors::white, 1},
+
+            {"q7/1P6/8/8/8/2k2p1K/4p3/3Q4 b - - 0 1", "e2e1q", PieceName::queen, PieceColors::black, 2},
+            {"q7/1P6/8/8/8/2k2p1K/2p5/3Q4 b - - 0 1", "c2d1r", PieceName::rook, PieceColors::black, 1},
         }));
 
     SECTION("Test Get Piece Count after promotion")
@@ -860,6 +866,6 @@ TEST_CASE("Test Loosing castling rights", "[BoardLegalMoves]")
 
     SECTION("Test Loosing castling rights")
     {
-        TestIsMoveLegal(fenPosition, moves, isMoveLegal);
+        TestIsLastMoveLegal(fenPosition, moves, isMoveLegal);
     }
 }
