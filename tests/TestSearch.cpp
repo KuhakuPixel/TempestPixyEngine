@@ -47,7 +47,7 @@ void TestGeneratePieceLegalMoves(std::string fenPosition, int fileNum, int rankN
     REQUIRE(generatedPieceMoves.size() == expect);
 }
 
-void TestGenerateMoves(std::string fenPosition, PieceColors sideToMove, int expect)
+void TestGenerateMovesFromBoard(std::string fenPosition, PieceColors sideToMove, int expect)
 {
 
     Board board = Board();
@@ -86,7 +86,7 @@ void TestGenerateMoves(std::string fenPosition, PieceColors sideToMove, int expe
 
     REQUIRE(generatedMoves.size() == expect);
 }
-TEST_CASE("Test Generate Pieces Moves", "[TestGenerateMoves]")
+TEST_CASE("Test Generate Pieces Moves", "[TestGenerateMovesFromBoard]")
 {
     std::string fenPosition;
     int fileNum;
@@ -113,7 +113,9 @@ TEST_CASE("Test Generate Pieces Moves", "[TestGenerateMoves]")
             {"8/1k6/8/2n5/p4N2/6K1/7P/8 w - - 0 1", 3, 5, 6},     //black knight legal moves
             {"8/1k1b4/8/2B5/p6P/6K1/8/8 w - - 1 2", 4, 7, 8},     //black bishop legal moves
             {"8/8/3rnk2/5p2/5P2/6P1/R5K1/8 b - - 0 1", 1, 2, 12}, //white rook legal moves
-            //TODO : Add test cases when pawn are promoting
+            //move generation for promotion
+            {"q7/1P6/8/8/8/2k2p1K/8/2bQ4 w - - 0 2", 2, 7, 8}, //white (can either take the black queen or not so legal moves should be 8)
+            {"q7/1Q6/8/8/8/2k4K/5p2/2bQ4 b - - 1 3", 6, 2, 4}, //black
         }));
 
     SECTION("Test generating movements")
@@ -122,7 +124,7 @@ TEST_CASE("Test Generate Pieces Moves", "[TestGenerateMoves]")
     }
 }
 
-TEST_CASE("Test Generate Moves", "[TestGenerateMoves]")
+TEST_CASE("Test Generate Moves", "[TestGenerateMovesFromBoard]")
 {
     std::string fenPosition;
     PieceColors sideToMove;
@@ -160,10 +162,13 @@ TEST_CASE("Test Generate Moves", "[TestGenerateMoves]")
             {"4R3/2Q5/6R1/1K1B1N1P/3B4/3N4/P6P/1k6 w - - 0 1", PieceColors::white, 103},
             //only 1 move (block the rook with the bishop)
             {"2R3k1/5ppp/8/8/1b6/8/5PPP/6K1 b - - 0 1", PieceColors::black, 1},
+            //test generating moves when pawns are promoting
+            {"7r/1P6/8/8/8/7k/KR4p1/8 w - - 0 1", PieceColors::white, 18},
+            {"7r/1P6/8/8/1R6/7k/K5p1/8 b - - 1 1", PieceColors::black, 17},
         }));
 
     SECTION("Test generating movements")
     {
-        TestGenerateMoves(fenPosition, sideToMove, expect);
+        TestGenerateMovesFromBoard(fenPosition, sideToMove, expect);
     }
 }

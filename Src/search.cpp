@@ -72,7 +72,7 @@ const std::map<PieceName, std::vector<Vector2>> Search::pieceToMoveVectorMap = {
         },
     },
 };
-//TODO : Generate moves when promoting
+///This function has no PieceColors parameter because it it will know for certain what piece color at the given square
 std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int fileNum, int rankNum)
 {
     std::vector<std::string> moves = {};
@@ -91,8 +91,22 @@ std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int
                 if (toFileNum >= 1 && toFileNum <= 8 && toRankNum >= 1 && toRankNum <= 8)
                 {
                     Square to = Square(toFileNum, toRankNum);
-                    if (Analyzer::IsMoveLegal(board, from, to, false))
-                        moves.push_back(from.GetNotation() + to.GetNotation());
+                    if ((sideToMove == PieceColors::white && toRankNum == 8) ||
+                        (sideToMove == PieceColors::black && toRankNum == 1))
+                    {
+                        if (Analyzer::IsMoveLegal(board, from, to, false, PieceName::queen))
+                        {
+                            moves.push_back(from.GetNotation() + to.GetNotation() + "q");
+                            moves.push_back(from.GetNotation() + to.GetNotation() + "n");
+                            moves.push_back(from.GetNotation() + to.GetNotation() + "b");
+                            moves.push_back(from.GetNotation() + to.GetNotation() + "r");
+                        }
+                    }
+                    else
+                    {
+                        if (Analyzer::IsMoveLegal(board, from, to, false))
+                            moves.push_back(from.GetNotation() + to.GetNotation());
+                    }
                 }
             }
         }
@@ -122,6 +136,7 @@ std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int
     }
     return moves;
 }
+///Generate all possible moves for either white or black
 std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors sideToMove)
 {
     std::vector<std::string> moves = {};
