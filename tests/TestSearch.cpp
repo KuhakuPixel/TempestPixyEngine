@@ -113,7 +113,7 @@ TEST_CASE("Test Generate Pieces Moves", "[TestGenerateMoves]")
             {"8/1k6/8/2n5/p4N2/6K1/7P/8 w - - 0 1", 3, 5, 6},     //black knight legal moves
             {"8/1k1b4/8/2B5/p6P/6K1/8/8 w - - 1 2", 4, 7, 8},     //black bishop legal moves
             {"8/8/3rnk2/5p2/5P2/6P1/R5K1/8 b - - 0 1", 1, 2, 12}, //white rook legal moves
-
+            //TODO : Add test cases when pawn are promoting
         }));
 
     SECTION("Test generating movements")

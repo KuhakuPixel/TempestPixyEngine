@@ -72,7 +72,7 @@ const std::map<PieceName, std::vector<Vector2>> Search::pieceToMoveVectorMap = {
         },
     },
 };
-
+//TODO : Generate moves when promoting
 std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int fileNum, int rankNum)
 {
     std::vector<std::string> moves = {};
