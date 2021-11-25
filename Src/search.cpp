@@ -198,12 +198,12 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
                         break;
                 }
             }
-            printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
+            //printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
         }
         if (currentDepth == 0)
         {
             *bestMove = currentBestMove;
-            printf("Best move for %s is %s\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), currentBestMove.c_str());
+            // printf("Best move for %s is %s\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), currentBestMove.c_str());
         }
 
         return bestValue;
