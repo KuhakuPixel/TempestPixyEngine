@@ -15,7 +15,7 @@ Run unit tests  with
 ```sh
 python3 build.py test
 ```
-#TODO:
+# TODO:
 - use cmake to build the project
 - use google benchmark to test performance
 - Improve performance
