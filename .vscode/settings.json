@@ -83,7 +83,8 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xtree": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "queue": "cpp"
     },
     "python.formatting.provider": "black",
     "editor.formatOnSave": true,
