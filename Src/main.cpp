@@ -8,7 +8,7 @@
 #include "evaluation.h"
 #include "search.h"
 #include "stringHelper.h"
-///Starts engine in uci mode
+/// Starts engine in uci mode
 void StartEngineUci()
 {
     std::string startFenPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -38,13 +38,13 @@ void StartEngineUci()
             }
             else if (command.find("position startpos moves") == 0)
             {
-                //restart board
+                // restart board
                 board = Board();
                 board.LoadFromFen(startFenPosition);
-                //get the algebraic moves
+                // get the algebraic moves
                 std::string movesStr = command.substr(strlen("position startpos moves") + 1);
                 std::vector<std::string> moves = StringHelper::SplitString(movesStr, " ");
-                //setup board
+                // setup board
                 for (int i = 0; i < moves.size(); i++)
                     board.Move(moves.at(i));
             }
@@ -54,7 +54,7 @@ void StartEngineUci()
             std::string bestMove = "";
             Search::SearchPosition(board, evaluation, 0, 4, -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), &bestMove);
             printf("bestmove %s\n", bestMove.c_str());
-            //board.Move(bestMove);
+            // board.Move(bestMove);
         }
         else if (command == "quit")
             exit(0);
@@ -79,7 +79,7 @@ void PlayAgainstSelf()
         printf("Side to move %s \n", colorToMove.c_str());
         printf("last move is :  %s\n", bestMove.c_str());
         board.DisplayBoard('w');
-        //move engine
+        // move engine
 
         Search::SearchPosition(board, evaluation, 0, 4, -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity(), &bestMove);
 

@@ -72,7 +72,7 @@ const std::map<PieceName, std::vector<Vector2>> Search::pieceToMoveVectorMap = {
         },
     },
 };
-///This function has no PieceColors parameter because it it will know for certain what piece color at the given square
+/// This function has no PieceColors parameter because it it will know for certain what piece color at the given square
 std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int fileNum, int rankNum)
 {
     std::vector<std::string> moves = {};
@@ -136,7 +136,19 @@ std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int
     }
     return moves;
 }
-///Generate all possible moves for either white or black
+// TODO :
+// Add unit tests to validate the move notations that are generated
+// Debug generating wrong move notation
+// but the moves generated count are  correct
+//  Steps to reproduce
+// command:
+// uci
+// position fen 5R2/K5R1/8/8/7k/8/8/8 b - - 2 60
+// go
+// //
+// Problem : with the above reproducing steps ,the program will output      "EMPTY" for some reason
+//
+/// Generate all possible moves for either white or black
 std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors sideToMove)
 {
     std::vector<std::string> moves = {};
@@ -159,21 +171,21 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
 {
     std::string currentBestMove = "EMPTY";
     PieceColors sideToMove = board.GetCurrentTurn();
-    //initialize the best value (will always be initialized to the worst depending on the side to move)
+    // initialize the best value (will always be initialized to the worst depending on the side to move)
     double bestValue = (sideToMove == PieceColors::white)
                            ? -std::numeric_limits<double>::infinity()
                            : std::numeric_limits<double>::infinity();
-    //if the current depth hasn't reached the maxDepth yet then continue recursively
+    // if the current depth hasn't reached the maxDepth yet then continue recursively
     if (currentDepth < maxDepth)
     {
         std::vector<std::string> generatedMoves = Search::GenerateMoves(board, sideToMove);
         for (int i = 0; i < generatedMoves.size(); i++)
         {
-            //move newBoard
+            // move newBoard
             Board newBoard = Board(board);
             newBoard.Move(generatedMoves.at(i), false);
             double newPositionValue = SearchPosition(newBoard, evaluation, currentDepth + 1, maxDepth, alpha, beta);
-            //choose the best value and best move according to the sideToMove
+            // choose the best value and best move according to the sideToMove
             if (sideToMove == PieceColors::white)
             {
                 if (newPositionValue > bestValue)
@@ -198,7 +210,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
                         break;
                 }
             }
-            //printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
+            // printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
         }
         if (currentDepth == 0)
         {
@@ -208,7 +220,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
 
         return bestValue;
     }
-    //recursion will stop here once the max depth is reached
+    // recursion will stop here once the max depth is reached
     else if (currentDepth == maxDepth)
     {
         return evaluation.Evaluate(board);
