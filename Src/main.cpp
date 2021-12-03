@@ -1,6 +1,6 @@
+#include <string.h>
 #include <iostream>
 #include <string>
-#include <string.h>
 #include "board.h"
 #include "CharHelper.h"
 #include "math.h"
@@ -33,7 +33,7 @@ void StartEngineUci()
         {
             if (command.find("position fen") == 0)
             {
-                std::string newFenPos = command.substr(13);
+                std::string newFenPos = command.substr(strlen("position fen") + 1);
                 board.LoadFromFen(newFenPos);
             }
             else if (command.find("position startpos moves") == 0)

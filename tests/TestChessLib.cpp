@@ -45,7 +45,7 @@ void TestToESquare(std::string square, ESquare expect)
     }
     REQUIRE(actual == expect);
 }
-//reference : https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md#top
+// reference : https://github.com/catchorg/Catch2/blob/devel/docs/tutorial.md#top
 /*
 
 TEST_CASE( "vectors can be sized and resized", "[vector]" ) {

@@ -136,18 +136,7 @@ std::vector<std::string> Search::GeneratePieceLegalMoves(const Board &board, int
     }
     return moves;
 }
-// TODO :
-// Add unit tests to validate the move notations that are generated
-// Debug generating wrong move notation
-// but the moves generated count are  correct
-//  Steps to reproduce
-// command:
-// uci
-// position fen 5R2/K5R1/8/8/7k/8/8/8 b - - 2 60
-// go
-// //
-// Problem : with the above reproducing steps ,the program will output      "EMPTY" for some reason
-//
+
 /// Generate all possible moves for either white or black
 std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors sideToMove)
 {
@@ -166,7 +155,6 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
     }
     return moves;
 }
-
 double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, double alpha, double beta, std::string *bestMove)
 {
     std::string currentBestMove = "EMPTY";
@@ -188,7 +176,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             // choose the best value and best move according to the sideToMove
             if (sideToMove == PieceColors::white)
             {
-                if (newPositionValue > bestValue)
+                if (newPositionValue >= bestValue)
                 {
                     bestValue = newPositionValue;
                     alpha = newPositionValue;
@@ -200,7 +188,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             }
             else if (sideToMove == PieceColors::black)
             {
-                if (newPositionValue < bestValue)
+                if (newPositionValue <= bestValue)
                 {
                     bestValue = newPositionValue;
                     beta = newPositionValue;
@@ -213,17 +201,11 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             // printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
         }
         if (currentDepth == 0)
-        {
             *bestMove = currentBestMove;
-            // printf("Best move for %s is %s\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), currentBestMove.c_str());
-        }
-
-        return bestValue;
     }
     // recursion will stop here once the max depth is reached
     else if (currentDepth == maxDepth)
-    {
         return evaluation.Evaluate(board);
-    }
+
     return bestValue;
 }
