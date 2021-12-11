@@ -27,6 +27,7 @@ def compile_cpp_codes(
     build_path: str,
     file_name: str,
     debug: bool = False,
+    optimized: bool = False,
     exclude_cpp_files: List[str] = [],
     object_files: List[str] = [],
 ):
@@ -44,6 +45,8 @@ def compile_cpp_codes(
     commands = ["g++"]
     if debug:
         commands.append("-g")
+    if optimized:
+        commands.append("-Ofast")
     commands.extend(codesFiles)
     commands.extend(["-o", os.path.join(build_path, file_name)])
     print("Running : " + " ".join(commands))
@@ -53,7 +56,7 @@ def compile_cpp_codes(
 args = sys.argv
 del args[0]
 if len(args) == 0:
-    compile_cpp_codes(["Src"], "build", "main", debug=False)
+    compile_cpp_codes(["Src"], "build", "main", debug=False, optimized=True)
     subprocess.run(["./build/main"])
 else:
     if args[0] == "debug":
