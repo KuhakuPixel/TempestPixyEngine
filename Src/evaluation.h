@@ -41,5 +41,6 @@ public:
     double EvaluateDefendedPieces(const Board &board, PieceColors sideToEvaluate) const;
     double EvaluateKingSafety(const Board &board, PieceColors sideToEvaluate) const;
     void EvaluateKnight(const Board &board, EvaluationVector &evaluationVector, PieceColors pieceColor, int fileNum, int rankNum) const;
+    double EvaluateGameResult(const Board &board, GameResult gameResult) const;
     double Evaluate(const Board &board) const;
 };

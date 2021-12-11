@@ -1,7 +1,7 @@
 #include "evaluation.h"
 #include "analyzer.h"
 #include "search.h"
-
+#include <limits>
 void EvaluationVector::IncrementEvaluation(PieceColors side, double value)
 {
     this->pieceColorToEvaluation[side] += value;
@@ -12,7 +12,7 @@ double EvaluationVector::GetStaticEvaluation()
 }
 Evaluation::Evaluation()
 {
-    //initialize piecesSquaresValue
+    // initialize piecesSquaresValue
     for (int i = (int)PieceName::pawn; i <= (int)PieceName::king; i++)
     {
         PieceName piece = static_cast<PieceName>(i);
@@ -72,7 +72,7 @@ void Evaluation::InitializeKnightPeriphery2(double value)
 }
 void Evaluation::InitializeKnightPeriphery3(double value)
 {
-    //center
+    // center
     this->piecesSquaresValue[PieceName::knight][ESquare::E4] = value;
     this->piecesSquaresValue[PieceName::knight][ESquare::D4] = value;
     this->piecesSquaresValue[PieceName::knight][ESquare::E5] = value;
@@ -99,15 +99,29 @@ void Evaluation::EvaluateKnight(
     double squareValue = this->piecesSquaresValue.at(PieceName::knight).at(eSquare);
     evaluationVector.IncrementEvaluation(pieceColor, squareValue);
 }
+double Evaluation::EvaluateGameResult(const Board &board, GameResult gameResult) const
+{
+    if (gameResult == GameResult::whiteWins)
+        return std::numeric_limits<double>::infinity();
+    else if (gameResult == GameResult::blackWins)
+        return -std::numeric_limits<double>::infinity();
+    else
+        return 0.0;
+}
 double Evaluation::Evaluate(const Board &board) const
 {
     EvaluationVector evalVector = EvaluationVector();
+    // check for possible checkmates
+    GameResult gameResult = Analyzer::GetGameResult(board, board.GetCurrentTurn());
+    if (gameResult != GameResult::ongoing)
+        return EvaluateGameResult(board, gameResult);
     for (int rankItr = 1; rankItr <= 8; rankItr++)
     {
         for (int fileItr = 1; fileItr <= 8; fileItr++)
         {
             if (!board.IsSquareEmpty(fileItr, rankItr))
             {
+
                 PieceName pieceName = board.GetPieceNameEnum(fileItr, rankItr);
                 PieceColors pieceColor = board.GetPieceColor(fileItr, rankItr);
                 EvaluateMaterial(evalVector, pieceName, pieceColor);
