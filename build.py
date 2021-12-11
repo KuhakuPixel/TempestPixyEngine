@@ -56,12 +56,14 @@ def compile_cpp_codes(
 args = sys.argv
 del args[0]
 if len(args) == 0:
-    compile_cpp_codes(["Src"], "build", "main", debug=False, optimized=True)
-    subprocess.run(["./build/main"])
+    compile_cpp_codes(
+        ["Src"], "build", "TempestPixyEngine", debug=False, optimized=True
+    )
+    subprocess.run(["./build/TempestPixyEngine"])
 else:
     if args[0] == "debug":
-        compile_cpp_codes(["Src"], "build", "main", debug=True)
-        subprocess.run(["gdb", "build/main"])
+        compile_cpp_codes(["Src"], "build", "TempestPixyEngine", debug=True)
+        subprocess.run(["gdb", "build/TempestPixyEngine"])
 
     elif args[0] == "test":
         if not ("TestMain.o" in os.listdir("tests")):
