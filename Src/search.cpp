@@ -157,7 +157,7 @@ std::vector<std::string> Search::GenerateMoves(const Board &board, PieceColors s
 }
 double Search::SearchPosition(const Board &board, const Evaluation &evaluation, int currentDepth, int maxDepth, double alpha, double beta, std::string *bestMove)
 {
-    std::string currentBestMove = "EMPTY";
+    std::string currentBestMove = "";
     PieceColors sideToMove = board.GetCurrentTurn();
     // initialize the best value (will always be initialized to the worst depending on the side to move)
     double bestValue = (sideToMove == PieceColors::white)
@@ -167,6 +167,9 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
     if (currentDepth < maxDepth)
     {
         std::vector<std::string> generatedMoves = Search::GenerateMoves(board, sideToMove);
+        // In case the evaluation of all the generated Moves are the same
+        if (generatedMoves.size() > 0)
+            currentBestMove = generatedMoves[0];
         for (int i = 0; i < generatedMoves.size(); i++)
         {
             // move newBoard
@@ -176,7 +179,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             // choose the best value and best move according to the sideToMove
             if (sideToMove == PieceColors::white)
             {
-                if (newPositionValue >= bestValue)
+                if (newPositionValue > bestValue)
                 {
                     bestValue = newPositionValue;
                     alpha = newPositionValue;
@@ -188,7 +191,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             }
             else if (sideToMove == PieceColors::black)
             {
-                if (newPositionValue <= bestValue)
+                if (newPositionValue < bestValue)
                 {
                     bestValue = newPositionValue;
                     beta = newPositionValue;
@@ -200,6 +203,7 @@ double Search::SearchPosition(const Board &board, const Evaluation &evaluation, 
             }
             // printf("Evaluating %s Move %s has an evaluation of %f at depth %d\n", ChessLib::GetPieceColorStr(sideToMove).c_str(), generatedMoves.at(i).c_str(), newPositionValue, currentDepth + 1);
         }
+
         if (currentDepth == 0)
             *bestMove = currentBestMove;
     }

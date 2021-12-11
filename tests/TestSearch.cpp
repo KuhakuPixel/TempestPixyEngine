@@ -217,11 +217,13 @@ TEST_CASE("Test Generate Algebraic Moves", "[TestGenerateMoves]")
     std::vector<std::string> expect;
 
     std::tie(fenPosition, sideToMove, expect) = GENERATE(
-        table<std::string, PieceColors, std::vector<std::string>>({{
-            "5R2/K5R1/8/8/7k/8/8/8 b - - 2 60",
-            PieceColors::black,
-            std::vector<std::string>{"h4h5", "h4h3"},
-        }}));
+        table<std::string, PieceColors, std::vector<std::string>>({
+            {
+                "5R2/K5R1/8/8/7k/8/8/8 b - - 2 60",
+                PieceColors::black,
+                std::vector<std::string>{"h4h5", "h4h3"},
+            },
+        }));
 
     SECTION("Test generating movements")
     {
